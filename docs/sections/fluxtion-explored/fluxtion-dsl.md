@@ -9,6 +9,7 @@ published: true
 **To be completed**
 
 # Fluxtion DSL Deep dive
+{: .no_toc }
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
 functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the
@@ -26,6 +27,15 @@ exploring concepts like, aggregation, windowing and groupBy in detail.
 - New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
 - No vendor lock-in, business code is free from any Fluxtion library dependencies
 
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+- TOC
+{:toc}
+</details>
+
 # API overview
 Fluxtion offers a DSL to bind functions into the event processor using the familiar map/filter/peek similar to the java
 stream api. Bound functions are invoked in accordance to the [dispatch rules](../fluxtion-explored#event-dispatch-rules).
@@ -33,24 +43,70 @@ stream api. Bound functions are invoked in accordance to the [dispatch rules](..
 An event processor is a live structure where new events trigger a set of dispatch operations. The node wrapping a function
 supports both stateful and stateless functions, it is the user choice what type of function to bind.
 
-## Creating a DataFlow
-To bind a functional operation we create a flow the event processor dispatch to when the event processor starts a 
-calculation cycle. In the imperative approach an event processor entry point is registered by [annotating a method](processing_events#handle-event-input) 
+## DataFlow
+To bind a functional operation we first create a [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) 
+in the event processor. A DataFlow triggers when the event processor starts a calculation cycle and there is a matching 
+dispatch rule. In the imperative approach an event processor entry point is registered by [annotating a method](processing_events#handle-event-input) 
 with `@OnEventHandler` or an interface exported with `@ExportService`.
 
 The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods to create and bind flows in an event processor. There is no restriction 
 on the number of data flows bound inside an event processor.
 
-Create a flow for String events with a call to `DataFlow.subscribe`, any call to processor.onEvent("myString") will be 
+To create a flow for String events, call  `DataFlow.subscribe(String.class)`, any call to processor.onEvent("myString") will be 
 routed to this flow.
 
 {% highlight java %}
 DataFlow.subscribe(String.class)
 {% endhighlight %}
 
-Once a flow has been created map/filter/grouping functions can be applied as chained calls.
+Once a flow has been created map, filter, groupBy, etc. functions can be applied as chained calls.
 
-## All functions are nodes
+
+## Map
+A map operation takes the output from a parent node and then applies a function to it. If the return of the
+function is null then the event notification no longer propagates down that path.
+
+{% highlight java %}
+var stringFlow = DataFlow.subscribe(String.class);
+
+stringFlow.map(String::toLowerCase);
+stringFlow.mapToInt(s -> s.length()/2);
+{% endhighlight %}
+
+**Map supports**
+
+- Stateless functions
+- Stateful functions
+- Primitive specialisation
+- Method references
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+
+## Filter
+A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
+the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
+event processor.
+
+{% highlight java %}
+DataFlow.subscribe(String.class)
+    .filter(Objects::nonNull)
+    .mapToInt(s -> s.length()/2);
+{% endhighlight %}
+
+**Filter supports**
+
+- Stateless functions
+- Stateful functions
+- Primitive specialisation
+- Method references
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+
+## Reduce
+There is no reduce function required in Fluxtion, stateful map functions perform the role of reduce. In a classic batch
+environment the reduce operation combines the element of collection of items into a single value. In a streaming environment
+the set of values is never complete, we can view the current value of a stateful map operation which is equivalent to the
+reduce operation. The question is rather, when is the value of the stateful map published and reset.
+
+## Automatic wrapping of functions
 Fluxtion automatically wraps the function in a node, actually a monad, and binds both into the event processor. The wrapping node
 handles all the event notifications, invoking the user function when it is triggered. Each wrapping node can be the
 head of multiple child flows forming complex graph structures that obey the dispatch rules. This is in contrast to
@@ -132,44 +188,70 @@ flowchart TB
     
 ```
 
+## Node to DataFlow
+A Dataflow can be created by subscribing to a node that has been imperatively added to the event processor. When the node 
+triggers in a calculation cycle the DataFlow will be triggered. Create a DataFlow from a node with:
 
-## Map
-A map operation takes the input from a parent function and then applies a function to the input. If the return of the
-output is null then the event notification no longer propagates down that path.
+`DataFlow.subscribeToNode(new MyComplexNode())`
 
-{% highlight java %}
-var stringFlow = DataFlow.subscribe(String.class);
+If the node referred to in the DataFlow.subscribeToNode method call is not in the event processor it will be bound
+automatically.
 
-stringFlow.map(String::toLowerCase);
-stringFlow.mapToInt(s -> s.length()/2);
-{% endhighlight %}
+The example below creates an instance of MyComplexNode as the head of a DataFlow. When a String event is received the
+DataFlow path is executed. In this case we are aggregating into a list that has the four most recent elements
 
-**Map supports**
-
-- Stateless functions
-- Stateful functions
-- Primitive specialisation
-- Method references
-- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
-
-## Filter
-A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
-the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
-event processor.
 
 {% highlight java %}
-DataFlow.subscribe(String.class)
-    .filter(Objects::nonNull)
-    .mapToInt(s -> s.length()/2);
+public class SubscribeToNodeSample {
+    @Getter
+    @ToString
+    public static class MyComplexNode {
+        private String in;
+
+        @OnEventHandler
+        public boolean stringUpdate(String in) {
+            this.in = in;
+            return true;
+        }
+    }
+    
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribeToNode(new MyComplexNode())
+                .console("node update trigger :{}")
+                .map(MyComplexNode::getIn)
+                .aggregate(Collectors.listFactory(4))
+                .console("last 4 elements:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(SubscribeToNodeSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+        processor.onEvent("E");
+        processor.onEvent("F");
+    }
+}
 {% endhighlight %}
 
-**Filter supports**
-
-- Stateless functions
-- Stateful functions
-- Primitive specialisation
-- Method references
-- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+Running the example code above logs to console
+{% highlight console %}
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=A)
+last 4 elements:[A]
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=B)
+last 4 elements:[A, B]
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=C)
+last 4 elements:[A, B, C]
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=D)
+last 4 elements:[A, B, C, D]
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=E)
+last 4 elements:[B, C, D, E]
+node update trigger :SubscribeToNodeSample.MyComplexNode(in=F)
+last 4 elements:[C, D, E, F]
+{% endhighlight %}
 
 # Aggregating
 # Windowing
