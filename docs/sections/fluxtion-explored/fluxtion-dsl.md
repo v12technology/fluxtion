@@ -136,7 +136,7 @@ DataFlow.mapBiFunction(MyFunctions::wordUpperCasePercentage, upperCharCount, cha
     .console("percentage chars upperCase this word:{}");
 {% endhighlight %}
 
-Running the above with a strings 'test ME', 'and AGAIN' outputs
+Running the above with a strings **'test ME', 'and AGAIN'** outputs
 
 {% highlight console %}
 input: 'test ME'
@@ -217,10 +217,10 @@ public class SubscribeToNodeSample {
     
     public static void buildGraph(EventProcessorConfig processorConfig) {
         DataFlow.subscribeToNode(new MyComplexNode())
-                .console("node update trigger :{}")
+                .console("node triggered -> {}")
                 .map(MyComplexNode::getIn)
                 .aggregate(Collectors.listFactory(4))
-                .console("last 4 elements:{}");
+                .console("last 4 elements:{}\n");
     }
 
     public static void main(String[] args) {
@@ -239,17 +239,22 @@ public class SubscribeToNodeSample {
 
 Running the example code above logs to console
 {% highlight console %}
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=A)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
 last 4 elements:[A]
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=B)
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
 last 4 elements:[A, B]
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=C)
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
 last 4 elements:[A, B, C]
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=D)
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
 last 4 elements:[A, B, C, D]
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=E)
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
 last 4 elements:[B, C, D, E]
-node update trigger :SubscribeToNodeSample.MyComplexNode(in=F)
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
 {% endhighlight %}
 
