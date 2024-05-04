@@ -539,7 +539,116 @@ node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[E, F]
 {% endhighlight %}
 
-
 # Aggregating
+Aggregating extends the concept of stateful map functions by adding behaviour when using functions in stateful operations
+like windowing and grouping. An aggregate function has these behaviours:
+
+- Stateful - defines the reset method
+- aggregate - aggregate a value and calculate a result
+- combine/deduct - combine or deduct another instance of this function, used when windowing
+- deduct supported - can this instance deduct another instance of this function or is loop required to recalculate
+
+
+{% highlight java %}
+public class AggregateSample {
+    public record ResetList() {}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ResetList.class).console("\n--- RESET ---");
+
+        DataFlow.subscribe(String.class)
+                .aggregate(Collectors.listFactory(3))
+                .resetTrigger(resetSignal)
+                .console("ROLLING list: {}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(AggregateSample::buildGraph);
+        processor.init();
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+        processor.onEvent("E");
+
+        processor.onEvent(new ResetList());
+        processor.onEvent("P");
+        processor.onEvent("Q");
+        processor.onEvent("R");
+
+        processor.onEvent(new ResetList());
+        processor.onEvent("XX");
+        processor.onEvent("YY");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ROLLING list: [A]
+ROLLING list: [A, B]
+ROLLING list: [A, B, C]
+ROLLING list: [B, C, D]
+ROLLING list: [C, D, E]
+
+--- RESET ---
+ROLLING list: []
+ROLLING list: [P]
+ROLLING list: [P, Q]
+ROLLING list: [P, Q, R]
+
+--- RESET ---
+ROLLING list: []
+ROLLING list: [XX]
+ROLLING list: [XX, YY]
+{% endhighlight %}
+
 # Windowing
+
 # GroupBy
+{% highlight java %}
+public class GroupBySample {
+    public record ResetList() {}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ResetList.class).console("\n--- RESET ---");
+
+        DataFlow.subscribe(Integer.class)
+                .groupBy(i -> i % 2 == 0 ? "evens" : "odds", Aggregates.countFactory())
+                .resetTrigger(resetSignal)
+                .map(GroupBy::toMap)
+                .console("ODD/EVEN map:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupBySample::buildGraph);
+        processor.init();
+        processor.onEvent(1);
+        processor.onEvent(2);
+
+        processor.onEvent(new ResetList());
+        processor.onEvent(5);
+        processor.onEvent(7);
+
+        processor.onEvent(new ResetList());
+        processor.onEvent(2);
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ODD/EVEN map:{odds=1}
+ODD/EVEN map:{odds=1, evens=1}
+
+--- RESET ---
+ODD/EVEN map:{}
+ODD/EVEN map:{odds=1}
+ODD/EVEN map:{odds=2}
+
+--- RESET ---
+ODD/EVEN map:{}
+ODD/EVEN map:{evens=1}
+{% endhighlight %}
