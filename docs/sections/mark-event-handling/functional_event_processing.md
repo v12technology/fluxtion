@@ -9,7 +9,7 @@ published: true
 # Functional DSL event stream processing
 {: .no_toc }
 
-This section documents the runtime event processing callback api and behaviour using functional programming.
+This section documents the runtime event processing described by functional programming.
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
 functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the
@@ -50,10 +50,12 @@ Fluxtion offers a DSL to bind functions into the event processor using the famil
 stream api. Bound functions are invoked in accordance to the dispatch rules [dispatch rules](../fluxtion-explored#event-dispatch-rules). 
 
 ## Creating a flow
-In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to when onEvent is called
-by user code. In the imperative approach an entry point is registered by [annotating a method](processing_events#handle-event-input) 
-with `@OnEventHandler`. The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods 
-for creating the head of a flow. There is no restriction to the number of flows bound inside an event processor.
+In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to 
+when the event processor starts a calculation cycle. In the imperative approach an event processor entry point is 
+registered by [annotating a method](processing_events#handle-event-input) with `@OnEventHandler` or an interface exported with `@ExportService`. 
+
+The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods for creating the head of a flow that is bound as an entry point to 
+n event processor. There is no restriction on the number of data flow heads bound inside an event processor.
 
 Creat a flow for String events with a call to DataFlow.subscribe
 
@@ -74,42 +76,46 @@ supports both stateful and stateless functions, it is the user choice what type 
 This example creates a simple graph structure where multiple stateful/stateless functions are bound to a single parent function.
 
 {% highlight java %}
+var stringFlow = DataFlow.subscribe(String.class).console("\ninput: '{}'");
 
-var stringFlow = DataFlow.subscribe(String.class);
+var charCount = stringFlow.map(new MyFunctions()::totalCharCount)
+        .console("charCount: {}");
+var upperCharCount = stringFlow.map(new MyFunctions()::totalUpperCaseCharCount)
+        .console("upperCharCount: {}");
 
-stringFlow.map(String::toLowerCase);
-stringFlow.map(String::toUpperCase);
-stringFlow.map(MyFunctions::charCount);
-stringFlow.map(new MyFunctions()::totalCharCount);
+DataFlow.mapBiFunction(new MyFunctions.SimpleMath()::updatePercentage, upperCharCount, charCount)
+        .console("percentage chars upperCase all words:{}");
 
-public static class MyFunctions{
-    int charCount;
+DataFlow.mapBiFunction(MyFunctions::updatePercentage,  upperCharCount, charCount)
+        .console("percentage chars upperCase this word:{}");
+{% endhighlight %}
 
-    public static int charCount(String in) {
-        return in.length();
-    }
+Running the above with a single string outputs
 
-    public int totalCharCount(String in) {
-        charCount += in.length();
-        return charCount;
-    }
-}
+{% highlight console %}
+input: 'test ME'
+charCount: 7
+upperCharCount: 2
+percentage chars upperCase all words:0.2857142857142857
+percentage chars upperCase this word:0.2857142857142857
+
+input: 'and AGAIN'
+charCount: 16
+upperCharCount: 7
+percentage chars upperCase all words:0.391304347826087
+percentage chars upperCase this word:0.4375
 {% endhighlight %}
 
 ## Map
 A map operation takes the input from a parent function and then applies a function to the input. If the return of the 
 output is null then the event notification no longer propagates down that path. 
 
-  {% highlight java %}
-  var stringFlow = DataFlow.subscribe(String.class);
+{% highlight java %}
+var stringFlow = DataFlow.subscribe(String.class);
 
-  stringFlow.map(String::toLowerCase);
-  stringFlow.map(String::toUpperCase);
-  stringFlow.map(MyFunctions::charCount);
-  stringFlow.map(new MyFunctions()::totalCharCount);
-  stringFlow.mapToInt(new MyFunctions()::totalCharCount);
-  stringFlow.mapToInt(s -> s.length()/2);
-  {% endhighlight %}
+stringFlow.map(String::toLowerCase);
+stringFlow.mapToInt(s -> s.length()/2);
+{% endhighlight %}
   
 **Map supports**
 
@@ -140,7 +146,7 @@ DataFlow.subscribe(String.class)
 - Method references
 - Inline lambdas
 
-## Functional operations
+# Functional operations
 The functional DSL supports a rich set of operations. Where appropriate functional operations support:
 
 - Stateless functions
@@ -149,62 +155,62 @@ The functional DSL supports a rich set of operations. Where appropriate function
 - Method references
 - Inline lambdas
 
-### Map with bi function
+## Map with bi function
 Takes two flow inputs and applies a bi function to the inputs. Applied once both functions have updated.
 
-### Peek
+## Peek
 View the state of a node, invoked when the parent triggers.
 
-### Sink
+## Sink
 Publishes the output of the function to a named sink end point. Client code can register as a named sink end point with
 the running event processor.
 
-### Id
+## Id
 A node can be given an id that makes it discoverable using EventProcessor.getNodeById.
 
-### Aggregate
+## Aggregate
 Aggregates the output of a node using a user supplied stateful function.
 
-### Aggregate with sliding window
+## Aggregate with sliding window
 Aggregates the output of a node using a user supplied stateful function, in a sliding window.
 
-### Aggregate with tumbling window
+## Aggregate with tumbling window
 Aggregates the output of a node using a user supplied stateful function, in a tumbling window.
 
-### Default value
+## Default value
 Set the initial value of a node without needing an input event to create a value.
 
-### Flat map
+## Flat map
 Flat map operations on a collection from a parent node.
 
-### Group by
+## Group by
 Group by operations.
 
-### Group by with sliding window
+## Group by with sliding window
 Group by operations, in a sliding window.
 
-### Group by with tumbling window
+## Group by with tumbling window
 Group by operations, in a tumbling window.
 
-### Lookup
+## Lookup
 Apply a lookup function to a value as a map operation.
 
-### Merge
+## Merge
 Merge multiple streams of the same type into a single output.
 
-### Map and merge
+## Map and merge
 Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
 
-### Console
+## Console
 Specialisation of peek that logs to console
 
-### Push
+## Push
 Pushes the output of a node to user class, joins functional to imperative flow
 
-### Trigger overrides
+## Trigger overrides
 External flows can override that standard triggering method to force publication/calculation/downstream notifications.
 
-### Reentrant events
+## Reentrant events
 The output of an operation can be published to the event processor as a new event. Will be processed after the current
 cycle finishes.
 
