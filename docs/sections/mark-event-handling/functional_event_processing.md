@@ -59,6 +59,44 @@ The functional DSL supports a rich set of operations. Where appropriate function
 - Method references
 - Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
+## Map
+A map operation takes the input from a parent function and then applies a function to the input. If the return of the
+output is null then the event notification no longer propagates down that path.
+
+{% highlight java %}
+var stringFlow = DataFlow.subscribe(String.class);
+
+stringFlow.map(String::toLowerCase);
+stringFlow.mapToInt(s -> s.length()/2);
+{% endhighlight %}
+
+**Map supports**
+
+- Stateless functions
+- Stateful functions
+- Primitive specialisation
+- Method references
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+
+## Filter
+A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
+the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
+event processor.
+
+{% highlight java %}
+DataFlow.subscribe(String.class)
+    .filter(Objects::nonNull)
+    .mapToInt(s -> s.length()/2);
+{% endhighlight %}
+
+**Filter supports**
+
+- Stateless functions
+- Stateful functions
+- Primitive specialisation
+- Method references
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+
 ## Map with bi function
 Takes two flow inputs and applies a bi function to the inputs. Applied once both functions have updated.
 
