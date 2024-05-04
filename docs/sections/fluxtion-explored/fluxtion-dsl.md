@@ -321,6 +321,8 @@ controls on the flow node.
 In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications are in 
 addition to the normal triggering operation of the flow node.
 
+`publishTrigger(DataFlow.subscribeToSignal("publishMe"))`
+
 The values in the parent node are unchanged when publishing.
 
 {% highlight java %}
@@ -379,6 +381,8 @@ the same. The publishTriggerOverride overrides the normal triggering operation.
 In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications override 
 the normal triggering operation of the flow node.
 
+`publishTriggerOverride(DataFlow.subscribeToSignal("publishMe"))`
+
 The values in the parent node are unchanged when publishing.
 
 {% highlight java %}
@@ -433,6 +437,8 @@ In this example the updateTrigger controls when the functional mapping operation
 are only aggregated when the update trigger is called. Notifications from the parent node are ignored and do not trigger
 a mapping operation.
 
+`updateTrigger(DataFlow.subscribeToSignal("updateMe"))`
+
 {% highlight java %}
 public class TriggerUpdateSample {
     public static void buildGraph(EventProcessorConfig processorConfig) {
@@ -479,6 +485,8 @@ last 4 elements:[C, F]
 In this example the resetTrigger controls when the functional mapping operation of the flow node is reset. The aggregate
 operation is stateful so all the values in the list are removed when then reset trigger fires. The reset operation causes 
 trigger a notification to children of the flow node.
+
+`resetTrigger(DataFlow.subscribeToSignal("resetMe"))`
 
 {% highlight java %}
 public class TriggerResetSample {
