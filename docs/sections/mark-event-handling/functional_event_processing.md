@@ -9,20 +9,17 @@ published: true
 # Functional DSL event stream processing
 {: .no_toc }
 
-This section documents the runtime event processing described by functional programming.
+This section documents the use of functional programming to construct event processing logic. For a more in-depth
+description of the dsl head over to [Fluxtion DSL deep dive](../fluxtion-explored/fluxtion-dsl).
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
-functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the
-functional DSL is to have no Fluxtion api calls in the business logic only pure vanilla java. 
+functions into the processor without having to construct classes marked with Fluxtion annotations. Operations such as
+map/filter/peek similar to the java stream api are present. The goal of using the functional DSL is to have no 
+Fluxtion api calls in the business logic only pure vanilla java. 
 
-**Advantages of using Fluxtion functional DSL**
-
-- Business logic components are re-usable and testable outside Fluxtion
-- Clear separation between event notification and business logic, event logic is removed from business code
-- Complex functions library like windowing and aggregation are well tested and natively supported
-- Increased developer productivity, less code to write and support
-- New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
-- No vendor lock-in, business code is free from any Fluxtion library dependencies
+An event processor is a live structure where new events trigger a set of dispatch operations. The node wrapping a function
+supports both stateful and stateless functions, it is the user choice what type of function to bind. Any bound functions 
+are invoked in accordance to the [dispatch rules](../fluxtion-explored#event-dispatch-rules).
 
 ## Three steps to using Fluxtion
 {: .no_toc }
@@ -44,107 +41,14 @@ In this section we are covering the first of these **Bind functions using functi
 {:toc}
 </details>
 
+# Advantages of using Fluxtion functional DSL
 
-# API overview
-Fluxtion offers a DSL to bind functions into the event processor using the familiar map/filter/peek similar to the java
-stream api. Bound functions are invoked in accordance to the dispatch rules [dispatch rules](../fluxtion-explored#event-dispatch-rules). 
-
-## Creating a flow
-In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to 
-when the event processor starts a calculation cycle. In the imperative approach an event processor entry point is 
-registered by [annotating a method](processing_events#handle-event-input) with `@OnEventHandler` or an interface exported with `@ExportService`. 
-
-The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods for creating the head of a flow that is bound as an entry point to 
-n event processor. There is no restriction on the number of data flow heads bound inside an event processor.
-
-Creat a flow for String events with a call to DataFlow.subscribe
-
-{% highlight java %}
-DataFlow.subscribe(String.class)
-{% endhighlight %}
-
-Once a flow has been created map/filter/grouping functions can be applied as chained calls.
-
-## All functions are nodes 
-A bound function is wrapped in a node/monad that is bound into the event processor and invokes the user function when 
-notified. Each wrapping node can be the head of multiple child flows forming complex graph structures that obey the dispatch
-rules. This is in contrast to classic java streams that have a terminal operation and a pipeline structure. 
-
-An event processor is a live structure where new events trigger a set of dispatch operations. The node wrapping the function
-supports both stateful and stateless functions, it is the user choice what type of function to bind. 
-
-This example creates a simple graph structure where multiple stateful/stateless functions are bound to a single parent function.
-
-{% highlight java %}
-var stringFlow = DataFlow.subscribe(String.class).console("\ninput: '{}'");
-
-var charCount = stringFlow.map(new MyFunctions()::totalCharCount)
-        .console("charCount: {}");
-var upperCharCount = stringFlow.map(new MyFunctions()::totalUpperCaseCharCount)
-        .console("upperCharCount: {}");
-
-DataFlow.mapBiFunction(new MyFunctions.SimpleMath()::updatePercentage, upperCharCount, charCount)
-        .console("percentage chars upperCase all words:{}");
-
-DataFlow.mapBiFunction(MyFunctions::updatePercentage,  upperCharCount, charCount)
-        .console("percentage chars upperCase this word:{}");
-{% endhighlight %}
-
-Running the above with a single string outputs
-
-{% highlight console %}
-input: 'test ME'
-charCount: 7
-upperCharCount: 2
-percentage chars upperCase all words:0.2857142857142857
-percentage chars upperCase this word:0.2857142857142857
-
-input: 'and AGAIN'
-charCount: 16
-upperCharCount: 7
-percentage chars upperCase all words:0.391304347826087
-percentage chars upperCase this word:0.4375
-{% endhighlight %}
-
-## Map
-A map operation takes the input from a parent function and then applies a function to the input. If the return of the 
-output is null then the event notification no longer propagates down that path. 
-
-{% highlight java %}
-var stringFlow = DataFlow.subscribe(String.class);
-
-stringFlow.map(String::toLowerCase);
-stringFlow.mapToInt(s -> s.length()/2);
-{% endhighlight %}
-  
-**Map supports**
-
-- Stateless functions
-- Stateful functions
-- Primitive specialisation
-- Method references
-- Inline lambdas
-
-## Filter
-A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
-the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the 
-event processor.
-
-{% highlight java %}
-
-DataFlow.subscribe(String.class)
-        .filter(Objects::nonNull)
-        .mapToInt(s -> s.length()/2);
-
-{% endhighlight %}
-
-**Filter supports**
-
-- Stateless functions
-- Stateful functions
-- Primitive specialisation
-- Method references
-- Inline lambdas
+- Business logic components are re-usable and testable outside Fluxtion
+- Clear separation between event notification and business logic, event logic is removed from business code
+- Complex functions library like windowing and aggregation are well tested and natively supported
+- Increased developer productivity, less code to write and support
+- New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
+- No vendor lock-in, business code is free from any Fluxtion library dependencies
 
 # Functional operations
 The functional DSL supports a rich set of operations. Where appropriate functional operations support:
@@ -153,7 +57,7 @@ The functional DSL supports a rich set of operations. Where appropriate function
 - Stateful functions
 - Primitive specialisation
 - Method references
-- Inline lambdas
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
 ## Map with bi function
 Takes two flow inputs and applies a bi function to the inputs. Applied once both functions have updated.
