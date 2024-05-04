@@ -258,6 +258,233 @@ node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
 {% endhighlight %}
 
+# Trigger control
+Fluxtion offers a way to override the triggering of a flow node in the event processor. There are four trigger controls
+available for client code to customise:
+
+* Flow.publishTrigger - Notifies a child node when triggered, adds a notification to the normal publish
+* Flow.publishTriggerOverride - Notifies a child node when triggered, overrides all publish notification
+* Flow.updateTrigger - Overrides when the flow node runs its functional operation
+* Flow.resetTrigger - If the functional operation is stateful call the reset function
+
+In the trigger examples we are using the `DataFlow.subscribeToSignal` and `processor.publishSignal` to drive the trigger
+controls on the flow node.
+
+## PublishTrigger
+In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications are in 
+addition to the normal triggering operation of the flow node.
+
+The values in the parent node are unchanged when publishing.
+
+{% highlight java %}
+public class TriggerPublishSample {
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribeToNode(new SubscribeToNodeSample.MyComplexNode())
+                .console("node triggered -> {}")
+                .map(SubscribeToNodeSample.MyComplexNode::getIn)
+                .aggregate(Collectors.listFactory(4))
+                .publishTrigger(DataFlow.subscribeToSignal("publishMe"))
+                .console("last 4 elements:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(TriggerPublishSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+        processor.onEvent("E");
+        processor.onEvent("F");
+
+        processor.publishSignal("publishMe");
+        processor.publishSignal("publishMe");
+        processor.publishSignal("publishMe");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+{% highlight console %}
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
+last 4 elements:[A]
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
+last 4 elements:[A, B]
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
+last 4 elements:[A, B, C]
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
+last 4 elements:[A, B, C, D]
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
+last 4 elements:[B, C, D, E]
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
+last 4 elements:[C, D, E, F]
+last 4 elements:[C, D, E, F]
+last 4 elements:[C, D, E, F]
+last 4 elements:[C, D, E, F]
+
+{% endhighlight %}
+
+## PublishTriggerOverride
+In this example the publishTriggerOverride control enables multiple publish calls for the flow node. The values published are
+the same. The publishTriggerOverride overrides the normal triggering operation.
+
+In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications override 
+the normal triggering operation of the flow node.
+
+The values in the parent node are unchanged when publishing.
+
+{% highlight java %}
+public class TriggerPublishOverrideSample {
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribeToNode(new SubscribeToNodeSample.MyComplexNode())
+                .console("node triggered -> {}")
+                .map(SubscribeToNodeSample.MyComplexNode::getIn)
+                .aggregate(Collectors.listFactory(4))
+                .publishTriggerOverride(DataFlow.subscribeToSignal("publishMe"))
+                .console("last 4 elements:{}\n");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(TriggerPublishOverrideSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+
+        processor.publishSignal("publishMe");
+        processor.onEvent("E");
+        processor.onEvent("F");
+        processor.onEvent("G");
+        processor.onEvent("H");
+
+        processor.publishSignal("publishMe");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
+last 4 elements:[A, B, C, D]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=G)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=H)
+last 4 elements:[E, F, G, H]
+{% endhighlight %}
+
+## UpdateTrigger
+In this example the updateTrigger controls when the functional mapping operation of the flow node is invoked. The values 
+are only aggregated when the update trigger is called. Notifications from the parent node are ignored and do not trigger
+a mapping operation.
+
+{% highlight java %}
+public class TriggerUpdateSample {
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribeToNode(new SubscribeToNodeSample.MyComplexNode())
+                .console("node triggered -> {}")
+                .map(SubscribeToNodeSample.MyComplexNode::getIn)
+                .aggregate(Collectors.listFactory(4))
+                .updateTrigger(DataFlow.subscribeToSignal("updateMe"))
+                .console("last 4 elements:{}\n");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(TriggerUpdateSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.publishSignal("updateMe");
+
+        processor.onEvent("D");
+        processor.onEvent("E");
+        processor.onEvent("F");
+        processor.publishSignal("updateMe");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
+last 4 elements:[C]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
+last 4 elements:[C, F]
+{% endhighlight %}
+
+## ResetTrigger
+In this example the resetTrigger controls when the functional mapping operation of the flow node is reset. The aggregate
+operation is stateful so all the values in the list are removed when then reset trigger fires. The reset operation causes 
+trigger a notification to children of the flow node.
+
+{% highlight java %}
+public class TriggerResetSample {
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribeToNode(new SubscribeToNodeSample.MyComplexNode())
+                .console("node triggered -> {}")
+                .map(SubscribeToNodeSample.MyComplexNode::getIn)
+                .aggregate(Collectors.listFactory(4))
+                .resetTrigger(DataFlow.subscribeToSignal("resetMe"))
+                .console("last 4 elements:{}\n");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(TriggerResetSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+
+        processor.publishSignal("resetMe");
+        processor.onEvent("E");
+        processor.onEvent("F");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
+last 4 elements:[A]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
+last 4 elements:[A, B]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
+last 4 elements:[A, B, C]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
+last 4 elements:[A, B, C, D]
+
+last 4 elements:[]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
+last 4 elements:[E]
+
+node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
+last 4 elements:[E, F]
+{% endhighlight %}
+
+
 # Aggregating
 # Windowing
 # GroupBy
