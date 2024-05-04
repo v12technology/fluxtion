@@ -34,14 +34,15 @@ An event processor is a live structure where new events trigger a set of dispatc
 supports both stateful and stateless functions, it is the user choice what type of function to bind.
 
 ## Creating a DataFlow
-In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to
-when the event processor starts a calculation cycle. In the imperative approach an event processor entry point is
-registered by [annotating a method](processing_events#handle-event-input) with `@OnEventHandler` or an interface exported with `@ExportService`.
+To bind a functional operation we create a flow the event processor dispatch to when the event processor starts a 
+calculation cycle. In the imperative approach an event processor entry point is registered by [annotating a method](processing_events#handle-event-input) 
+with `@OnEventHandler` or an interface exported with `@ExportService`.
 
-The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods for creating the head of a flow that is bound as an entry point to
-n event processor. There is no restriction on the number of data flow heads bound inside an event processor.
+The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods to create and bind flows in an event processor. There is no restriction 
+on the number of data flows bound inside an event processor.
 
-Creat a flow for String events with a call to DataFlow.subscribe
+Create a flow for String events with a call to `DataFlow.subscribe`, any call to processor.onEvent("myString") will be 
+routed to this flow.
 
 {% highlight java %}
 DataFlow.subscribe(String.class)
@@ -66,17 +67,17 @@ SimpleMath simpleMath = new SimpleMath();
 var stringFlow = DataFlow.subscribe(String.class).console("\ninput: '{}'");
 
 var charCount = stringFlow.map(myFunctions::totalCharCount)
-.console("charCount: {}");
+    .console("charCount: {}");
 
 var upperCharCount = stringFlow.map(myFunctions::totalUpperCaseCharCount)
-.console("upperCharCount: {}");
+    .console("upperCharCount: {}");
 
 DataFlow.mapBiFunction(simpleMath::updatePercentage, upperCharCount, charCount)
-.console("percentage chars upperCase all words:{}");
+    .console("percentage chars upperCase all words:{}");
 
 //STATELESS FUNCTION
 DataFlow.mapBiFunction(MyFunctions::wordUpperCasePercentage, upperCharCount, charCount)
-.console("percentage chars upperCase this word:{}");
+    .console("percentage chars upperCase this word:{}");
 {% endhighlight %}
 
 Running the above with a strings 'test ME', 'and AGAIN' outputs
@@ -94,6 +95,47 @@ upperCharCount: 7
 percentage chars upperCase all words:0.391304347826087
 percentage chars upperCase this word:0.4375
 {% endhighlight %}
+
+### Processing graph
+{: .no_toc }
+Fluxtion DSL only requires the developer to write functions, any wrapping nodes are automatically added to the event processor.
+The compiler automatically selects stateful or stateless map functions, binding user instances if a stateful map 
+function is specified.
+
+```mermaid
+flowchart TB
+
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
+    
+    EventA><b>InputEvent</b>::String]:::eventHandler 
+
+    HandlerA[<b>Subscriber</b>::String\nid - stringFlow]:::graphNode
+    
+    MapData1[<b>Map - stateful</b>\nid - charCount\nmyFunctions::totalCharCount]:::graphNode 
+    MapData2[<b>Map - stateful</b>\nid - upperCharCount\nmyFunctions::totalUpperCaseCharCount]:::graphNode
+    
+    BiMapSum[<b>BiMap - stateful</b>\nsimpleMath::updatePercentage]:::graphNode 
+    BiMapSum2[<b>BiMap - stateless</b>\nMyFunctions::wordUpperCasePercentage]:::graphNode 
+%%    
+%%    Console1[<b>Peek</b> -> console]:::graphNode
+%%    Console2[<b>Peek</b> -> console]:::graphNode 
+    
+    EventA --> HandlerA
+
+    
+    subgraph EventProcessor
+      myFunctions[<b>User object::MyFunctions</b>\nid - myFunctions]  --- MapData1 & MapData2
+      simpleMath[<b>User object::SimpleMath</b>\nid - simpleMath] ----- BiMapSum
+      HandlerA --> MapData1 & MapData2 ---> BiMapSum
+      MapData1 & MapData2 ---> BiMapSum2
+%%      BiMapSum --> Console1 --> Filter --> Console2
+    end
+    
+```
+
 
 ## Map
 A map operation takes the input from a parent function and then applies a function to the input. If the return of the
@@ -120,11 +162,9 @@ the notification. If the predicate returns true then the input to the predicate 
 event processor.
 
 {% highlight java %}
-
 DataFlow.subscribe(String.class)
-.filter(Objects::nonNull)
-.mapToInt(s -> s.length()/2);
-
+    .filter(Objects::nonNull)
+    .mapToInt(s -> s.length()/2);
 {% endhighlight %}
 
 **Filter supports**
