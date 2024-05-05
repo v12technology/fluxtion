@@ -1369,59 +1369,60 @@ public class SlidingGroupByCompoundKeySample {
 Running the example code above logs to console
 
 {% highlight console %}
-client_D_MSFT_: 353
-client_E_MSFT_: 94
-client_D_TKM_: 350
-client_A_AMZN_: 325
-client_B_AMZN_: 149
-client_E_TKM_: 329
-client_E_AMZN_: 391
-client_A_TKM_: 264
-client_D_AMZN_: 345
-client_A_MSFT_: 196
-client_B_MSFT_: 161
-client_B_TKM_: 547
-client_E_GOOG_: 277
-client_A_GOOG_: 90
-client_B_GOOG_: 416
-client_D_GOOG_: 654
+Trade volume for last second by client and symbol time:1714948876439:
+client_B_TKM_: 391
+client_E_AMZN_: 29
+client_A_TKM_: 393
+client_A_GOOG_: 254
+client_B_MSFT_: 333
+client_A_MSFT_: 220
+client_B_GOOG_: 165
+client_E_GOOG_: 381
+client_D_GOOG_: 357
+client_E_TKM_: 270
+client_E_MSFT_: 372
+client_D_MSFT_: 408
+client_A_AMZN_: 342
+client_B_AMZN_: 277
+client_D_AMZN_: 46
+client_D_TKM_: 462
 ----------------------
 
-Trade volume for last second by client and symbol time:1714948751262:
-client_D_MSFT_: 390
-client_E_MSFT_: 184
-client_D_TKM_: 412
-client_A_AMZN_: 515
-client_B_AMZN_: 127
-client_E_TKM_: 374
-client_E_AMZN_: 227
-client_A_TKM_: 324
-client_D_AMZN_: 339
-client_A_MSFT_: 313
-client_B_MSFT_: 161
-client_B_TKM_: 706
-client_E_GOOG_: 286
-client_A_GOOG_: 90
-client_B_GOOG_: 278
-client_D_GOOG_: 444
+Trade volume for last second by client and symbol time:1714948876689:
+client_B_TKM_: 517
+client_E_AMZN_: 70
+client_A_TKM_: 304
+client_A_GOOG_: 257
+client_B_MSFT_: 351
+client_A_MSFT_: 217
+client_B_GOOG_: 119
+client_E_GOOG_: 278
+client_D_GOOG_: 244
+client_E_TKM_: 281
+client_E_MSFT_: 390
+client_D_MSFT_: 297
+client_A_AMZN_: 434
+client_B_AMZN_: 465
+client_D_AMZN_: 118
+client_D_TKM_: 347
 ----------------------
 
-Trade volume for last second by client and symbol time:1714948751511:
-client_D_MSFT_: 339
-client_E_MSFT_: 280
-client_D_TKM_: 315
-client_A_AMZN_: 539
-client_B_AMZN_: 159
-client_E_TKM_: 370
-client_E_AMZN_: 248
-client_A_TKM_: 299
-client_D_AMZN_: 270
-client_A_MSFT_: 313
-client_B_MSFT_: 118
-client_B_TKM_: 546
-client_E_GOOG_: 459
-client_A_GOOG_: 354
-client_B_GOOG_: 207
-client_D_GOOG_: 544
+Trade volume for last second by client and symbol time:1714948876939:
+client_B_TKM_: 386
+client_E_AMZN_: 50
+client_A_TKM_: 249
+client_A_GOOG_: 118
+client_B_MSFT_: 551
+client_A_MSFT_: 335
+client_B_GOOG_: 119
+client_E_GOOG_: 300
+client_D_GOOG_: 116
+client_E_TKM_: 310
+client_E_MSFT_: 526
+client_D_MSFT_: 297
+client_A_AMZN_: 392
+client_B_AMZN_: 495
+client_D_AMZN_: 190
+client_D_TKM_: 295
 ----------------------
 {% endhighlight %}
