@@ -1321,6 +1321,109 @@ Trade volume for last second:{MSFT=1439, GOOG=998, AMZN=907, TKM=1111} time:1714
 Trade volume for last second:{MSFT=1159, GOOG=1537, AMZN=1151, TKM=1133} time:1714938296704
 {% endhighlight %}
 
+
+## Tumbling GroupBy with compound key
+
+{% highlight java %}
+
+public class TumblingGroupByCompoundKeySample {
+    public record Trade(String symbol, String client, int amountTraded) {}
+    private static String[] symbols = new String[]{"GOOG", "AMZN", "MSFT", "TKM"};
+    private static String[] clients = new String[]{"client_A", "client_B", "client_D", "client_E"};
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Trade.class)
+                .groupByTumbling(
+                        GroupByKey.build(Trade::client, Trade::symbol),
+                        Trade::amountTraded,
+                        Aggregates.intSumFactory(),
+                        250)
+                .map(TumblingGroupByCompoundKeySample::formatGroupBy)
+                .console("Trade volume tumbling per 250 millis by client and symbol time:%e:\n{}----------------------\n");
+    }
+
+    private static <T> String formatGroupBy(GroupBy<GroupByKey<T>, Integer> groupBy) {
+        Map<GroupByKey<T>, Integer> groupByMap = groupBy.toMap();
+        StringBuilder stringBuilder = new StringBuilder();
+        groupByMap.forEach((k, v) -> stringBuilder.append(k.getKey() + ": " + v + "\n"));
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(TumblingGroupByCompoundKeySample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Trade volume tumbling per 250 millis by client and symbol time:1714950058070:
+client_B_TKM_: 176
+client_E_AMZN_: 2
+client_D_AMZN_: 32
+client_A_TKM_: 96
+client_E_GOOG_: 296
+client_D_GOOG_: 2
+client_A_AMZN_: 44
+client_D_TKM_: 74
+client_A_GOOG_: 161
+client_E_MSFT_: 68
+client_D_MSFT_: 47
+client_B_MSFT_: 239
+client_A_MSFT_: 73
+----------------------
+
+Trade volume tumbling per 250 millis by client and symbol time:1714950058321:
+client_B_TKM_: 119
+client_E_AMZN_: 47
+client_D_AMZN_: 107
+client_A_TKM_: 18
+client_E_GOOG_: 142
+client_E_TKM_: 181
+client_D_GOOG_: 83
+client_B_AMZN_: 17
+client_D_TKM_: 169
+client_A_GOOG_: 2
+client_B_GOOG_: 181
+client_E_MSFT_: 26
+client_D_MSFT_: 1
+client_A_MSFT_: 132
+client_B_MSFT_: 56
+----------------------
+
+Trade volume tumbling per 250 millis by client and symbol time:1714950058571:
+client_B_TKM_: 131
+client_E_AMZN_: 41
+client_D_AMZN_: 14
+client_A_TKM_: 39
+client_E_GOOG_: 4
+client_E_TKM_: 153
+client_D_GOOG_: 53
+client_A_AMZN_: 137
+client_B_AMZN_: 158
+client_D_TKM_: 86
+client_A_GOOG_: 91
+client_B_GOOG_: 156
+client_E_MSFT_: 43
+client_A_MSFT_: 36
+client_B_MSFT_: 253
+----------------------
+{% endhighlight %}
+
+
 ## Sliding GroupBy with compound key
 
 {% highlight java %}
@@ -1427,104 +1530,3 @@ client_D_TKM_: 295
 ----------------------
 {% endhighlight %}
 
-
-## Tumbling GroupBy with compound key
-
-{% highlight java %}
-
-public class TumblingGroupByCompoundKeySample {
-    public record Trade(String symbol, String client, int amountTraded) {}
-    private static String[] symbols = new String[]{"GOOG", "AMZN", "MSFT", "TKM"};
-    private static String[] clients = new String[]{"client_A", "client_B", "client_D", "client_E"};
-
-    public static void buildGraph(EventProcessorConfig processorConfig) {
-        DataFlow.subscribe(Trade.class)
-                .groupByTumbling(
-                        GroupByKey.build(Trade::client, Trade::symbol),
-                        Trade::amountTraded,
-                        Aggregates.intSumFactory(),
-                        250)
-                .map(TumblingGroupByCompoundKeySample::formatGroupBy)
-                .console("Trade volume tumbling per 250 millis by client and symbol time:%e:\n{}----------------------\n");
-    }
-
-    private static <T> String formatGroupBy(GroupBy<GroupByKey<T>, Integer> groupBy) {
-        Map<GroupByKey<T>, Integer> groupByMap = groupBy.toMap();
-        StringBuilder stringBuilder = new StringBuilder();
-        groupByMap.forEach((k, v) -> stringBuilder.append(k.getKey() + ": " + v + "\n"));
-        return stringBuilder.toString();
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        var processor = Fluxtion.interpret(TumblingGroupByCompoundKeySample::buildGraph);
-        processor.init();
-        Random rand = new Random();
-
-        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
-            executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
-                    },
-                    10,10, TimeUnit.MILLISECONDS);
-            Thread.sleep(4_000);
-        }
-    }
-}
-{% endhighlight %}
-
-Running the example code above logs to console
-
-{% highlight console %}
-Trade volume tumbling per 250 millis by client and symbol time:1714950058070:
-client_B_TKM_: 176
-client_E_AMZN_: 2
-client_D_AMZN_: 32
-client_A_TKM_: 96
-client_E_GOOG_: 296
-client_D_GOOG_: 2
-client_A_AMZN_: 44
-client_D_TKM_: 74
-client_A_GOOG_: 161
-client_E_MSFT_: 68
-client_D_MSFT_: 47
-client_B_MSFT_: 239
-client_A_MSFT_: 73
-----------------------
-
-Trade volume tumbling per 250 millis by client and symbol time:1714950058321:
-client_B_TKM_: 119
-client_E_AMZN_: 47
-client_D_AMZN_: 107
-client_A_TKM_: 18
-client_E_GOOG_: 142
-client_E_TKM_: 181
-client_D_GOOG_: 83
-client_B_AMZN_: 17
-client_D_TKM_: 169
-client_A_GOOG_: 2
-client_B_GOOG_: 181
-client_E_MSFT_: 26
-client_D_MSFT_: 1
-client_A_MSFT_: 132
-client_B_MSFT_: 56
-----------------------
-
-Trade volume tumbling per 250 millis by client and symbol time:1714950058571:
-client_B_TKM_: 131
-client_E_AMZN_: 41
-client_D_AMZN_: 14
-client_A_TKM_: 39
-client_E_GOOG_: 4
-client_E_TKM_: 153
-client_D_GOOG_: 53
-client_A_AMZN_: 137
-client_B_AMZN_: 158
-client_D_TKM_: 86
-client_A_GOOG_: 91
-client_B_GOOG_: 156
-client_E_MSFT_: 43
-client_A_MSFT_: 36
-client_B_MSFT_: 253
-----------------------
-{% endhighlight %}
