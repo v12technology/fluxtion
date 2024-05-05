@@ -6,14 +6,12 @@ nav_order: 3
 published: true
 ---
 
-**To be completed**
-
 # Fluxtion DSL Deep dive
 {: .no_toc }
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
 functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the
-functional DSL is to have no Fluxtion api calls in the business logic only pure vanilla java.
+functional DSL is to have no Fluxtion api calls in the business logic only vanilla java.
 
 This section describes the Functional DSL in greater depth than the [Fluxtion DSL](../mark-event-handling/functional_event_processing)
 exploring concepts like, aggregation, windowing and groupBy in detail.
@@ -22,7 +20,7 @@ exploring concepts like, aggregation, windowing and groupBy in detail.
 
 - Business logic components are re-usable and testable outside Fluxtion
 - Clear separation between event notification and business logic, event logic is removed from business code
-- Complex functions library like windowing and aggregation are well tested and natively supported
+- Complex library functions like windowing and aggregation are well tested and natively supported
 - Increased developer productivity, less code to write and support
 - New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
 - No vendor lock-in, business code is free from any Fluxtion library dependencies
@@ -102,7 +100,7 @@ DataFlow.subscribe(String.class)
 
 ## Reduce
 There is no reduce function required in Fluxtion, stateful map functions perform the role of reduce. In a classic batch
-environment the reduce operation combines the element of collection of items into a single value. In a streaming environment
+environment the reduce operation combines a collection of items into a single value. In a streaming environment
 the set of values is never complete, we can view the current value of a stateful map operation which is equivalent to the
 reduce operation. The question is rather, when is the value of the stateful map published and reset.
 
