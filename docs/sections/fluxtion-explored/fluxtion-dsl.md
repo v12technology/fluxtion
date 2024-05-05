@@ -1077,6 +1077,56 @@ ODD/EVEN map:{odds=[1, 5, 7], evens=[2, 2]}
 ODD/EVEN map:{}
 {% endhighlight %}
 
+
+## GroupBy to set
+
+{% highlight java %}
+public class GroupByToSetSample {
+
+    public record ResetList() {}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ResetList.class).console("\n--- RESET ---");
+
+        DataFlow.subscribe(Integer.class)
+                .groupByToSet(i -> i % 2 == 0 ? "evens" : "odds")
+                .resetTrigger(resetSignal)
+                .map(GroupBy::toMap)
+                .console("ODD/EVEN map:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByToSetSample::buildGraph);
+        processor.init();
+        processor.onEvent(1);
+        processor.onEvent(2);
+        processor.onEvent(2);
+        processor.onEvent(5);
+        processor.onEvent(5);
+        processor.onEvent(5);
+        processor.onEvent(7);
+        processor.onEvent(2);
+        processor.onEvent(new ResetList());
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ODD/EVEN map:{odds=[1]}
+ODD/EVEN map:{odds=[1], evens=[2]}
+ODD/EVEN map:{odds=[1], evens=[2]}
+ODD/EVEN map:{odds=[1, 5], evens=[2]}
+ODD/EVEN map:{odds=[1, 5], evens=[2]}
+ODD/EVEN map:{odds=[1, 5], evens=[2]}
+ODD/EVEN map:{odds=[1, 5, 7], evens=[2]}
+ODD/EVEN map:{odds=[1, 5, 7], evens=[2]}
+
+--- RESET ---
+ODD/EVEN map:{}
+{% endhighlight %}
+
 ## GroupBy with compound key
 
 {% highlight java %}
