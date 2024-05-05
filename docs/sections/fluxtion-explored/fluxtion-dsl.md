@@ -760,6 +760,13 @@ Fluxtion supports windowing operations in a DataFlow to aggregate data. There ar
 - Sliding time based windows bucket size is timer based, calculations fire on a timer
 - Sliding windows bucket size is based on count calculations fire on a bucket count
 
+Fluxtion does not run threads, it is an event driven data structure. On a calculation cycle the window monitors read 
+the time of the clock and expire windows if necessary.
+
+{: .info }
+To advance time in an event processor send any event regularly, this causes the window expiry calculation to run
+{: .fs-4 }
+
 ## Tumbling windows
 {: .no_toc }
 
@@ -907,6 +914,73 @@ Running the example code above logs to console
 --- CHECKOUT CART ---
 CURRENT CART: [Apples, Camera]
 {% endhighlight %}
+
+## Sliding time window
+
+Fluxtion supports a sliding time window for any DataFlow node with this call:
+
+`slidingAggregate(Supplier<AggregateFlowFunction> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow)`
+
+The lifecycle of the AggregateFlowFunction is managed by the event processor, tracking the current time and firing
+notifications to child nodes when the timer expires. 
+
+An automatically added [FixedRateTrigger]({{site.fluxtion_src_runtime}}/time/FixedRateTrigger.java) monitors the sliding
+window for expiry an event is received. If the window has expired, the following actions occur:
+
+* The aggregate for the current window is calculated and combined with the aggregate for the whole sliding window
+* The aggregate for the oldest window is deducted from the aggregate for the whole sliding window
+* The aggregate for the whole sliding window is cached and stored for inspection
+* Downstream nodes are triggered with the cached value
+
+This example publishes a random Integer every 10 milliseconds, the int sum calculates the current sum for the window.
+There are 4 buckets each of 300 milliseconds in size, once every 300 milliseconds the aggregate sum for the past 1.2 
+seconds is logged to console.
+
+As the effective window size is 1.2 seconds the sliding window values are approximately 4 times larger than the tumbling
+window example that resets the sum every 300 milliseconds.
+
+{% highlight java %}
+public class SlidingWindowSample {
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Integer.class)
+                .slidingAggregate(Aggregates.intSumFactory(), 300, 4)
+                .console("current tumble sum:{} eventTime:%e");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(SlidingWindowSample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(rand.nextInt(100));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+current tumble sum:5773 eventTime:1714926872282
+current tumble sum:5963 eventTime:1714926872582
+current tumble sum:5525 eventTime:1714926872882
+current tumble sum:5570 eventTime:1714926873182
+current tumble sum:5536 eventTime:1714926873482
+current tumble sum:5532 eventTime:1714926873780
+current tumble sum:5533 eventTime:1714926874081
+current tumble sum:5512 eventTime:1714926874382
+current tumble sum:5655 eventTime:1714926874682
+current tumble sum:5745 eventTime:1714926874982
+{% endhighlight %}
+
 
 # GroupBy
 {% highlight java %}
