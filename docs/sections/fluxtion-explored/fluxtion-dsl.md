@@ -1320,3 +1320,108 @@ Trade volume for last second:{MSFT=1331, GOOG=1060, AMZN=1195, TKM=1121} time:17
 Trade volume for last second:{MSFT=1439, GOOG=998, AMZN=907, TKM=1111} time:1714938296453
 Trade volume for last second:{MSFT=1159, GOOG=1537, AMZN=1151, TKM=1133} time:1714938296704
 {% endhighlight %}
+
+## Sliding GroupBy with compound key
+
+{% highlight java %}
+public class SlidingGroupByCompoundKeySample {
+    public record Trade(String symbol, String client, int amountTraded) {}
+    private static String[] symbols = new String[]{"GOOG", "AMZN", "MSFT", "TKM"};
+    private static String[] clients = new String[]{"client_A", "client_B", "client_D", "client_E"};
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Trade.class)
+                .groupBySliding(
+                        GroupByKey.build(Trade::client, Trade::symbol),
+                        Trade::amountTraded, 
+                        Aggregates.intSumFactory(),
+                        250, 4)
+                .map(SlidingGroupByCompoundKeySample::formatGroupBy)
+                .console("Trade volume for last second by symbol/client time:%e:\n{} \n--------\n");
+    }
+
+    private static String formatGroupBy(GroupBy<GroupByKey<Trade>, Integer> groupBy) {
+        Map<GroupByKey<Trade>, Integer> groupByMap = groupBy.toMap();
+        StringBuilder stringBuilder = new StringBuilder();
+        groupByMap.forEach((k, v) -> stringBuilder.append(k.getKey() + ": " + v + "\n"));
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(SlidingGroupByCompoundKeySample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+client_D_MSFT_: 353
+client_E_MSFT_: 94
+client_D_TKM_: 350
+client_A_AMZN_: 325
+client_B_AMZN_: 149
+client_E_TKM_: 329
+client_E_AMZN_: 391
+client_A_TKM_: 264
+client_D_AMZN_: 345
+client_A_MSFT_: 196
+client_B_MSFT_: 161
+client_B_TKM_: 547
+client_E_GOOG_: 277
+client_A_GOOG_: 90
+client_B_GOOG_: 416
+client_D_GOOG_: 654
+----------------------
+
+Trade volume for last second by client and symbol time:1714948751262:
+client_D_MSFT_: 390
+client_E_MSFT_: 184
+client_D_TKM_: 412
+client_A_AMZN_: 515
+client_B_AMZN_: 127
+client_E_TKM_: 374
+client_E_AMZN_: 227
+client_A_TKM_: 324
+client_D_AMZN_: 339
+client_A_MSFT_: 313
+client_B_MSFT_: 161
+client_B_TKM_: 706
+client_E_GOOG_: 286
+client_A_GOOG_: 90
+client_B_GOOG_: 278
+client_D_GOOG_: 444
+----------------------
+
+Trade volume for last second by client and symbol time:1714948751511:
+client_D_MSFT_: 339
+client_E_MSFT_: 280
+client_D_TKM_: 315
+client_A_AMZN_: 539
+client_B_AMZN_: 159
+client_E_TKM_: 370
+client_E_AMZN_: 248
+client_A_TKM_: 299
+client_D_AMZN_: 270
+client_A_MSFT_: 313
+client_B_MSFT_: 118
+client_B_TKM_: 546
+client_E_GOOG_: 459
+client_A_GOOG_: 354
+client_B_GOOG_: 207
+client_D_GOOG_: 544
+----------------------
+{% endhighlight %}
