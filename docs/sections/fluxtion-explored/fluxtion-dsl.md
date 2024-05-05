@@ -539,6 +539,65 @@ node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[E, F]
 {% endhighlight %}
 
+## Stateful function reset
+Stateful functions can be reset by implementing the [Stateful]({{site.fluxtion_src_runtime}}/dataflow/Stateful.java) interface with a reset 
+method. Configuring the resetTrigger will automatically route calls to the reset method of the stateful function.
+
+
+{% highlight java %}
+public class ResetFunctionSample {
+    public static class MyResetSum implements Stateful<Integer> {
+        public int count = 0;
+
+        public int increment(Object o){
+            return ++count;
+        }
+
+        @Override
+        public Integer reset() {
+            System.out.println("--- RESET CALLED ---");
+            count = 0;
+            return count;
+        }
+    }
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(String.class)
+                .map(new MyResetSum()::increment)
+                .resetTrigger(DataFlow.subscribeToSignal("resetMe"))
+                .console("count:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(ResetFunctionSample::buildGraph);
+        processor.init();
+
+        processor.onEvent("A");
+        processor.onEvent("B");
+        processor.onEvent("C");
+        processor.onEvent("D");
+
+        processor.publishSignal("resetMe");
+        processor.onEvent("E");
+        processor.onEvent("F");
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+count:1
+count:2
+count:3
+count:4
+--- RESET CALLED ---
+count:0
+count:1
+count:2
+{% endhighlight %}
+
+
 # Aggregating
 Aggregating extends the concept of stateful map functions by adding behaviour when using functions in stateful operations
 like windowing and grouping. An aggregate function has these behaviours:
