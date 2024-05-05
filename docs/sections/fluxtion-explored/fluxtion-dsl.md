@@ -763,12 +763,14 @@ Fluxtion supports windowing operations in a DataFlow to aggregate data. There ar
 - Sliding windows bucket size is based on count calculations fire on a bucket count
 
 ## Tumbling windows
+{: .no_toc }
 
 Imagine tumbling windows as distinct buckets collecting data for a fixed size window. Once a bucket fills up, it's closed and 
 published downstream. A new, empty bucket is created to collect the next batch of data. Tumbling windows never overlap, 
 ensuring all data points are processed exactly once. This is good for capturing complete snapshots of the data at regular intervals.
 
 ## Sliding windows
+{: .no_toc }
 
 Think of sliding window as a constantly moving window on the data stream. The window has a fixed size, but it advances 
 by a set increment (called the slide). As the window slides forward, new data enters at the front, and old data falls 
@@ -777,6 +779,9 @@ multiple windows. This is useful for capturing trends and changes happening over
 nodes are triggered.
 
 ## Diagram comparing tumbling and sliding windows
+{: .no_toc }
+
+<br/>
 
 ![](../../images/tumbling_vs_sliding_windows.png)
 
