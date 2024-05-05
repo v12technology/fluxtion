@@ -319,11 +319,11 @@ controls on the flow node.
 
 ## PublishTrigger
 In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications are in 
-addition to the normal triggering operation of the flow node.
+addition to the normal triggering operation of the flow node. The values in the parent node are unchanged when publishing.
 
 `publishTrigger(DataFlow.subscribeToSignal("publishMe"))`
 
-The values in the parent node are unchanged when publishing.
+Child DataFlow nodes are notified when publishTrigger fires or the map function executes in a calculation cycle.
 
 {% highlight java %}
 public class TriggerPublishSample {
@@ -375,15 +375,13 @@ last 4 elements:[C, D, E, F]
 {% endhighlight %}
 
 ## PublishTriggerOverride
-In this example the publishTriggerOverride control enables multiple publish calls for the flow node. The values published are
-the same. The publishTriggerOverride overrides the normal triggering operation.
-
-In this example the publishTrigger control enables multiple publish calls for the flow node. Child notifications override 
-the normal triggering operation of the flow node.
+In this example the publishTrigger control overrides the normal triggering operation of the flow node. The child is notified
+only when publishTriggerOverride fires, changes due to recalculation are swallowed and not published downstream.
+The values in the parent node are unchanged when publishing.
 
 `publishTriggerOverride(DataFlow.subscribeToSignal("publishMe"))`
 
-The values in the parent node are unchanged when publishing.
+Child DataFlow nodes are notified when publishTriggerOverride fires.
 
 {% highlight java %}
 public class TriggerPublishOverrideSample {
@@ -439,6 +437,8 @@ a mapping operation.
 
 `updateTrigger(DataFlow.subscribeToSignal("updateMe"))`
 
+A map operation only occurs when the update trigger fires. 
+
 {% highlight java %}
 public class TriggerUpdateSample {
     public static void buildGraph(EventProcessorConfig processorConfig) {
@@ -488,6 +488,8 @@ trigger a notification to children of the flow node.
 
 `resetTrigger(DataFlow.subscribeToSignal("resetMe"))`
 
+The reset trigger notifies the stateful function to clear its state.
+
 {% highlight java %}
 public class TriggerResetSample {
     public static void buildGraph(EventProcessorConfig processorConfig) {
@@ -495,8 +497,8 @@ public class TriggerResetSample {
                 .console("node triggered -> {}")
                 .map(SubscribeToNodeSample.MyComplexNode::getIn)
                 .aggregate(Collectors.listFactory(4))
-                .resetTrigger(DataFlow.subscribeToSignal("resetMe"))
-                .console("last 4 elements:{}\n");
+                .resetTrigger(DataFlow.subscribeToSignal("resetMe").console("\n--- resetTrigger ---"))
+                .console("last 4 elements:{}");
     }
 
     public static void main(String[] args) {
@@ -520,21 +522,17 @@ Running the example code above logs to console
 {% highlight console %}
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=A)
 last 4 elements:[A]
-
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=B)
 last 4 elements:[A, B]
-
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=C)
 last 4 elements:[A, B, C]
-
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=D)
 last 4 elements:[A, B, C, D]
 
+--- resetTrigger ---
 last 4 elements:[]
-
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=E)
 last 4 elements:[E]
-
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[E, F]
 {% endhighlight %}
@@ -607,6 +605,13 @@ like windowing and grouping. An aggregate function has these behaviours:
 - combine/deduct - combine or deduct another instance of this function, used when windowing
 - deduct supported - can this instance deduct another instance of this function or is loop required to recalculate
 
+Create an aggregate in a DataFlow with the call:
+
+`DataFlow.aggregate(Supplier<AggregateFlowFunction> aggregateSupplier)` 
+
+DataFlow.aggregate takes a Supplier of [AggregateFlowFunction]({{site.fluxtion_src_runtime}}/dataflow/aggregate/AggregateFlowFunction.java)'s not a 
+single AggregateFlowFunction instance. When managing windowing and groupBy operations the event processor creates instances 
+of AggregateFlowFunction to partition function state.
 
 {% highlight java %}
 public class AggregateSample {
@@ -661,6 +666,89 @@ ROLLING list: [P, Q, R]
 ROLLING list: []
 ROLLING list: [XX]
 ROLLING list: [XX, YY]
+{% endhighlight %}
+
+# Custom aggregate function
+Users can create aggregate functions that plug into the reset trigger callbacks in a DataFlow. The steps to create a
+user aggregate function:
+
+- Extend [AggregateFlowFunction]({{site.fluxtion_src_runtime}}/dataflow/aggregate/AggregateFlowFunction.java), the type parameters define the input and output types of the function
+- Implement the reset, get and aggregate methods
+- Return null from the aggregate method to indicate no change to the aggregate output
+
+The example below maintains a date range as a String and resets the range when reset trigger is fired. When the date range
+is unaltered the aggregate operation returns a null and no notifications are triggered.
+
+{% highlight java %}
+public class CustomAggregateFunctionSample {
+    public static class DateRangeAggregate implements AggregateFlowFunction<LocalDate, String, DateRangeAggregate> {
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private String message;
+        private final transient DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        @Override
+        public String reset() {
+            System.out.println("--- RESET ---");
+            startDate = null;
+            endDate = null;
+            message = null;
+            return get();
+        }
+
+        @Override
+        public String get() {
+            return message;
+        }
+
+        @Override
+        public String aggregate(LocalDate input) {
+            startDate = startDate == null ? input : startDate;
+            endDate = endDate == null ? input : endDate;
+            if (input.isBefore(startDate)) {
+                startDate = input;
+            } else if (input.isAfter(endDate)) {
+                endDate = input;
+            } else {
+                //RETURN NULL -> NO CHANGE NOTIFICATIONS FIRED
+                return null;
+            }
+            message = formatter.format(startDate) + " - " + formatter.format(endDate);
+            return message;
+        }
+    }
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(LocalDate.class)
+                .aggregate(DateRangeAggregate::new)
+                .resetTrigger(DataFlow.subscribeToSignal("resetDateRange"))
+                .console("UPDATED date range : '{}'");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(CustomAggregateFunctionSample::buildGraph);
+        processor.init();
+
+        processor.onEvent(LocalDate.of(2019, 8, 10));
+        processor.onEvent(LocalDate.of(2009, 6, 14));
+        processor.onEvent(LocalDate.of(2024, 4, 22));
+        processor.onEvent(LocalDate.of(2021, 3, 30));
+
+        //reset
+        processor.publishSignal("resetDateRange");
+        processor.onEvent(LocalDate.of(2019, 8, 10));
+        processor.onEvent(LocalDate.of(2021, 3, 30));
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+UPDATED date range : '2009-06-14 - 2019-08-10'
+UPDATED date range : '2009-06-14 - 2024-04-22'
+--- RESET ---
+UPDATED date range : '2019-08-10 - 2021-03-30'
 {% endhighlight %}
 
 # Windowing
