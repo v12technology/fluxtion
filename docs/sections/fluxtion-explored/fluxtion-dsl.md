@@ -783,14 +783,32 @@ nodes are triggered.
 
 ![](../../images/tumbling_vs_sliding_windows.png)
 
-## Tumbling window
+## Tumbling time window
+
+Fluxtion supports a tumbling time window for any DataFlow node with this call:
+
+`tumblingAggregate(Supplier<AggregateFlowFunction> aggregateFunction, int bucketSizeMillis)`
+
+The lifecycle of the AggregateFlowFunction is managed by the event processor, tracking the current time and firing 
+notifications to child nodes when the timer expires. Reset calls to the stateful function are also handled by the event 
+processor.
+
+An automatically added [FixedRateTrigger]({{site.fluxtion_src_runtime}}/time/FixedRateTrigger.java) monitors the tumbling
+window for expiry an event is received. If the window has expired, the following actions occur:
+
+* The window aggregate is calculated and cached for inspection
+* The aggregate function is reset
+* Downstream nodes are triggered with the cached value
+
+This example publishes a random Integer every 10 milliseconds, the int sum calculates the current sum for the window. 
+Every 300 milliseconds the cumulative sum for the window just expired is logged to console.
 
 {% highlight java %}
 public class TumblingWindowSample {
 
     public static void buildGraph(EventProcessorConfig processorConfig) {
         DataFlow.subscribe(Integer.class)
-                .tumblingAggregate(IntSumFlowFunction::new, 300)
+                .tumblingAggregate(Aggregates.intSumFactory(), 300)
                 .console("current tumble sum:{} eventTime:%e");
     }
 
@@ -830,7 +848,65 @@ current tumble sum:1693 eventTime:1714920610851
 current tumble sum:1347 eventTime:1714920611152
 {% endhighlight %}
 
+## Tumbling trigger based window
 
+To create a tumbling cart that is none-time based we use the trigger overrides to control resetting and publishing the
+values in the tumbling window:
+
+{% highlight java %}
+resetTrigger(resetSignal)
+publishTriggerOverride(publishSignal)
+{% endhighlight %}
+
+In this example we have a shopping cart that can have at the most three items. The cart can be cleared with a ClearCart
+event. A GoToCheckout event publishes the contents of the cart down stream if the number of items > 0;
+
+{% highlight java %}
+public class TumblingTriggerSample {
+
+    public record ClearCart() {}
+    public record GoToCheckout() {}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ClearCart.class).console("\n--- CLEAR CART ---");
+        var publishSignal = DataFlow.subscribe(GoToCheckout.class).console("\n--- CHECKOUT CART ---");
+
+        DataFlow.subscribe(String.class)
+                .aggregate(Collectors.listFactory(3))
+                .resetTrigger(resetSignal)
+                .publishTriggerOverride(publishSignal)
+                .filter(l -> !l.isEmpty())
+                .console("CURRENT CART: {}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(TumblingTriggerSample::buildGraph);
+        processor.init();
+        processor.onEvent("Gloves");
+        processor.onEvent("Toothpaste");
+        processor.onEvent("Towel");
+        processor.onEvent("Plug");
+        processor.onEvent("Mirror");
+        processor.onEvent("Drill");
+        processor.onEvent("Salt");
+
+        processor.onEvent(new ClearCart());
+        processor.onEvent("Apples");
+        processor.onEvent("Camera");
+
+        processor.onEvent(new GoToCheckout());
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+--- CLEAR CART ---
+
+--- CHECKOUT CART ---
+CURRENT CART: [Apples, Camera]
+{% endhighlight %}
 
 # GroupBy
 {% highlight java %}

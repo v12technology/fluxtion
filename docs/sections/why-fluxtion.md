@@ -32,6 +32,7 @@ single vendor for both message delivery and stream processing.
 Fluxtion can be a great fit for your business if any of the following apply
 
 * Cost-effective Integration of stream processing into an existing system 
+* Requirement to process big data streams in realtime
 * Multiple messaging system inputs must be supported
 * Cost-effective integration of AI/ML
 * Re-use existing imperative business logic in a stream processing engine
