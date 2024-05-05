@@ -114,6 +114,9 @@ classic java streams that have a terminal operation and a pipeline structure.
 
 This example creates a simple graph structure, multiple stateful/stateless functions are bound to a single parent DataFlow.
 
+We are using the `DataFlow.console` operation to print intermediate results to the screen for illustrative purposese. 
+The console operation is a specialisation of `DataFlow.peek`.
+
 {% highlight java %}
 //STATEFUL FUNCTIONS
 MyFunctions myFunctions = new MyFunctions();
@@ -668,7 +671,7 @@ ROLLING list: [XX]
 ROLLING list: [XX, YY]
 {% endhighlight %}
 
-# Custom aggregate function
+## Custom aggregate function
 Users can create aggregate functions that plug into the reset trigger callbacks in a DataFlow. The steps to create a
 user aggregate function:
 
