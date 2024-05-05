@@ -983,6 +983,11 @@ current tumble sum:5745 eventTime:1714926874982
 
 
 # GroupBy
+Fluxtion dsl offers many groupBy operations that partition based on a key function and then apply and aggregate operation
+to the partition.
+
+## GroupBy and aggregate
+
 {% highlight java %}
 public class GroupBySample {
     public record ResetList() {}
@@ -1027,4 +1032,133 @@ ODD/EVEN map:{odds=2}
 --- RESET ---
 ODD/EVEN map:{}
 ODD/EVEN map:{evens=1}
+{% endhighlight %}
+
+
+## GroupBy to list
+
+{% highlight java %}
+public class GroupByToListSample {
+    public record ResetList() {}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ResetList.class).console("\n--- RESET ---");
+
+        DataFlow.subscribe(Integer.class)
+                .groupByToList(i -> i % 2 == 0 ? "evens" : "odds")
+                .resetTrigger(resetSignal)
+                .map(GroupBy::toMap)
+                .console("ODD/EVEN map:{}");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByToListSample::buildGraph);
+        processor.init();
+        processor.onEvent(1);
+        processor.onEvent(2);
+        processor.onEvent(5);
+        processor.onEvent(7);
+        processor.onEvent(2);
+        processor.onEvent(new ResetList());
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ODD/EVEN map:{odds=[1]}
+ODD/EVEN map:{odds=[1], evens=[2]}
+ODD/EVEN map:{odds=[1, 5], evens=[2]}
+ODD/EVEN map:{odds=[1, 5, 7], evens=[2]}
+ODD/EVEN map:{odds=[1, 5, 7], evens=[2, 2]}
+
+--- RESET ---
+ODD/EVEN map:{}
+{% endhighlight %}
+
+## GroupBy with compound key
+
+{% highlight java %}
+public class GroupByFieldsSample {
+
+    public record Pupil(int year, String sex, String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+
+        DataFlow.subscribe(Pupil.class)
+                .groupByFieldsAggregate(Aggregates.countFactory(), Pupil::year, Pupil::sex)
+                .map(GroupByFieldsSample::formatGroupBy)
+                .console("Pupil count by year/sex \n----\n{}----\n");
+    }
+
+    private static String formatGroupBy(GroupBy<GroupByKey<Pupil>, Integer> groupBy) {
+        Map<GroupByKey<Pupil>, Integer> groupByMap = groupBy.toMap();
+        StringBuilder stringBuilder = new StringBuilder();
+        groupByMap.forEach((k, v) -> stringBuilder.append(k.getKey() + ": " + v + "\n"));
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByFieldsSample::buildGraph);
+        processor.init();
+
+        processor.onEvent(new Pupil(2015, "Female", "Bob"));
+        processor.onEvent(new Pupil(2013, "Male", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Male", "Channing"));
+        processor.onEvent(new Pupil(2013, "Female", "Chelsea"));
+        processor.onEvent(new Pupil(2013, "Female", "Tamsin"));
+        processor.onEvent(new Pupil(2013, "Female", "Ayola"));
+        processor.onEvent(new Pupil(2015, "Female", "Sunita"));
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Pupil count by year/sex
+----
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 1
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 2
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 2
+2013_Female_: 1
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 2
+2013_Female_: 2
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 2
+2013_Female_: 3
+2015_Female_: 1
+----
+
+Pupil count by year/sex
+----
+2013_Male_: 2
+2013_Female_: 3
+2015_Female_: 2
+----
 {% endhighlight %}
