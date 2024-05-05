@@ -64,8 +64,8 @@ The Fluxtion event processor manages all the event call backs, the user code han
 {: .no_toc }
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" >Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 
