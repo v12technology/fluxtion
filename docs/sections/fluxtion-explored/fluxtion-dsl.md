@@ -945,7 +945,7 @@ public class SlidingWindowSample {
     public static void buildGraph(EventProcessorConfig processorConfig) {
         DataFlow.subscribe(Integer.class)
                 .slidingAggregate(Aggregates.intSumFactory(), 300, 4)
-                .console("current tumble sum:{} eventTime:%e");
+                .console("current sliding 1.2 second sum:{} eventTime:%e");
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -969,16 +969,16 @@ public class SlidingWindowSample {
 Running the example code above logs to console
 
 {% highlight console %}
-current tumble sum:5773 eventTime:1714926872282
-current tumble sum:5963 eventTime:1714926872582
-current tumble sum:5525 eventTime:1714926872882
-current tumble sum:5570 eventTime:1714926873182
-current tumble sum:5536 eventTime:1714926873482
-current tumble sum:5532 eventTime:1714926873780
-current tumble sum:5533 eventTime:1714926874081
-current tumble sum:5512 eventTime:1714926874382
-current tumble sum:5655 eventTime:1714926874682
-current tumble sum:5745 eventTime:1714926874982
+current sliding 1.2 second sum:6092 eventTime:1714938615556
+current sliding 1.2 second sum:5905 eventTime:1714938615854
+current sliding 1.2 second sum:5751 eventTime:1714938616156
+current sliding 1.2 second sum:5612 eventTime:1714938616456
+current sliding 1.2 second sum:5558 eventTime:1714938616756
+current sliding 1.2 second sum:5817 eventTime:1714938617054
+current sliding 1.2 second sum:6295 eventTime:1714938617356
+current sliding 1.2 second sum:6437 eventTime:1714938617656
+current sliding 1.2 second sum:6397 eventTime:1714938617955
+current sliding 1.2 second sum:6130 eventTime:1714938618254
 {% endhighlight %}
 
 
@@ -1211,4 +1211,112 @@ Pupil count by year/sex
 2013_Female_: 3
 2015_Female_: 2
 ----
+{% endhighlight %}
+
+# Windowed GroupBy
+
+## Tumbling GroupBy
+
+{% highlight java %}
+public class TumblingGroupBySample {
+    public record Trade(String symbol, int amountTraded) {}
+    private static String[] symbols = new String[]{"GOOG", "AMZN", "MSFT", "TKM"};
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Trade.class)
+                .groupByTumbling(Trade::symbol, Trade::amountTraded, Aggregates.intSumFactory(), 250)
+                .map(GroupBy::toMap)
+                .console("Trade volume for last 250 millis:{} time:%e");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(TumblingGroupBySample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Trade volume for last 250 millis:{MSFT=560, GOOG=95, AMZN=411, TKM=331} time:1714938250829
+Trade volume for last 250 millis:{MSFT=486, GOOG=408, AMZN=169, TKM=247} time:1714938251079
+Trade volume for last 250 millis:{MSFT=427, GOOG=423, AMZN=246, TKM=215} time:1714938251329
+Trade volume for last 250 millis:{MSFT=461, GOOG=204, AMZN=477, TKM=369} time:1714938251579
+Trade volume for last 250 millis:{MSFT=392, GOOG=181, AMZN=273, TKM=341} time:1714938251829
+Trade volume for last 250 millis:{MSFT=322, GOOG=296, AMZN=403, TKM=175} time:1714938252079
+Trade volume for last 250 millis:{MSFT=348, GOOG=253, AMZN=204, TKM=316} time:1714938252328
+Trade volume for last 250 millis:{MSFT=377, GOOG=481, AMZN=161, TKM=382} time:1714938252578
+Trade volume for last 250 millis:{MSFT=302, GOOG=344, AMZN=386, TKM=232} time:1714938252829
+Trade volume for last 250 millis:{MSFT=232, GOOG=144, AMZN=477, TKM=365} time:1714938253078
+Trade volume for last 250 millis:{MSFT=430, GOOG=328, AMZN=294, TKM=473} time:1714938253329
+Trade volume for last 250 millis:{MSFT=499, GOOG=183, AMZN=152, TKM=470} time:1714938253578
+Trade volume for last 250 millis:{MSFT=338, GOOG=334, AMZN=579, TKM=200} time:1714938253829
+Trade volume for last 250 millis:{MSFT=278, GOOG=363, AMZN=390, TKM=44} time:1714938254079
+Trade volume for last 250 millis:{MSFT=429, GOOG=225, AMZN=399, TKM=36} time:1714938254329
+Trade volume for last 250 millis:{MSFT=88, GOOG=290, AMZN=300, TKM=554} time:1714938254577
+{% endhighlight %}
+
+
+## Sliding GroupBy
+
+{% highlight java %}
+public class SlidingGroupBySample {
+    public record Trade(String symbol, int amountTraded) {}
+    private static String[] symbols = new String[]{"GOOG", "AMZN", "MSFT", "TKM"};
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Trade.class)
+                .groupBySliding(Trade::symbol, Trade::amountTraded, Aggregates.intSumFactory(), 250, 4)
+                .map(GroupBy::toMap)
+                .console("Trade volume for last second:{} time:%e");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(SlidingGroupBySample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Trade volume for last second:{MSFT=970, GOOG=1355, AMZN=1203, TKM=1077} time:1714938293704
+Trade volume for last second:{MSFT=857, GOOG=1359, AMZN=1147, TKM=1245} time:1714938293954
+Trade volume for last second:{MSFT=1078, GOOG=1370, AMZN=832, TKM=1237} time:1714938294204
+Trade volume for last second:{MSFT=1433, GOOG=1239, AMZN=836, TKM=1211} time:1714938294454
+Trade volume for last second:{MSFT=1494, GOOG=1458, AMZN=862, TKM=1153} time:1714938294704
+Trade volume for last second:{MSFT=1515, GOOG=1401, AMZN=1170, TKM=1141} time:1714938294954
+Trade volume for last second:{MSFT=1413, GOOG=1204, AMZN=1372, TKM=1458} time:1714938295202
+Trade volume for last second:{MSFT=1113, GOOG=1144, AMZN=1555, TKM=1618} time:1714938295454
+Trade volume for last second:{MSFT=1250, GOOG=967, AMZN=1365, TKM=1402} time:1714938295704
+Trade volume for last second:{MSFT=1388, GOOG=938, AMZN=1126, TKM=1416} time:1714938295954
+Trade volume for last second:{MSFT=1331, GOOG=1060, AMZN=1195, TKM=1121} time:1714938296202
+Trade volume for last second:{MSFT=1439, GOOG=998, AMZN=907, TKM=1111} time:1714938296453
+Trade volume for last second:{MSFT=1159, GOOG=1537, AMZN=1151, TKM=1133} time:1714938296704
 {% endhighlight %}
