@@ -783,6 +783,54 @@ nodes are triggered.
 
 ![](../../images/tumbling_vs_sliding_windows.png)
 
+## Tumbling window
+
+{% highlight java %}
+public class TumblingWindowSample {
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Integer.class)
+                .tumblingAggregate(IntSumFlowFunction::new, 300)
+                .console("current tumble sum:{} eventTime:%e");
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        var processor = Fluxtion.interpret(TumblingWindowSample::buildGraph);
+        processor.init();
+        Random rand = new Random();
+
+        try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
+            executor.scheduleAtFixedRate(
+                    () -> {
+                        processor.onEvent("tick");
+                        processor.onEvent(rand.nextInt(100));
+                    },
+                    10,10, TimeUnit.MILLISECONDS);
+            Thread.sleep(4_000);
+        }
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+current tumble sum:1325 eventTime:1714920607551
+current tumble sum:1543 eventTime:1714920607858
+current tumble sum:1482 eventTime:1714920608150
+current tumble sum:1694 eventTime:1714920608451
+current tumble sum:1785 eventTime:1714920608751
+current tumble sum:1338 eventTime:1714920609051
+current tumble sum:1160 eventTime:1714920609350
+current tumble sum:1511 eventTime:1714920609651
+current tumble sum:1516 eventTime:1714920609951
+current tumble sum:1489 eventTime:1714920610252
+current tumble sum:1389 eventTime:1714920610551
+current tumble sum:1693 eventTime:1714920610851
+current tumble sum:1347 eventTime:1714920611152
+{% endhighlight %}
+
+
 
 # GroupBy
 {% highlight java %}
