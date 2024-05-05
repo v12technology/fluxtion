@@ -14,8 +14,8 @@ flexibility, and ease of use for developers working with streaming data. It proc
 minimal latency, streamlines development and is free from vedor lock-in
 
 {: .info }
-If you have an existing system, and you want a cost-effective way to integrate stream processing and real-time AI/ML
-then Fluxtion is a great fit for you.
+**Have an existing system and want a cost-effective way to integrate stream processing and real-time AI/ML? <br/>
+Fluxtion is a great fit for you**
 {: .fs-4 }
 
 * Real-time streaming compute engine <br/>

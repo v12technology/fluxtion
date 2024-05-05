@@ -310,10 +310,10 @@ last 4 elements:[C, D, E, F]
 Fluxtion offers a way to override the triggering of a flow node in the event processor. There are four trigger controls
 available for client code to customise:
 
-* Flow.publishTrigger - Notifies a child node when triggered, adds a notification to the normal publish
-* Flow.publishTriggerOverride - Notifies a child node when triggered, overrides all publish notification
-* Flow.updateTrigger - Overrides when the flow node runs its functional operation
-* Flow.resetTrigger - If the functional operation is stateful call the reset function
+* **Flow.publishTrigger** - Notifies a child node when triggered, adds a notification to the normal publish
+* **Flow.publishTriggerOverride** - Notifies a child node when triggered, removes all other publish notifications
+* **Flow.updateTrigger** - Overrides when the flow node runs its functional operation
+* **Flow.resetTrigger** - If the functional operation is stateful calls the reset function
 
 In the trigger examples we are using the `DataFlow.subscribeToSignal` and `processor.publishSignal` to drive the trigger
 controls on the flow node.
