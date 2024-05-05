@@ -755,7 +755,7 @@ UPDATED date range : '2019-08-10 - 2021-03-30'
 {% endhighlight %}
 
 # Windowing
-Fluxtion supports windowing operations in a DataFlow to aggregate data. There are three types of windows supported:
+Fluxtion supports windowing operations in a DataFlow to aggregate data. There are four types of windows supported:
 
 - Tumbling window with custom start/stop triggers
 - Tumbling time based windows start/stop triggers fire on a timer
