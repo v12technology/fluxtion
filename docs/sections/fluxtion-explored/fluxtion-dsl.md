@@ -1535,7 +1535,7 @@ client_D_TKM_: 295
 Fluxtion offers extended methods for manipulating a GroupBy instance of DataFlow node
 
 ## Mapping keys
-Keys can be mapped with
+Keys of GroupBy can be mapped with
 
 `mapKeys(Function<KEY_OLD, KEY_NEW> keyMappingFunction)`
 
@@ -1572,17 +1572,72 @@ Running the example code above logs to console
 
 {% highlight console %}
 {2015_Female_=1}
-----
 {2013_Male_=1, 2015_Female_=1}
-----
 {2013_Male_=2, 2015_Female_=1}
-----
 {2013_Male_=2, 2013_Female_=1, 2015_Female_=1}
-----
 {2013_Male_=2, 2013_Female_=2, 2015_Female_=1}
-----
 {2013_Male_=2, 2013_Female_=3, 2015_Female_=1}
-----
 {2013_Male_=2, 2013_Female_=3, 2015_Female_=2}
-----
+{% endhighlight %}
+
+
+## Mapping values
+Values of GroupBy can be mapped with
+
+`mapValues(Function<VALUE_OLD, VALUE_NEW> valueMappingFunction)`
+
+
+{% highlight java %}
+public class GroupByMapValuesSample {
+
+    public record ResetList() {
+    }
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        var resetSignal = DataFlow.subscribe(ResetList.class).console("\n--- RESET ---");
+
+        DataFlow.subscribe(Integer.class)
+                .groupByToSet(i -> i % 2 == 0 ? "evens" : "odds")
+                .resetTrigger(resetSignal)
+                .mapValues(GroupByMapValuesSample::toRange)//MAPS VALUES
+                .map(GroupBy::toMap)
+                .console("ODD/EVEN map:{}");
+    }
+
+    private static String toRange(Set<Integer> integers) {
+        int max = integers.stream().max(Integer::compareTo).get();
+        int min = integers.stream().min(Integer::compareTo).get();
+        return "range [" + min + "," + max + "]";
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByMapValuesSample::buildGraph);
+        processor.init();
+        processor.onEvent(1);
+        processor.onEvent(2);
+        processor.onEvent(2);
+        processor.onEvent(5);
+        processor.onEvent(5);
+        processor.onEvent(5);
+        processor.onEvent(7);
+        processor.onEvent(2);
+        processor.onEvent(new ResetList());
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ODD/EVEN map:{odds=range [1,1]}
+ODD/EVEN map:{odds=range [1,1], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,1], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,5], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,5], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,5], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,7], evens=range [2,2]}
+ODD/EVEN map:{odds=range [1,7], evens=range [2,2]}
+
+--- RESET ---
+ODD/EVEN map:{}
 {% endhighlight %}
