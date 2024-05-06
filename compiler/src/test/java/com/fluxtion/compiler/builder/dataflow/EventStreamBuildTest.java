@@ -70,6 +70,7 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         assertNotNull(target);
     }
 
+
     @Test
     public void wrapNodeAndPushStreamPropertyStreamTest() {
         sep(c -> subscribeToNodeProperty(MyStringHandler::getInputString)
