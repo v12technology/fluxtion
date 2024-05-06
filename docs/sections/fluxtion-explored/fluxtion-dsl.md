@@ -1699,3 +1699,143 @@ REDUCED sum:15
 ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=13, evens=4}}
 REDUCED sum:17
 {% endhighlight %}
+
+
+# Joining 
+Fluxtion supports join operations for groupBy data flow nodes.
+
+## Inner join
+Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
+
+`JoinFlowBuilder.innerJoin(schools, pupils)`
+
+The value type of the joined GroupBy is a Tuple, the first value is the left join and the second value is the right join.
+The utility static method in [Tuples]({{site.fluxtion_src_runtime}}/dataflow/helpers/Tuples.java)
+
+`Tuples.mapTuple`
+
+Is used to map the School, Pupil Tuple into a pretty print String.
+
+{% highlight java %}
+public class GroupByJoinSample {
+    
+    public record Pupil(int year, String school, String name){}
+    public record School(String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+
+        var pupils = DataFlow.subscribe(Pupil.class).groupByToList(Pupil::school);
+        var schools = DataFlow.subscribe(School.class).groupBy(School::name);
+
+        JoinFlowBuilder.innerJoin(schools, pupils)
+                .mapValues(Tuples.mapTuple(GroupByJoinSample::prettyPrint))
+                .map(GroupBy::toMap)
+                .console();
+    }
+
+    private static String prettyPrint(School schoolName, List<Pupil> pupils) {
+        return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "] ") );
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByJoinSample::buildGraph);
+        processor.init();
+
+        //register some schools
+        processor.onEvent(new School("RGS"));
+        processor.onEvent(new School("Belles"));
+        
+        //register some pupils
+        processor.onEvent(new Pupil(2015, "RGS", "Bob"));
+        processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Belles", "Channing"));
+        processor.onEvent(new Pupil(2013, "RGS", "Chelsea"));
+        processor.onEvent(new Pupil(2013, "Belles", "Tamsin"));
+        processor.onEvent(new Pupil(2013, "Belles", "Ayola"));
+        processor.onEvent(new Pupil(2015, "Belles", "Sunita"));
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+{RGS=pupils[Bob]}
+{RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin,Ayola], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin,Ayola,Sunita], RGS=pupils[Bob,Ashkay,Chelsea]}
+{% endhighlight %}
+
+## Left outer join
+Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
+
+`JoinFlowBuilder.leftJoin(schools, pupils)`
+
+A default value of an empty collection is assigned to the pupil groupBy so the first school can join against a non-null
+value.
+
+{% highlight java %}
+
+public class GroupByLeftOuterJoinSample {
+
+    public record Pupil(int year, String school, String name){}
+    public record School(String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+
+        var schools = DataFlow.subscribe(School.class)
+                .groupBy(School::name);
+        var pupils = DataFlow.subscribe(Pupil.class)
+                .groupByToList(Pupil::school)
+                .defaultValue(GroupBy.emptyCollection());
+
+        JoinFlowBuilder.leftJoin(schools, pupils)
+                .mapValues(Tuples.mapTuple(GroupByLeftOuterJoinSample::prettyPrint))
+                .map(GroupBy::toMap)
+                .console();
+    }
+
+    private static String prettyPrint(School schoolName, List<Pupil> pupils) {
+        if(pupils == null || pupils.isEmpty()) {
+            return "0";
+        }
+        return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "]") );
+    }
+
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByLeftOuterJoinSample::buildGraph);
+        processor.init();
+
+        //register some schools
+        processor.onEvent(new School("RGS"));
+        processor.onEvent(new School("Belles"));
+
+        //register some pupils
+        processor.onEvent(new Pupil(2015, "RGS", "Bob"));
+        processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Belles", "Channing"));
+        processor.onEvent(new Pupil(2013, "RGS", "Chelsea"));
+        processor.onEvent(new Pupil(2013, "Belles", "Tamsin"));
+        processor.onEvent(new Pupil(2013, "Belles", "Ayola"));
+        processor.onEvent(new Pupil(2015, "Belles", "Sunita"));
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+{RGS=pupils[]}
+{Belles=pupils[], RGS=pupils[]}
+{Belles=pupils[], RGS=pupils[Bob]}
+{Belles=pupils[], RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin,Ayola], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Tamsin,Ayola,Sunita], RGS=pupils[Bob,Ashkay,Chelsea]}
+{% endhighlight %}
