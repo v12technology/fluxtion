@@ -1530,3 +1530,59 @@ client_D_TKM_: 295
 ----------------------
 {% endhighlight %}
 
+# GroupBy functional support
+
+Fluxtion offers extended methods for manipulating a GroupBy instance of DataFlow node
+
+## Mapping keys
+Keys can be mapped with
+
+`mapKeys(Function<KEY_OLD, KEY_NEW> keyMappingFunction)`
+
+
+{% highlight java %}
+public class GroupByMapKeySample {
+
+    public record Pupil(int year, String sex, String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Pupil.class)
+                .groupByFieldsAggregate(Aggregates.countFactory(), Pupil::year, Pupil::sex)
+                .mapKeys(GroupByKey::getKey)//MAPS KEYS
+                .map(GroupBy::toMap)
+                .console("{}\n----");
+    }
+    
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByMapKeySample::buildGraph);
+        processor.init();
+
+        processor.onEvent(new Pupil(2015, "Female", "Bob"));
+        processor.onEvent(new Pupil(2013, "Male", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Male", "Channing"));
+        processor.onEvent(new Pupil(2013, "Female", "Chelsea"));
+        processor.onEvent(new Pupil(2013, "Female", "Tamsin"));
+        processor.onEvent(new Pupil(2013, "Female", "Ayola"));
+        processor.onEvent(new Pupil(2015, "Female", "Sunita"));
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+{2015_Female_=1}
+----
+{2013_Male_=1, 2015_Female_=1}
+----
+{2013_Male_=2, 2015_Female_=1}
+----
+{2013_Male_=2, 2013_Female_=1, 2015_Female_=1}
+----
+{2013_Male_=2, 2013_Female_=2, 2015_Female_=1}
+----
+{2013_Male_=2, 2013_Female_=3, 2015_Female_=1}
+----
+{2013_Male_=2, 2013_Female_=3, 2015_Female_=2}
+----
+{% endhighlight %}
