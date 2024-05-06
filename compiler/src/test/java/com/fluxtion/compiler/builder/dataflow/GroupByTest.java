@@ -504,9 +504,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         Map<String, KeyedData> expected = new HashMap<>();
         sep(c -> {
             subscribe(KeyedData.class).groupBy(KeyedData::getId)
-                    .biMapValuesByKey(
-                            GroupByTest::applyFactor,
-                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()),
+                    .coGroup(
+                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()), GroupByTest::applyFactor,
                             new Data("default", 3)
                     )
                     .map(GroupBy::toMap)
@@ -836,7 +835,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
                     .defaultValue(GroupBy.emptyCollection());
 
-            positionMap.biMapValuesByKey(Mappers::multiplyDoubles, rateMap, Double.NaN)
+            positionMap.coGroup(rateMap, Mappers::multiplyDoubles, Double.NaN)
                     .reduceValues(DoubleSumFlowFunction::new)
                     .id("pnl");
         });

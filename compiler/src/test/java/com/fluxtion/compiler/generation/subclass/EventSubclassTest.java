@@ -22,6 +22,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.SingleNamedNode;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.junit.Test;
 
@@ -133,6 +134,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
     }
 
     @Value
+    @EqualsAndHashCode(callSuper = true)
     public static class FilteredImplEvent extends TimeEvent {
 
         String filterString;

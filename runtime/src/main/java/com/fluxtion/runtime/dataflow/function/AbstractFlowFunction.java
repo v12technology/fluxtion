@@ -49,6 +49,7 @@ public abstract class AbstractFlowFunction<T, R, S extends FlowFunction<T>> exte
     private BooleanSupplier dirtySupplier;
     private transient boolean parallelCandidate = false;
 
+    @SuppressWarnings("unchecked")
     public AbstractFlowFunction(
             @AssignToField("inputEventStream") S inputEventStream,
             MethodReferenceReflection methodReferenceReflection) {

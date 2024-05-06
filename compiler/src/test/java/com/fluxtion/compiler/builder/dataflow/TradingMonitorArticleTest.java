@@ -37,7 +37,7 @@ public class TradingMonitorArticleTest extends MultipleSepTargetInProcessTest {
 
             JoinFlowBuilder.innerJoin(tradeVolumeEvery20Seconds, tradeStatsDaily).id("joinedData")
                     .resetTrigger(DataFlow.subscribeToSignal("startOfDay"))
-                    .console("joined time:%t data:{}")
+                    .console("joined time:%t data:{} deltaTime:%dt")
             ;
 
         });

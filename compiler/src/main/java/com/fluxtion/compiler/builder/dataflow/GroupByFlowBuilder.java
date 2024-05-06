@@ -7,14 +7,7 @@ import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToRefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.GroupBy;
-import com.fluxtion.runtime.dataflow.groupby.GroupByFilterFlowFunctionWrapper;
-import com.fluxtion.runtime.dataflow.groupby.GroupByMapFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.GroupByReduceFlowFunction;
-import com.fluxtion.runtime.dataflow.groupby.InnerJoin;
-import com.fluxtion.runtime.dataflow.groupby.LeftJoin;
-import com.fluxtion.runtime.dataflow.groupby.OuterJoin;
-import com.fluxtion.runtime.dataflow.groupby.RightJoin;
+import com.fluxtion.runtime.dataflow.groupby.*;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
@@ -77,34 +70,39 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
     }
 
     /**
-     * Maps values that are in a multi map of GroupBy, applies the mapping function to all values in the second map
+     * Joins to stream together by key, specifying the aggregate operation that should be used to join the values
      *
-     * @param mappingFunction
-     * @param <R>
-     * @return the trransformed value
+     * @param streamToJoin        the other GroupBy flow to join with
+     * @param mergeValuesFunction The bi map function that will merge values from the two streams
+     * @param <K2>                Key type of other GroupBy flow
+     * @param <V2>                Value type of other GroupBy flow
+     * @param <VOUT>              Output type of bi map merge function
+     * @return The co-grouped GroupByFlowBuilder
      */
-    //TODO FIX
-    public <T, R> GroupByFlowBuilder<K, R> mapNestedValues(SerializableFunction<T, R> mappingFunction) {
-        throw new UnsupportedOperationException("not implemented");
-//        return new GroupByFlowBuilder<>(new MapRef2RefFlowFunction<>(eventStream,
-//                new GroupByMapFlowFunction(new GroupByMapFlowFunction(mappingFunction)::mapForEachValues)::mapValues));
+    public <K2 extends K, V2, VOUT>
+    GroupByFlowBuilder<K, VOUT> coGroup(
+            GroupByFlowBuilder<K2, V2> streamToJoin,
+            SerializableBiFunction<V, V2, VOUT> mergeValuesFunction
+    ) {
+        return coGroup(streamToJoin, mergeValuesFunction, null);
     }
 
+    /**
+     * @param streamToJoin          the other GroupBy flow to join with
+     * @param mergeValuesFunction   The bi map function that will merge values from the two streams
+     * @param defaultSecondArgument default initial value
+     * @param <K2>                  Key type of other GroupBy flow
+     * @param <V2>                  Value type of other GroupBy flow
+     * @param <VOUT>                Output type of bi map merge function
+     * @return The co-grouped GroupByFlowBuilder
+     */
     public <K2 extends K, V2, VOUT>
-    GroupByFlowBuilder<K, VOUT> biMapValuesByKey(
-            SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
-            GroupByFlowBuilder<K2, V2> secondArgumentStream) {
-        GroupByMapFlowFunction invoker = new GroupByMapFlowFunction(null, mappingBiFunction, null);
-        return biMapValuesByKey(mappingBiFunction, secondArgumentStream, null);
-    }
-
-    public <K2 extends K, V2, VOUT>
-    GroupByFlowBuilder<K, VOUT> biMapValuesByKey(
-            SerializableBiFunction<V, V2, VOUT> mappingBiFunction,
-            GroupByFlowBuilder<K2, V2> secondArgumentStream,
+    GroupByFlowBuilder<K, VOUT> coGroup(
+            GroupByFlowBuilder<K2, V2> streamToJoin,
+            SerializableBiFunction<V, V2, VOUT> mergeValuesFunction,
             V2 defaultSecondArgument) {
-        GroupByMapFlowFunction invoker = new GroupByMapFlowFunction(null, mappingBiFunction, defaultSecondArgument);
-        return mapBiFunction(invoker::biMapValuesWithParamMap, secondArgumentStream);
+        GroupByMapFlowFunction invoker = new GroupByMapFlowFunction(null, mergeValuesFunction, defaultSecondArgument);
+        return mapBiFunction(invoker::biMapValuesWithParamMap, streamToJoin);
     }
 
     public <R, F extends AggregateFlowFunction<V, R, F>> FlowBuilder<R> reduceValues(
