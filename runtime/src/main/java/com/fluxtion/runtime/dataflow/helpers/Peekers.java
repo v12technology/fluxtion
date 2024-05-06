@@ -2,6 +2,7 @@ package com.fluxtion.runtime.dataflow.helpers;
 
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
+import com.fluxtion.runtime.annotations.Start;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
@@ -54,6 +55,11 @@ public interface Peekers {
 
         @Initialise
         public void initialise() {
+            initialTime = clock.getWallClockTime();
+        }
+
+        @Start
+        public void start() {
             initialTime = clock.getWallClockTime();
         }
 

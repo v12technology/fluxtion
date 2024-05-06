@@ -49,10 +49,16 @@ public class TumblingWindow<T, R, S extends FlowFunction<T>, F extends Aggregate
 
     @OnParentUpdate
     public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-        cacheWindowValue();
+        if (rollTrigger.getTriggerCount() == 1) {
+            cacheWindowValue();
+        }
+        publishOverrideTriggered = !overridePublishTrigger & !overrideUpdateTrigger;
         inputStreamTriggered_1 = true;
         inputStreamTriggered = true;
         windowFunction.reset();
+        if (rollTrigger.getTriggerCount() != 1) {
+            cacheWindowValue();
+        }
     }
 
     @OnParentUpdate
