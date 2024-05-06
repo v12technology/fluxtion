@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +36,9 @@ public class NodeWithPrivateParentList {
     public List<Integer> intList;
 
     public NodeWithPrivateParentList() {
-        this(null);
+        parents = new ArrayList<>();
+        stringList = new ArrayList<>();
+        intList = new ArrayList<>();
     }
 
     public NodeWithPrivateParentList(EventHandlerCbNode... cbs) {
