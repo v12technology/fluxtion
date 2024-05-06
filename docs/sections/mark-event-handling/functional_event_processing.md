@@ -1,28 +1,25 @@
 ---
-title: Functional programming
-parent: Event handling
+title: Functional DSL
+parent: Mark event handling
 has_children: false
 nav_order: 2
 published: true
 ---
 
-# Functional event stream processing
+# Functional DSL event stream processing
 {: .no_toc }
 
-This section documents the runtime event processing callback api and behaviour using functional programming.
+This section documents the use of functional programming to construct event processing logic. For a more in-depth
+description of the dsl head over to [Fluxtion DSL deep dive](../fluxtion-explored/fluxtion-dsl).
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
-functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the
-functional DSL is to have no Fluxtion api calls in the business logic only pure vanilla java. 
+functions into the processor without having to construct classes marked with Fluxtion annotations. Operations such as
+map/filter/peek similar to the java stream api are present. The goal of using the functional DSL is to have no 
+Fluxtion api calls in the business logic only pure vanilla java. 
 
-**Advantages of using Fluxtion functional DSL**
-
-- Business logic components are re-usable and testable outside Fluxtion
-- Clear separation between event notification and business logic, event logic is removed from business code
-- Complex functions library like windowing and aggregation are well tested and natively supported
-- Increased developer productivity, less code to write and support
-- New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
-- No vendor lock-in, business code is free from any Fluxtion library dependencies
+An event processor is a live structure where new events trigger a set of dispatch operations. The node wrapping a function
+supports both stateful and stateless functions, it is the user choice what type of function to bind. Any bound functions 
+are invoked in accordance to the [dispatch rules](../fluxtion-explored#event-dispatch-rules).
 
 ## Three steps to using Fluxtion
 {: .no_toc }
@@ -44,92 +41,52 @@ In this section we are covering the first of these **Bind functions using functi
 {:toc}
 </details>
 
+# Advantages of using Fluxtion functional DSL
 
-# API overview
-Fluxtion offers a DSL to bind functions into the event processor using the familiar map/filter/peek similar to the java
-stream api. Bound functions are invoked in accordance to the dispatch rules [dispatch rules](../core-technology#event-dispatch-rules). 
+- Business logic components are re-usable and testable outside Fluxtion
+- Clear separation between event notification and business logic, event logic is removed from business code
+- Complex functions library like windowing and aggregation are well tested and natively supported
+- Increased developer productivity, less code to write and support
+- New functionality is simple and cheap to integrate, Fluxtion pays the cost of rewiring the event flow
+- No vendor lock-in, business code is free from any Fluxtion library dependencies
 
-## Creating a flow
-In order to bind a functional operation we need to create a head of flow that the event processor will dispatch to when onEvent is called
-by user code. In the imperative approach an entry point is registered by [annotating a method](processing_events#handle-event-input) 
-with `@OnEventHandler`. The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods 
-for creating the head of a flow. There is no restriction to the number of flows bound inside an event processor.
+# Functional operations
+The functional DSL supports a rich set of operations. Where appropriate functional operations support:
 
-Creat a flow for String events with a call to DataFlow.subscribe
+- Stateless functions
+- Stateful functions
+- Primitive specialisation
+- Method references
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
-{% highlight java %}
-DataFlow.subscribe(String.class)
-{% endhighlight %}
-
-Once a flow has been created map/filter/grouping functions can be applied as chained calls.
-
-## All functions are nodes 
-A bound function is wrapped in a node/monad that is bound into the event processor and invokes the user function when 
-notified. Each wrapping node can be the head of multiple child flows forming complex graph structures that obey the dispatch
-rules. This is in contrast to classic java streams that have a terminal operation and a pipeline structure. 
-
-An event processor is a live structure where new events trigger a set of dispatch operations. The node wrapping the function
-supports both stateful and stateless functions, it is the user choice what type of function to bind. 
-
-This example creates a simple graph structure where multiple stateful/stateless functions are bound to a single parent function.
+## Map
+A map operation takes the input from a parent function and then applies a function to the input. If the return of the
+output is null then the event notification no longer propagates down that path.
 
 {% highlight java %}
-
 var stringFlow = DataFlow.subscribe(String.class);
 
 stringFlow.map(String::toLowerCase);
-stringFlow.map(String::toUpperCase);
-stringFlow.map(MyFunctions::charCount);
-stringFlow.map(new MyFunctions()::totalCharCount);
-
-public static class MyFunctions{
-    int charCount;
-
-    public static int charCount(String in) {
-        return in.length();
-    }
-
-    public int totalCharCount(String in) {
-        charCount += in.length();
-        return charCount;
-    }
-}
+stringFlow.mapToInt(s -> s.length()/2);
 {% endhighlight %}
 
-## Map
-A map operation takes the input from a parent function and then applies a function to the input. If the return of the 
-output is null then the event notification no longer propagates down that path. 
-
-  {% highlight java %}
-  var stringFlow = DataFlow.subscribe(String.class);
-
-  stringFlow.map(String::toLowerCase);
-  stringFlow.map(String::toUpperCase);
-  stringFlow.map(MyFunctions::charCount);
-  stringFlow.map(new MyFunctions()::totalCharCount);
-  stringFlow.mapToInt(new MyFunctions()::totalCharCount);
-  stringFlow.mapToInt(s -> s.length()/2);
-  {% endhighlight %}
-  
 **Map supports**
 
 - Stateless functions
 - Stateful functions
 - Primitive specialisation
 - Method references
-- Inline lambdas
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
 ## Filter
 A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
-the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the 
+the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
 event processor.
 
 {% highlight java %}
-
 DataFlow.subscribe(String.class)
-        .filter(Objects::nonNull)
-        .mapToInt(s -> s.length()/2);
-
+    .filter(Objects::nonNull)
+    .mapToInt(s -> s.length()/2);
 {% endhighlight %}
 
 **Filter supports**
@@ -138,73 +95,64 @@ DataFlow.subscribe(String.class)
 - Stateful functions
 - Primitive specialisation
 - Method references
-- Inline lambdas
+- Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
-## Functional operations
-The functional DSL supports a rich set of operations. Where appropriate functional operations support:
-
-- Stateless functions
-- Stateful functions
-- Primitive specialisation
-- Method references
-- Inline lambdas
-
-### Map with bi function
+## Map with bi function
 Takes two flow inputs and applies a bi function to the inputs. Applied once both functions have updated.
 
-### Peek
+## Peek
 View the state of a node, invoked when the parent triggers.
 
-### Sink
+## Sink
 Publishes the output of the function to a named sink end point. Client code can register as a named sink end point with
 the running event processor.
 
-### Id
+## Id
 A node can be given an id that makes it discoverable using EventProcessor.getNodeById.
 
-### Aggregate
+## Aggregate
 Aggregates the output of a node using a user supplied stateful function.
 
-### Aggregate with sliding window
+## Aggregate with sliding window
 Aggregates the output of a node using a user supplied stateful function, in a sliding window.
 
-### Aggregate with tumbling window
+## Aggregate with tumbling window
 Aggregates the output of a node using a user supplied stateful function, in a tumbling window.
 
-### Default value
+## Default value
 Set the initial value of a node without needing an input event to create a value.
 
-### Flat map
+## Flat map
 Flat map operations on a collection from a parent node.
 
-### Group by
+## Group by
 Group by operations.
 
-### Group by with sliding window
+## Group by with sliding window
 Group by operations, in a sliding window.
 
-### Group by with tumbling window
+## Group by with tumbling window
 Group by operations, in a tumbling window.
 
-### Lookup
+## Lookup
 Apply a lookup function to a value as a map operation.
 
-### Merge
+## Merge
 Merge multiple streams of the same type into a single output.
 
-### Map and merge
+## Map and merge
 Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
 
-### Console
+## Console
 Specialisation of peek that logs to console
 
-### Push
+## Push
 Pushes the output of a node to user class, joins functional to imperative flow
 
-### Trigger overrides
+## Trigger overrides
 External flows can override that standard triggering method to force publication/calculation/downstream notifications.
 
-### Reentrant events
+## Reentrant events
 The output of an operation can be published to the event processor as a new event. Will be processed after the current
 cycle finishes.
 

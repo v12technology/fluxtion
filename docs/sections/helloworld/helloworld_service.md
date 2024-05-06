@@ -4,7 +4,10 @@ has_children: false
 parent: Hello fluxtion world
 nav_order: 2
 published: true
-example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functional-helloworld/src/main/java/com/fluxtion/example/functional/helloworld
+example_src: https://github.com/v12technology/fluxtion-examples/tree/main/service-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
+
+
+
 ---
 
 # 5 minute Service hello world 
@@ -14,17 +17,18 @@ are defined in an interface. The bound class exports the service interface with 
 service implementation is registered in the event processor and is discoverable by client code using the service interface
 class. 
 
-For an event based implementation example see [Hello fluxtion world](helloworld_imperative)
+Code is available as a [maven project]({{page.example_src}})
 
 Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
 calculations are run whenever a new event is received.
 
 This example creates an event processor, initialises it, looks up the service interface and calls service methods
-with instances of data tuples. If a breach occurs a warning will be logged to console. All dispatch and change 
+with instances of data tuples. If a breach occurs a warning will be logged to console. All dispatch and change
 notification is handled by Fluxtion when a service method is invoked.
 
-Code is available as a [maven project]({{page.example_src}})
+
+For an event based implementation example see [Hello fluxtion world](helloworld_imperative)
 
 ## Processing graph
 {: .no_toc }
@@ -44,7 +48,7 @@ flowchart TB
     EventA><b>ServiceCall</b> updateA#Event_A]:::eventHandler 
     EventB><b>ServiceCall</b> updateB#Event_B]:::eventHandler 
     DataSumCalculator([<b>ServiceLookup</b>::DataSumCalculator]):::exportedService 
-    DataSumCalculatorImpl[ExportService\n <b>ExportService</b>::ExportService]:::graphNode
+    DataSumCalculatorImpl[DataSumCalculatorImpl\n <b>ExportService</b>::DataSumCalculator]:::graphNode
     BreachNotifier:::graphNode
     
     EventA & EventB --> DataSumCalculator --> DataSumCalculatorImpl
@@ -69,8 +73,8 @@ service calls.
 {: .no_toc }
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" >Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 

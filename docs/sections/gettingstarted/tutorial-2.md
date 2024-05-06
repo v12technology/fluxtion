@@ -1,12 +1,12 @@
 ---
-title: 2nd tutorial - AOT
-parent: Getting started
+title: 2nd tutorial - AOT Spring
+parent: Developer tutorials
 has_children: false
-nav_order: 2
+nav_order: 3
 published: true
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -19,7 +19,7 @@ published: true
 
 This tutorial is an introduction to building Fluxtion dependency injection container ahead of time. The reader should
 be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before starting
-this tutorial. The project source can be found [here.]({{site.getting_started}}/tutorial2-lottery-aot)
+this tutorial.
 
 Our goal is to create the lottery processing logic ahead of time so the application has no change in functional
 behaviour compared to the first tutorial. An aot application has the advantage of starting quicker, using less resources
@@ -30,6 +30,9 @@ At the end of this tutorial you should understand:
 - The relationship between Fluxtion runtime and compiler components
 - How to generate a container ahead of time using the fluxtion maven plugin
 - How the serialised container source file is used in an application
+
+# Example project
+The [example project]({{site.getting_started}}/tutorial2-lottery-aot) is referenced in this tutorial.
 
 # Building AOT
 
@@ -225,5 +228,5 @@ realised:
 I hope you have enjoyed reading this tutorial, and it has given you a desire to try running the container in aot mode
 within your applications. Please send me in any comments or suggestions to improve this tutorial
 
-[next tutorial 3](tutorial-3.md)
+[next tutorial 3](tutorial-3)
 {: .text-right }

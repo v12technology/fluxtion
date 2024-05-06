@@ -12,14 +12,16 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
-calculations are run whenever a new event is received. For a functional implementation example see [Hello functional fluxtion world](helloworld_functional)
-
-This example **creates an event processor ahead of time using the Fluxtion maven plugin**. Once generated the event processor 
-is used as a normal user class. The main method instantiates and initialises the event processor, then fires data events at it. 
-If a breach occurs a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is 
-received. Business logic resides in the user functions/classes.
+calculations are run whenever a new event is received. 
 
 Code is available as a [maven project]({{page.example_src}})
+
+This example **creates an event processor ahead of time using the Fluxtion maven plugin**. Once generated the event processor
+is used as a normal user class. The main method instantiates and initialises the event processor, then fires data events at it.
+If a breach occurs a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is
+received. Business logic resides in the user functions/classes.
+
+For an event based interpreted example see [Hello fluxtion world](helloworld_imperative)
 
 ## Processing graph
 {: .no_toc }
@@ -62,8 +64,8 @@ The Fluxtion event processor manages all the event call backs, the user code han
 {: .no_toc }
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" >Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 
@@ -230,36 +232,33 @@ Calculates the current sum adding the values of Event_A_Handler and Event_B_Hand
 has its updated method invoked. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
+
 public class DataSumCalculator {
-  private final Event_A_Handler event_A_Handler;
-  private final Event_B_Handler event_B_Handler;
-  private double sum;
+    private final Event_A_Handler event_A_Handler;
+    private final Event_B_Handler event_B_Handler;
+    private double sum;
+    
+    public DataSumCalculator(Event_A_Handler event_A_Handler, Event_B_Handler event_B_Handler) {
+        this.event_A_Handler = event_A_Handler;
+        this.event_B_Handler = event_B_Handler;
+    }
+    
+    public DataSumCalculator() {
+        this(new Event_A_Handler(), new Event_B_Handler());
+    }
 
-  public DataSumCalculator(Event_A_Handler event_A_Handler, Event_B_Handler event_B_Handler) {
-      this.event_A_Handler = event_A_Handler;
-      this.event_B_Handler = event_B_Handler;
-  }
+    @OnTrigger
+    public boolean calculate() {
+        sum = event_A_Handler.getValue() + event_B_Handler.getValue();
+        System.out.println("sum:" + sum);
+        return sum > 100;
+    }
 
-  public DataSumCalculator() {
-      this(new Event_A_Handler(), new Event_B_Handler());
-  }
-
-  /**
-   * The {@link OnTrigger} annotation marks this method to be called if any parents have changed
-   *
-   * @return flag indicating a change and a propagation of the event wave to child dependencies if the sum > 100
-   */
-  @OnTrigger
-  public boolean calculate() {
-      sum = event_A_Handler.getValue() + event_B_Handler.getValue();
-      System.out.println("sum:" + sum);
-      return sum > 100;
-  }
-
-  public double getSum() {
-      return sum;
-  }
+    public double getSum() {
+        return sum;
+    }
 }
+
 {% endhighlight %}
 
 The return flag indicates that the event notification should be propagated and any child nodes trigger methods
@@ -275,24 +274,25 @@ The trigger method is only invoked if the DataSumCalculator propagates the notif
 trigger method. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
+
 public class BreachNotifier {
-  private final DataSumCalculator dataAddition;
-
-  public BreachNotifier(DataSumCalculator dataAddition) {
-      this.dataAddition = dataAddition;
-  }
-  
-  public BreachNotifier() {
-      this(new DataSumCalculator());
-  }
-  
-  @OnTrigger
-  public boolean printWarning() {
-      System.out.println("WARNING DataSumCalculator value is greater than 100 sum = " + dataAddition.getSum());
-      return true;
-  }
-
+    private final DataSumCalculator dataAddition;
+    
+    public BreachNotifier(DataSumCalculator dataAddition) {
+        this.dataAddition = dataAddition;
+    }
+    
+    public BreachNotifier() {
+        this(new DataSumCalculator());
+    }
+    
+    @OnTrigger
+    public boolean printWarning() {
+        System.out.println("WARNING DataSumCalculator value is greater than 100 sum = " + dataAddition.getSum());
+        return true;
+    }
 }
+
 {% endhighlight %}
 </div>
 </div>
@@ -355,44 +355,46 @@ public class AotBuilder implements FluxtionGraphBuilder {
 The AOT generated event processor source file is here [BreachNotifierProcessor.java]({{page.example_src}}/generated/BreachNotifierProcessor.java)
 
 {% highlight java %}
-/**
 
-* <pre>
-* generation time                 : Not available
-* eventProcessorGenerator version : 9.2.17
-* api version                     : 9.2.17
-* </pre>
-* <p>
-* Event classes supported:
-*
-* <ul>
-*   <li>com.fluxtion.example.imperative.helloworld.Event_A
-*   <li>com.fluxtion.example.imperative.helloworld.Event_B
-*   <li>com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent
-* </ul>
-*
-* @author Greg Higgins
-  */
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public class BreachNotifierProcessor
-  implements EventProcessor<BreachNotifierProcessor>,
-  StaticEventProcessor,
-  InternalEventProcessor,
-  BatchHandler,
-  Lifecycle {
+/**
+ *
+ *
+ * <pre>
+ * generation time                 : Not available
+ * eventProcessorGenerator version : 9.2.23
+ * api version                     : 9.2.23
+ * </pre>
+ *
+ * Event classes supported:
+ *
+ * <ul>
+ *   <li>com.fluxtion.example.imperative.helloworld.Event_A
+ *   <li>com.fluxtion.example.imperative.helloworld.Event_B
+ *   <li>com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent
+ * </ul>
+ *
+ * @author Greg Higgins
+ */
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class BreachNotifierProcessor
+    implements EventProcessor<BreachNotifierProcessor>,
+        StaticEventProcessor,
+        InternalEventProcessor,
+        BatchHandler,
+        Lifecycle {
 
   //Node declarations
   private final CallbackDispatcherImpl callbackDispatcher = new CallbackDispatcherImpl();
   private final Event_A_Handler event_A_Handler_2 = new Event_A_Handler();
   private final Event_B_Handler event_B_Handler_3 = new Event_B_Handler();
   private final DataSumCalculator dataSumCalculator_1 =
-  new DataSumCalculator(event_A_Handler_2, event_B_Handler_3);
+      new DataSumCalculator(event_A_Handler_2, event_B_Handler_3);
   private final BreachNotifier breachNotifier_0 = new BreachNotifier(dataSumCalculator_1);
   public final NodeNameAuditor nodeNameLookup = new NodeNameAuditor();
   private final SubscriptionManagerNode subscriptionManager = new SubscriptionManagerNode();
   private final MutableEventProcessorContext context =
-  new MutableEventProcessorContext(
-  nodeNameLookup, callbackDispatcher, subscriptionManager, callbackDispatcher);
+      new MutableEventProcessorContext(
+          nodeNameLookup, callbackDispatcher, subscriptionManager, callbackDispatcher);
   public final Clock clock = new Clock();
   private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
   //Dirty flags
@@ -400,9 +402,9 @@ The AOT generated event processor source file is here [BreachNotifierProcessor.j
   private boolean processing = false;
   private boolean buffering = false;
   private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap =
-  new IdentityHashMap<>(3);
+      new IdentityHashMap<>(3);
   private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap =
-  new IdentityHashMap<>(3);
+      new IdentityHashMap<>(3);
 
   private boolean isDirty_dataSumCalculator_1 = false;
   private boolean isDirty_event_A_Handler_2 = false;
@@ -412,308 +414,309 @@ The AOT generated event processor source file is here [BreachNotifierProcessor.j
   //Filter constants
 
   public BreachNotifierProcessor(Map<Object, Object> contextMap) {
-  context.replaceMappings(contextMap);
-  //node auditors
-  initialiseAuditor(clock);
-  initialiseAuditor(nodeNameLookup);
-  subscriptionManager.setSubscribingEventProcessor(this);
-  context.setEventProcessorCallback(this);
+    context.replaceMappings(contextMap);
+    //node auditors
+    initialiseAuditor(clock);
+    initialiseAuditor(nodeNameLookup);
+    subscriptionManager.setSubscribingEventProcessor(this);
+    context.setEventProcessorCallback(this);
   }
 
   public BreachNotifierProcessor() {
-  this(null);
+    this(null);
   }
 
   @Override
   public void init() {
-  initCalled = true;
-  auditEvent(Lifecycle.LifecycleEvent.Init);
-  //initialise dirty lookup map
-  isDirty("test");
-  clock.init();
-  afterEvent();
+    initCalled = true;
+    auditEvent(Lifecycle.LifecycleEvent.Init);
+    //initialise dirty lookup map
+    isDirty("test");
+    clock.init();
+    afterEvent();
   }
 
   @Override
   public void start() {
-  if (!initCalled) {
-  throw new RuntimeException("init() must be called before start()");
-  }
-  processing = true;
-  auditEvent(Lifecycle.LifecycleEvent.Start);
+    if (!initCalled) {
+      throw new RuntimeException("init() must be called before start()");
+    }
+    processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.Start);
 
-       afterEvent();
-       callbackDispatcher.dispatchQueuedCallbacks();
-       processing = false;
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
   }
 
   @Override
   public void stop() {
-  if (!initCalled) {
-  throw new RuntimeException("init() must be called before stop()");
-  }
-  processing = true;
-  auditEvent(Lifecycle.LifecycleEvent.Stop);
+    if (!initCalled) {
+      throw new RuntimeException("init() must be called before stop()");
+    }
+    processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.Stop);
 
-       afterEvent();
-       callbackDispatcher.dispatchQueuedCallbacks();
-       processing = false;
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
   }
 
   @Override
   public void tearDown() {
-  initCalled = false;
-  auditEvent(Lifecycle.LifecycleEvent.TearDown);
-  nodeNameLookup.tearDown();
-  clock.tearDown();
-  subscriptionManager.tearDown();
-  afterEvent();
+    initCalled = false;
+    auditEvent(Lifecycle.LifecycleEvent.TearDown);
+    nodeNameLookup.tearDown();
+    clock.tearDown();
+    subscriptionManager.tearDown();
+    afterEvent();
   }
 
   @Override
   public void setContextParameterMap(Map<Object, Object> newContextMapping) {
-  context.replaceMappings(newContextMapping);
+    context.replaceMappings(newContextMapping);
   }
 
   @Override
   public void addContextParameter(Object key, Object value) {
-  context.addMapping(key, value);
+    context.addMapping(key, value);
   }
 
   //EVENT DISPATCH - START
   @Override
   public void onEvent(Object event) {
-  if (buffering) {
-  triggerCalculation();
-  }
-  if (processing) {
-  callbackDispatcher.processReentrantEvent(event);
-  } else {
-  processing = true;
-  onEventInternal(event);
-  callbackDispatcher.dispatchQueuedCallbacks();
-  processing = false;
-  }
+    if (buffering) {
+      triggerCalculation();
+    }
+    if (processing) {
+      callbackDispatcher.processReentrantEvent(event);
+    } else {
+      processing = true;
+      onEventInternal(event);
+      callbackDispatcher.dispatchQueuedCallbacks();
+      processing = false;
+    }
   }
 
   @Override
   public void onEventInternal(Object event) {
-  if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
-  Event_A typedEvent = (Event_A) event;
-  handleEvent(typedEvent);
-  } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
-  Event_B typedEvent = (Event_B) event;
-  handleEvent(typedEvent);
-  } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
-  ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
-  handleEvent(typedEvent);
-  }
+    if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
+      Event_A typedEvent = (Event_A) event;
+      handleEvent(typedEvent);
+    } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
+      Event_B typedEvent = (Event_B) event;
+      handleEvent(typedEvent);
+    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+      handleEvent(typedEvent);
+    }
   }
 
   public void handleEvent(Event_A typedEvent) {
-  auditEvent(typedEvent);
-  //Default, no filter methods
-  isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
-  if (guardCheck_dataSumCalculator_1()) {
-  isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
-  }
-  if (guardCheck_breachNotifier_0()) {
-  breachNotifier_0.printWarning();
-  }
-  afterEvent();
+    auditEvent(typedEvent);
+    //Default, no filter methods
+    isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
+    if (guardCheck_dataSumCalculator_1()) {
+      isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+    }
+    if (guardCheck_breachNotifier_0()) {
+      breachNotifier_0.printWarning();
+    }
+    afterEvent();
   }
 
   public void handleEvent(Event_B typedEvent) {
-  auditEvent(typedEvent);
-  //Default, no filter methods
-  isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
-  if (guardCheck_dataSumCalculator_1()) {
-  isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
-  }
-  if (guardCheck_breachNotifier_0()) {
-  breachNotifier_0.printWarning();
-  }
-  afterEvent();
+    auditEvent(typedEvent);
+    //Default, no filter methods
+    isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
+    if (guardCheck_dataSumCalculator_1()) {
+      isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+    }
+    if (guardCheck_breachNotifier_0()) {
+      breachNotifier_0.printWarning();
+    }
+    afterEvent();
   }
 
   public void handleEvent(ClockStrategyEvent typedEvent) {
-  auditEvent(typedEvent);
-  //Default, no filter methods
-  clock.setClockStrategy(typedEvent);
-  afterEvent();
+    auditEvent(typedEvent);
+    //Default, no filter methods
+    clock.setClockStrategy(typedEvent);
+    afterEvent();
   }
   //EVENT DISPATCH - END
 
   public void bufferEvent(Object event) {
-  buffering = true;
-  if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
-  Event_A typedEvent = (Event_A) event;
-  auditEvent(typedEvent);
-  isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
-  } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
-  Event_B typedEvent = (Event_B) event;
-  auditEvent(typedEvent);
-  isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
-  } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
-  ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
-  auditEvent(typedEvent);
-  clock.setClockStrategy(typedEvent);
-  }
+    buffering = true;
+    if (event instanceof com.fluxtion.example.imperative.helloworld.Event_A) {
+      Event_A typedEvent = (Event_A) event;
+      auditEvent(typedEvent);
+      isDirty_event_A_Handler_2 = event_A_Handler_2.data1Update(typedEvent);
+    } else if (event instanceof com.fluxtion.example.imperative.helloworld.Event_B) {
+      Event_B typedEvent = (Event_B) event;
+      auditEvent(typedEvent);
+      isDirty_event_B_Handler_3 = event_B_Handler_3.data1Update(typedEvent);
+    } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
+      ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
+      auditEvent(typedEvent);
+      clock.setClockStrategy(typedEvent);
+    }
   }
 
   public void triggerCalculation() {
-  buffering = false;
-  String typedEvent = "No event information - buffered dispatch";
-  if (guardCheck_dataSumCalculator_1()) {
-  isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
-  }
-  if (guardCheck_breachNotifier_0()) {
-  breachNotifier_0.printWarning();
-  }
-  afterEvent();
+    buffering = false;
+    String typedEvent = "No event information - buffered dispatch";
+    if (guardCheck_dataSumCalculator_1()) {
+      isDirty_dataSumCalculator_1 = dataSumCalculator_1.calculate();
+    }
+    if (guardCheck_breachNotifier_0()) {
+      breachNotifier_0.printWarning();
+    }
+    afterEvent();
   }
 
   private void auditEvent(Object typedEvent) {
-  clock.eventReceived(typedEvent);
-  nodeNameLookup.eventReceived(typedEvent);
+    clock.eventReceived(typedEvent);
+    nodeNameLookup.eventReceived(typedEvent);
   }
 
   private void auditEvent(Event typedEvent) {
-  clock.eventReceived(typedEvent);
-  nodeNameLookup.eventReceived(typedEvent);
+    clock.eventReceived(typedEvent);
+    nodeNameLookup.eventReceived(typedEvent);
   }
 
   private void initialiseAuditor(Auditor auditor) {
-  auditor.init();
-  auditor.nodeRegistered(breachNotifier_0, "breachNotifier_0");
-  auditor.nodeRegistered(dataSumCalculator_1, "dataSumCalculator_1");
-  auditor.nodeRegistered(event_A_Handler_2, "event_A_Handler_2");
-  auditor.nodeRegistered(event_B_Handler_3, "event_B_Handler_3");
-  auditor.nodeRegistered(callbackDispatcher, "callbackDispatcher");
-  auditor.nodeRegistered(subscriptionManager, "subscriptionManager");
-  auditor.nodeRegistered(context, "context");
+    auditor.init();
+    auditor.nodeRegistered(breachNotifier_0, "breachNotifier_0");
+    auditor.nodeRegistered(dataSumCalculator_1, "dataSumCalculator_1");
+    auditor.nodeRegistered(event_A_Handler_2, "event_A_Handler_2");
+    auditor.nodeRegistered(event_B_Handler_3, "event_B_Handler_3");
+    auditor.nodeRegistered(callbackDispatcher, "callbackDispatcher");
+    auditor.nodeRegistered(subscriptionManager, "subscriptionManager");
+    auditor.nodeRegistered(context, "context");
   }
 
   private void beforeServiceCall(String functionDescription) {
-  functionAudit.setFunctionDescription(functionDescription);
-  auditEvent(functionAudit);
-  if (buffering) {
-  triggerCalculation();
-  }
-  processing = true;
+    functionAudit.setFunctionDescription(functionDescription);
+    auditEvent(functionAudit);
+    if (buffering) {
+      triggerCalculation();
+    }
+    processing = true;
   }
 
   private void afterServiceCall() {
-  afterEvent();
-  callbackDispatcher.dispatchQueuedCallbacks();
-  processing = false;
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
   }
 
   private void afterEvent() {
 
-       clock.processingComplete();
-       nodeNameLookup.processingComplete();
-       isDirty_dataSumCalculator_1 = false;
-       isDirty_event_A_Handler_2 = false;
-       isDirty_event_B_Handler_3 = false;
+    clock.processingComplete();
+    nodeNameLookup.processingComplete();
+    isDirty_dataSumCalculator_1 = false;
+    isDirty_event_A_Handler_2 = false;
+    isDirty_event_B_Handler_3 = false;
   }
 
   @Override
   public void batchPause() {
-  auditEvent(Lifecycle.LifecycleEvent.BatchPause);
-  processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.BatchPause);
+    processing = true;
 
-       afterEvent();
-       callbackDispatcher.dispatchQueuedCallbacks();
-       processing = false;
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
   }
 
   @Override
   public void batchEnd() {
-  auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
-  processing = true;
+    auditEvent(Lifecycle.LifecycleEvent.BatchEnd);
+    processing = true;
 
-       afterEvent();
-       callbackDispatcher.dispatchQueuedCallbacks();
-       processing = false;
+    afterEvent();
+    callbackDispatcher.dispatchQueuedCallbacks();
+    processing = false;
   }
 
   @Override
   public boolean isDirty(Object node) {
-  return dirtySupplier(node).getAsBoolean();
+    return dirtySupplier(node).getAsBoolean();
   }
 
   @Override
   public BooleanSupplier dirtySupplier(Object node) {
-  if (dirtyFlagSupplierMap.isEmpty()) {
-  dirtyFlagSupplierMap.put(dataSumCalculator_1, () -> isDirty_dataSumCalculator_1);
-  dirtyFlagSupplierMap.put(event_A_Handler_2, () -> isDirty_event_A_Handler_2);
-  dirtyFlagSupplierMap.put(event_B_Handler_3, () -> isDirty_event_B_Handler_3);
-  }
-  return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
+    if (dirtyFlagSupplierMap.isEmpty()) {
+      dirtyFlagSupplierMap.put(dataSumCalculator_1, () -> isDirty_dataSumCalculator_1);
+      dirtyFlagSupplierMap.put(event_A_Handler_2, () -> isDirty_event_A_Handler_2);
+      dirtyFlagSupplierMap.put(event_B_Handler_3, () -> isDirty_event_B_Handler_3);
+    }
+    return dirtyFlagSupplierMap.getOrDefault(node, StaticEventProcessor.ALWAYS_FALSE);
   }
 
   @Override
   public void setDirty(Object node, boolean dirtyFlag) {
-  if (dirtyFlagUpdateMap.isEmpty()) {
-  dirtyFlagUpdateMap.put(dataSumCalculator_1, (b) -> isDirty_dataSumCalculator_1 = b);
-  dirtyFlagUpdateMap.put(event_A_Handler_2, (b) -> isDirty_event_A_Handler_2 = b);
-  dirtyFlagUpdateMap.put(event_B_Handler_3, (b) -> isDirty_event_B_Handler_3 = b);
-  }
-  dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
+    if (dirtyFlagUpdateMap.isEmpty()) {
+      dirtyFlagUpdateMap.put(dataSumCalculator_1, (b) -> isDirty_dataSumCalculator_1 = b);
+      dirtyFlagUpdateMap.put(event_A_Handler_2, (b) -> isDirty_event_A_Handler_2 = b);
+      dirtyFlagUpdateMap.put(event_B_Handler_3, (b) -> isDirty_event_B_Handler_3 = b);
+    }
+    dirtyFlagUpdateMap.get(node).accept(dirtyFlag);
   }
 
   private boolean guardCheck_breachNotifier_0() {
-  return isDirty_dataSumCalculator_1;
+    return isDirty_dataSumCalculator_1;
   }
 
   private boolean guardCheck_dataSumCalculator_1() {
-  return isDirty_event_A_Handler_2 | isDirty_event_B_Handler_3;
+    return isDirty_event_A_Handler_2 | isDirty_event_B_Handler_3;
   }
 
   @Override
   public <T> T getNodeById(String id) throws NoSuchFieldException {
-  return nodeNameLookup.getInstanceById(id);
+    return nodeNameLookup.getInstanceById(id);
   }
 
   @Override
   public <A extends Auditor> A getAuditorById(String id)
-  throws NoSuchFieldException, IllegalAccessException {
-  return (A) this.getClass().getField(id).get(this);
+      throws NoSuchFieldException, IllegalAccessException {
+    return (A) this.getClass().getField(id).get(this);
   }
 
   @Override
   public void addEventFeed(EventFeed eventProcessorFeed) {
-  subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
+    subscriptionManager.addEventProcessorFeed(eventProcessorFeed);
   }
 
   @Override
   public void removeEventFeed(EventFeed eventProcessorFeed) {
-  subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
+    subscriptionManager.removeEventProcessorFeed(eventProcessorFeed);
   }
 
   @Override
   public BreachNotifierProcessor newInstance() {
-  return new BreachNotifierProcessor();
+    return new BreachNotifierProcessor();
   }
 
   @Override
   public BreachNotifierProcessor newInstance(Map<Object, Object> contextMap) {
-  return new BreachNotifierProcessor();
+    return new BreachNotifierProcessor();
   }
 
   @Override
   public String getLastAuditLogRecord() {
-  try {
-  EventLogManager eventLogManager =
-  (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
-  return eventLogManager.lastRecordAsString();
-  } catch (Throwable e) {
-  return "";
+    try {
+      EventLogManager eventLogManager =
+          (EventLogManager) this.getClass().getField(EventLogManager.NODE_NAME).get(this);
+      return eventLogManager.lastRecordAsString();
+    } catch (Throwable e) {
+      return "";
+    }
   }
-  }
-  }
-  {% endhighlight %}
+}
+
+{% endhighlight %}
 
 </div>
 </div>

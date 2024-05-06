@@ -1,7 +1,7 @@
 ---
 title: Hello fluxtion world
 has_children: true
-nav_order: 2
+nav_order: 3
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld/src/main/java/com/fluxtion/example/imperative/helloworld
 ---
@@ -11,13 +11,15 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
-calculations are run whenever a new event is received. For a functional implementation example see [Hello functional fluxtion world](helloworld_functional)
-
-This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
-a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is 
-received. Business logic resides in the user functions/classes.
+calculations are run whenever a new event is received. 
 
 Code is available as a [maven project]({{page.example_src}})
+
+This example creates an event processor, initialises it and fires data events at the processor. If a breach occurs
+a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is
+received. Business logic resides in the user functions/classes.
+
+For a functional implementation example see [Hello functional fluxtion world](helloworld_functional)
 
 ## Processing graph
 {: .no_toc }
@@ -60,8 +62,8 @@ The Fluxtion event processor manages all the event call backs, the user code han
 {: .no_toc }
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" >Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 
@@ -212,9 +214,9 @@ has its updated method invoked. Annotate the trigger method with **@OnTrigger** 
 
 {% highlight java %}
 public class DataSumCalculator {
-private final Event_A_Handler event_A_Handler;
-private final Event_B_Handler event_B_Handler;
-private double sum;
+    private final Event_A_Handler event_A_Handler;
+    private final Event_B_Handler event_B_Handler;
+    private double sum;
 
     public DataSumCalculator(Event_A_Handler event_A_Handler, Event_B_Handler event_B_Handler) {
         this.event_A_Handler = event_A_Handler;
@@ -257,7 +259,7 @@ trigger method. Annotate the trigger method with **@OnTrigger** as follows:
 
 {% highlight java %}
 public class BreachNotifier {
-private final DataSumCalculator dataAddition;
+    private final DataSumCalculator dataAddition;
 
     public BreachNotifier(DataSumCalculator dataAddition) {
         this.dataAddition = dataAddition;

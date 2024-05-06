@@ -1,6 +1,6 @@
 ---
 title: Exporting services
-parent: Event handling
+parent: Mark event handling
 has_children: false
 nav_order: 3
 published: true
@@ -44,7 +44,7 @@ callbacks on a change notification. Steps to export a service
 
 The methods on an exported service must either be a boolean or void return type. The return value is used to notify 
 a signal change, void is equivalent to returning true. Depending upon the return value the event processor the event 
-processor then notifies annotated callback methods according to the [dispatch rules](../core-technology#event-dispatch-rules).
+processor then notifies annotated callback methods according to the [dispatch rules](../fluxtion-explored#event-dispatch-rules).
 
 # Examples
 

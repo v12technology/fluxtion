@@ -1,12 +1,12 @@
 ---
-title: 1st tutorial
-parent: Getting started
+title: 1st tutorial - Spring
+parent: Developer tutorials
 has_children: false
-nav_order: 1
+nav_order: 2
 published: true
 ---
 
-<details markdown="block">
+<details open markdown="block">
   <summary>
     Table of contents
   </summary>
@@ -19,8 +19,7 @@ published: true
 # Introduction
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
-proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection. The project source can be
-found [here.]({{site.getting_started}}/tutorial1-lottery)
+proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection.
 
 Our goal is to build the logic for a simple lottery application that will be connected to request and response queues.
 Serialising requests to a queue makes our application event driven and easier to scale in the future, the response queue
@@ -33,6 +32,10 @@ At the end of this tutorial you should understand how Fluxtion:
 - Calls lifecycle methods on managed components
 - Triggers event logic between dependent components
 - Wires components together
+
+
+# Example project
+The [example project]({{site.getting_started}}/tutorial1-lottery) is referenced in this tutorial.
 
 # The Lottery game
 
@@ -47,6 +50,51 @@ Our application will be event driven through a service interface api for the out
 think about the design of our services and then the concrete implementations. Once this design is complete we will use
 Fluxtion to wire up the components. Fluxtion is low touch allowing engineers and architects to concentrate on design and 
 components with no distraction.
+
+## Processing logic
+{: .no_toc }
+Our design sketches show what we intend to integrate into our system
+
+```mermaid
+
+flowchart TB
+    {{site.mermaid_eventHandler}}
+    {{site.mermaid_graphNode}}
+    {{site.mermaid_exportedService}}
+    {{site.mermaid_eventProcessor}}
+
+    buyTicket><b>ServiceCalls</b>\n buyTicket, openStore, closeStore, setTicketSalesPublisher]:::eventHandler
+    selectWinningTicket><b>ServiceCalls</b>\n selectWinningTicket, setResultPublisher]:::eventHandler
+
+
+    LotteryMachine([<b>ServiceLookup</b>::LotteryMachine]):::exportedService
+    TicketStore([<b>ServiceLookup</b>::TicketStore]):::exportedService
+    
+    TicketStoreNode[TicketStoreNode\n <b>ExportService</b>::TicketStore]:::graphNode
+    LotteryMachineNode[LotteryMachineNode\n <b>ExportService</b>::LotteryMachine]:::graphNode
+
+    selectWinningTicket ---> LotteryMachine
+    buyTicket --> TicketStore
+    
+    LotteryMachine --> LotteryMachineNode
+    TicketStore ---> TicketStoreNode
+ 
+    subgraph EventProcessor
+        TicketStoreNode --> LotteryMachineNode
+    end
+
+```
+## Spring config
+Spring config for our lottery application
+
+{% highlight xml %}
+<beans xmlns="">
+    <bean id="ticketStore" class="com.fluxtion.example.cookbook.lottery.nodes.TicketStoreNode"/>
+    <bean id="lotteryMachine" class="com.fluxtion.example.cookbook.lottery.nodes.LotteryMachineNode">
+        <constructor-arg ref="ticketStore"/>
+    </bean>
+</beans>
+{% endhighlight %}
 
 ## Service api
 
