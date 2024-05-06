@@ -1037,6 +1037,14 @@ ODD/EVEN map:{evens=1}
 
 ## GroupBy to list
 
+Collect items in group to a list with this call.
+
+`groupByToList(i -> i % 2 == 0 ? "evens" : "odds")`
+
+This is shorthand for:
+
+`.groupBy(i -> i % 2 == 0 ? "evens" : "odds", Collectors.listFactory())`
+
 {% highlight java %}
 public class GroupByToListSample {
     public record ResetList() {}
@@ -1640,4 +1648,54 @@ ODD/EVEN map:{odds=range [1,7], evens=range [2,2]}
 
 --- RESET ---
 ODD/EVEN map:{}
+{% endhighlight %}
+
+## Reducing values
+All the values of GroupBy can be reduced to a single value
+
+`reduceValues(Supplier<AggregateFlowFunction> aggregateFactory)`
+
+All the values are passed to the aggregate function and the single scalar output is published for downstream nodes to
+consume.
+
+{% highlight java %}
+public class GroupByReduceSample {
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+        DataFlow.subscribe(Integer.class)
+                .groupBy(i -> i % 2 == 0 ? "evens" : "odds", Aggregates.intSumFactory())
+                .console("ODD/EVEN sum:{}")
+                .reduceValues(Aggregates.intSumFactory())
+                .console("REDUCED sum:{}\n");
+    }
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByReduceSample::buildGraph);
+        processor.init();
+        processor.onEvent(1);
+        processor.onEvent(2);
+        processor.onEvent(5);
+        processor.onEvent(7);
+        processor.onEvent(2);
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=1}}
+REDUCED sum:1
+
+ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=1, evens=2}}
+REDUCED sum:3
+
+ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=6, evens=2}}
+REDUCED sum:8
+
+ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=13, evens=2}}
+REDUCED sum:15
+
+ODD/EVEN sum:GroupByFlowFunctionWrapper{mapOfValues={odds=13, evens=4}}
+REDUCED sum:17
 {% endhighlight %}
