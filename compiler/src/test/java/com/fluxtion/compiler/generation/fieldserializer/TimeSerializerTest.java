@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeSerializerTest extends MultipleSepTargetInProcessTest {
@@ -25,7 +26,9 @@ public class TimeSerializerTest extends MultipleSepTargetInProcessTest {
         localDateTime = LocalDateTime.now();
         localTime = LocalTime.now();
         zonedDateTime = ZonedDateTime.now();
-        date = new Date(1258, 05, 06);
+        Calendar instance = Calendar.getInstance();
+        instance.set(1258, 5, 6);
+        date = instance.getTime();
     }
 
     @Test

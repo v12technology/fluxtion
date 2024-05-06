@@ -21,17 +21,13 @@ public class NodeNameAuditor implements Auditor, NodeNameLookup, NamedNode {
         return node2NameMap.getOrDefault(node, "???");
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getInstanceById(String id) throws NoSuchFieldException {
         T node = (T) name2NodeMap.get(id);
         if (node == null) {
             throw new NoSuchFieldException(id);
         }
         return node;
-    }
-
-    @Override
-    public boolean auditInvocations() {
-        return false;
     }
 
     @Override
