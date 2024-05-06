@@ -10,8 +10,9 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functi
 # 5 minute Functional hello world 
 
 Hello world using a functional programming style with Fluxtion DSL. Business logic resides in user functions removing
-the need to write classes and annotate event handling methods with fluxtion annotations. For an imperative 
-implementation example see [Hello fluxtion world](helloworld_imperative)
+the need to write classes and annotate event handling methods with fluxtion annotations. 
+
+Code is available as a [maven project]({{page.example_src}})
 
 Add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,
@@ -21,7 +22,7 @@ This example creates an event processor, initialises it and fires data events at
 a warning will be logged to console. All dispatch and change notification is handled by Fluxtion when an event is
 received.
 
-Code is available as a [maven project]({{page.example_src}})
+For an imperative implementation example see [Hello fluxtion world](helloworld_imperative)
 
 ## Processing graph
 {: .no_toc }
@@ -83,8 +84,8 @@ the event processor using the Fluxtion DSL.
 {: .no_toc }
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Maven')" id="defaultOpen">Maven dependencies</button>
-  <button class="tablinks" onclick="openTab(event, 'Gradle')">Gradle dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Maven')" >Maven dependencies</button>
+  <button class="tablinks" onclick="openTab(event, 'Gradle')" id="defaultOpen">Gradle dependencies</button>
   <button class="tablinks" onclick="openTab(event, 'pom_xml')">Maven pom</button>
 </div>
 

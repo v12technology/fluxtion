@@ -1,6 +1,6 @@
 ---
 title: Processing events
-parent: Event handling
+parent: Mark event handling
 has_children: false
 nav_order: 1
 published: true
@@ -38,7 +38,7 @@ mark event handling methods with Fluxtion annotations** using an imperative appr
 User classes bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) register for event callbacks with annotations. The generated EventProcessor
 implements the [StaticEventProcessor]({{site.fluxtion_src_runtime}}/StaticEventProcessor.java), with the onEvent method acting as
 a bridge between external event streams and bound processing logic. User code reads the event streams calling onEvent
-with each new event received, the event processor then notifies annotated callback methods according to the [dispatch rules](../core-technology#event-dispatch-rules).
+with each new event received, the event processor then notifies annotated callback methods according to the [dispatch rules](../fluxtion-explored#event-dispatch-rules).
 
 # Examples
 The source project for the examples can be found [here]({{site.reference_examples}}/runtime-execution/src/main/java/com/fluxtion/example/reference/execution)
@@ -925,7 +925,7 @@ Child::triggered updateCount:2
 {% endhighlight %}
 
 
-## Forking trigger methods
+## Forking concurrent trigger methods
 Forking trigger methods is supported. If multiple trigger methods are fired from a single parent they can be forked to 
 run in parallel using the fork join pool. Only when all the forked trigger methods have completed will an event notification
 be propagated to their children. 

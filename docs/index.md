@@ -9,10 +9,13 @@ published: true
 
 ---
 
+**[Why fluxtion](sections/why-fluxtion) explains the value proposition**
+
 Fluxtion is a Java library and code generation utility designed for building high-performance, low-latency streaming
 applications. It provides a lightweight framework for event-driven programming, particularly suited for applications
 such as financial trading systems, real-time analytics, and sensor data processing. Fluxtion emphasizes simplicity,
 efficiency, and ease of use in handling streaming data.
+
 
 <div class="grid">
 <div class="col-1-2">
@@ -39,6 +42,12 @@ efficiency, and ease of use in handling streaming data.
 Overall, Fluxtion provides a powerful framework for building real-time streaming applications in Java, offering high
 performance, flexibility, and ease of use for developers working with streaming data.
 {: .fs-4 }
+
+# Integrating Fluxtion
+Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
+
+![](images/embedding-fluxtion.png)
+
 
 **Event-driven Programming**: Fluxtion is based on the concept of event-driven programming, where components react to
 incoming events in real-time. Events can represent changes in data, user actions, or any other relevant triggers.
@@ -314,6 +323,9 @@ Image is generated as part of the code generator
 # Getting started
 
 ## Developers
+For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
+
+A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
 
 A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
 Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
@@ -321,13 +333,13 @@ Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
 ## Architects
 
 For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
-[core technology section](sections/core-technology.md).
+[Fluxtion explored section](sections/fluxtion-explored).
 
 ## Reference documentation
 
-* [Runtime execution](sections/runtime.md)
-* [Event processor building](sections/generating.md)
-* [Deploying and testing](sections/deploying-testing.md)
+* [Mark event handling](sections/runtime.md)
+* [Build event processor](sections/build-event-processor)
+* [Integrate event processor](sections/integrate-eventprocessor)
 * [Quick reference](sections/quick-reference.md)
 
 # Latest release
@@ -369,29 +381,6 @@ implementation 'com.fluxtion:compiler:{{site.fluxtion_version}}'
 {% endhighlight %}
 </div>
 </div>
-
-# The cost of complexity problem
-
-Increasing system complexity makes delivery of new features expensive and time-consuming to deliver. Efficiently
-managing
-complexity reduces both operational costs and time to market for new functionality, critical for a business to remain
-profitable in a competitive environment.
-
-Event driven systems have two types of complexity to manage:
-
-- Delivering events to application components in a fault-tolerant predictable fashion.
-- Developing application logic responses to events that meets business requirements
-
-Initially all the project complexity centres on the event delivery system, but over time this system becomes stable and
-the complexity demands are minimal. Pre-packaged event delivery systems are a common solution to control complexity and
-cost of event distribution. The opposite is true for event driven application logic, functional requirements increase
-over time and developing application logic becomes ever more complex and expensive to deliver. As more functionality is
-added the danger of instability increases.
-
-Fluxtion reduces the cost to develop and maintain business logic, while maintaining stability. Automating the expensive
-and error-prone process of wiring application logic to multiple event streams is Fluxtion's target. For long term
-development
-projects the ROI of using Fluxtion increases exponentially.
 
 <script>
 document.getElementById("defaultOpen").click();

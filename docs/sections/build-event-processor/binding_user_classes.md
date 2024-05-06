@@ -1,6 +1,6 @@
 ---
 title: Binding user classes
-parent: Event processor building
+parent: Build event processor
 has_children: false
 nav_order: 1
 published: true
@@ -14,10 +14,10 @@ that are bound into the event processor. This section documents the various ways
 [EventProcessorConfig]({{site.fluxtion_src_compiler}}/EventProcessorConfig.java) is the class that acts as the model,
 a number of options are available for adding user classes to an EventProcessorConfig instance:
 
-* imperative
-* declarative
-* config driven
-* spring config
+* Imperative api
+* Functional dsl api
+* Spring based
+* Yaml based
 
 These examples use `Fluxtion.interpret` which executes the event processor as an in-process interpretation, the 
 available output types of the generated event processor are described in [Processor generation](processor_generation.md).
@@ -31,6 +31,9 @@ available output types of the generated event processor are described in [Proces
 - TOC
 {:toc}
 </details>
+
+# Example project
+The source project for the examples can be found [here]({{site.reference_examples}}/generation/src/main/java/com/fluxtion/example/reference/binding)
 
 # Imperative model building
 Call one of the static Fluxtion [Fluxtion]({{site.fluxtion_src_compiler}}/Fluxtion.java) build methods with a
@@ -771,7 +774,7 @@ To bind functions to a flow of events the subscription must first be created wit
 `DataFlow.subscribe([event class])`
 
 A lambda or a method reference can be bound as the next item in the function flow. A full description of the functional
-api is in [Functional programming](../runtime/functional_event_processing.md)
+api is in [Functional programming](../mark-event-handling/functional_event_processing.md)
 
 {% highlight java %}
 public static String toUpper(String incoming){

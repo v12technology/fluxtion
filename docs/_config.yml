@@ -61,8 +61,11 @@ fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.2.23/run
 fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.2.23/compiler/src/main/java/com/fluxtion/compiler
 EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.2.23/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
 Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.2.23/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
+EventProcessorConfig_link: https://github.com/v12technology/fluxtion/blob/9.2.23/compiler/src/main/java/com/fluxtion/compiler/EventProcessorConfig.java
+FluxtionCompilerConfig_link: https://github.com/v12technology/fluxtion/blob/9.2.23/compiler/src/main/java/com/fluxtion/compiler/FluxtionCompilerConfig.java
 cookbook_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook
 reference_examples: https://github.com/v12technology/fluxtion-examples/tree/main/reference-examples/
+examples_project: https://github.com/v12technology/fluxtion-examples/tree/main/
 getting_started: https://github.com/v12technology/fluxtion-examples/tree/main/getting-started
 
 
@@ -81,6 +84,10 @@ callouts:
   note:
     title: NOTE
     color: blue
+  warning:
+    title: WARNING
+    color: red
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.

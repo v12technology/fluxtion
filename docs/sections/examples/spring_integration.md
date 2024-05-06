@@ -1,7 +1,6 @@
 ---
 title: Spring integration
 parent: Examples
-#grand_parent: Old stuff
 has_children: false
 nav_order: 1
 published: true
@@ -11,19 +10,19 @@ resources_src: https://github.com/v12technology/fluxtion-examples/tree/main/cook
 
 ## Introduction
 
+Spring is a popular DI container in the java world, this tutorial demonstrates how the construction logic of spring can
+be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
+the developer to concentrate on developing application logic while the container automatically builds the object graph
+and constructs event dispatch logic.
+
 Fluxtion is a dependency injection container specialised for event driven application deployments. The container
 exposes event consumer end-points, routing events as methods calls to beans within the running container. A bean
 registers a method as an event-handler by using Fluxtion annotations. Any beans referencing an event-handler bean will
 be triggered by the container as the internal dispatcher propagates an event notification through the object graph.
 
 All methods on an interface can be exported by annotating the interface in an implementing bean, the container exports
-the interface methods as a single service. A client can look up an exported service by interface type using the 
+the interface methods as a single service. A client can look up an exported service by interface type using the
 container apis. All method calls on the service proxy are routed through the container's internal dispatcher.
-
-Spring is a popular DI container in the java world, this tutorial demonstrates how the construction logic of spring can
-be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow
-the developer to concentrate on developing application logic while the container automatically builds the object graph
-and constructs event dispatch logic.
 
 This example builds a small banking application, that supports credit, debit, account query, credit checking,
 opening hours and persistence functions. The methods are grouped into service interfaces that are exposed by the

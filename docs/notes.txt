@@ -1,27 +1,40 @@
-Introduction
+TODO:
 
-5 minute tutorial
-    Top trades
+Overview
+    create sub-sections
+        Event Oriented programming
+        Use cases
+        Developer workflow
 
-Running
-    Steps to build and run
-    Key classes - Fluxtion
-    deploying
-    Event flow
-    Lifecycle
 
-Building
-    describe two apis
-    Streaming api
-    imperative api
-    binding together
+Getting started
+    re-organise so Spring is not the only thing. Move none-spring AOT to second
+    Add mermaid diagrams
 
-Testing
-    writing test cases
+Mark event handling
+    Create new section for DSL and then subsections:
+        Windowing
+        Aggregating
+        GroupBy
 
-Monitoring
-    audit
-    logging
-    peeking
-    replay
-    visualising
+Build event processor
+    Add how-to for gradle
+
+Integrate
+    Section on testing
+    Section on replay
+    Visualising - maybe
+
+Performance
+    Best numbers at the beginning
+    Create new section on performance - describe the continuum
+    real examples for the continuum
+
+Examples
+    Get the real time data ingestion fully documented
+
+Quick reference
+    Add something
+
+Consistent header numbering across all documents
+
