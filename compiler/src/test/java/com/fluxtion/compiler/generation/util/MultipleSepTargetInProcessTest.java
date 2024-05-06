@@ -270,6 +270,11 @@ public abstract class MultipleSepTargetInProcessTest {
         return stream.get();
     }
 
+    protected <T> T getStreamed(String name, Class<T> clazz) {
+        FlowFunction<T> stream = getField(name);
+        return stream.get();
+    }
+
     protected void onEvent(Object e) {
         try {
             sep.onEvent(e);
@@ -400,6 +405,19 @@ public abstract class MultipleSepTargetInProcessTest {
     protected StaticEventProcessor setTime(long newTime) {
         addClock();
         time.set(newTime);
+        return sep;
+    }
+
+    /**
+     * sets the time of the clock and then calls start after the clock has been set
+     *
+     * @param newTime
+     * @return
+     */
+    protected StaticEventProcessor startTime(long newTime) {
+        addClock();
+        time.set(newTime);
+        start();
         return sep;
     }
 

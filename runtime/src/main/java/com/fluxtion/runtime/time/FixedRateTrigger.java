@@ -3,16 +3,19 @@ package com.fluxtion.runtime.time;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.builder.Inject;
+import lombok.Getter;
 
 //@EqualsAndHashCode
 public class FixedRateTrigger {
 
-    @Inject
     @NoTriggerReference
     private final Clock clock;
     private final int rate;
     private long previousTime;
+    /**
+     * number of triggers that should have fired since the last time update to now
+     */
+    @Getter
     private int triggerCount;
 
     public static FixedRateTrigger atMillis(int millis) {
@@ -20,7 +23,7 @@ public class FixedRateTrigger {
     }
 
     public FixedRateTrigger(int rate) {
-        this(null, rate);
+        this(Clock.DEFAULT_CLOCK, rate);
     }
 
     public FixedRateTrigger(Clock clock, int rate) {
@@ -37,15 +40,6 @@ public class FixedRateTrigger {
             previousTime += (long) triggerCount * rate;
         }
         return expired;
-    }
-
-    /**
-     * number of triggers that should have fired since the last time update to now
-     *
-     * @return number of triggers between previous time and now
-     */
-    public int getTriggerCount() {
-        return triggerCount;
     }
 
     @OnEventHandler(propagate = false)

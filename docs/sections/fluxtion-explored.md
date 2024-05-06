@@ -1,7 +1,7 @@
 ---
-title: Core technology
+title: Fluxtion explored
 has_children: true
-nav_order: 4
+nav_order: 5
 published: true
 ---
 
@@ -85,9 +85,9 @@ Configuration data can be programmatic, spring xml config, yaml or custom data f
 
 There are three options for building a container:
 
-- Interpreted - built and run in process, uses dynamic dispatch can handle millions of nodes
-- Compiled - static analysis, code generated and compiled in process. handles thousands of nodes
-- Compiled AOT - code generated at build time, zero cost start time when deployed
+- **Interpreted** - built and run in process, uses dynamic dispatch can handle millions of nodes
+- **Compiled** - static analysis, code generated and compiled in process. handles thousands of nodes
+- **Compiled AOT** - code generated at build time, zero cost start time when deployed
 
 Fluxtion DI containers are very lightweight and designed to be run within an application. Multiple containers can be
 used within a single application each container providing specialised business processing logic.
@@ -103,3 +103,19 @@ calculate the dispatch call trees for the internal dispatcher. A bean can export
 single method. For exported interfaces the container generates proxies that routes calls from the proxy handler methods
 to the container's dispatcher.
 
+# Building and executing
+There are two components provided by Fluxtion the developer uses to build event driven logic and then to execute it.
+
+## Compiler
+The compiler analyses the configuration information provided by the programmer and builds a dependency injection container
+that houses all the user components or beans combined with pre-calculated event dispatch. Outputs from the compiler
+are either
+- In memory event processor running in an interpreted mode
+- An event processor generated and compiled in process
+- An event processor generated ahead of time and serialised to code
+
+## Runtime
+The runtime provides the dependency injection container with a core set of libraries required at runtime. An AOT generated
+container only requires the runtime to function, no compiler libraries are required.
+
+![](../images/integration_overview-generating.png)

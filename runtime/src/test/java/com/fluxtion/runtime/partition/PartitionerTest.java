@@ -41,8 +41,7 @@ public class PartitionerTest {
 
     @Test
     public void singleKeyFilter() {
-        System.out.println("single filter");
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new);
         partitioner.keyPartitioner(PartitionerTest::keyGen);
         //
         MyEvent monday = new MyEvent("monday");
@@ -73,8 +72,7 @@ public class PartitionerTest {
 
     @Test
     public void singleFilter() {
-        System.out.println("single filter");
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new);
         partitioner.partition(MyEvent::getDay);
         //
         MyEvent monday = new MyEvent("monday");
@@ -94,9 +92,9 @@ public class PartitionerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMultiKey() {
-        System.out.println("testMultiKey");
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new);
         partitioner.partition(MyEvent::getDay, MyEvent::getMonth);
         //
         MyEvent monday = new MyEvent("monday");
@@ -118,9 +116,9 @@ public class PartitionerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSingleAndMultiKey() {
-        System.out.println("testSingleAndMultiKey");
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new);
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new);
         partitioner.partition(MyEvent::getDay, MyEvent::getMonth);
         partitioner.partition(MyEvent::getDay);
         //
@@ -135,8 +133,6 @@ public class PartitionerTest {
         partitioner.onEvent(monday_march);
         partitioner.onEvent(monday_march);
         //
-//        System.out.println(MyHandler.dayMonthCounts);
-//        System.out.println(MyHandler.dayCounts);
         assertThat(MyHandler.dayMonthCounts.get(monday.toString()), is(2));
         assertThat(MyHandler.dayMonthCounts.get(tuesday.toString()), is(4));
         assertThat(MyHandler.dayMonthCounts.get(monday_march.toString()), is(4));
@@ -146,12 +142,10 @@ public class PartitionerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testInitialiser() {
-        System.out.println("testInitialiser");
         LongAdder adder = new LongAdder();
-        Partitioner<MyHandler> partitioner = new Partitioner(MyHandler::new, (e) -> {
-            adder.increment();
-        });
+        Partitioner<MyHandler> partitioner = new Partitioner<>(MyHandler::new, (e) -> adder.increment());
         partitioner.partition(MyEvent::getDay, MyEvent::getMonth);
         partitioner.partition(MyEvent::getDay);
         //
