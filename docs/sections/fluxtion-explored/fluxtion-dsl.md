@@ -1799,9 +1799,7 @@ public class GroupByLeftOuterJoinSample {
     }
 
     private static String prettyPrint(School schoolName, List<Pupil> pupils) {
-        if(pupils == null || pupils.isEmpty()) {
-            return "0";
-        }
+        pupils = pupils == null ? Collections.emptyList() : pupils;
         return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "]") );
     }
 
@@ -1818,10 +1816,11 @@ public class GroupByLeftOuterJoinSample {
         processor.onEvent(new Pupil(2015, "RGS", "Bob"));
         processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
         processor.onEvent(new Pupil(2013, "Belles", "Channing"));
-        processor.onEvent(new Pupil(2013, "RGS", "Chelsea"));
-        processor.onEvent(new Pupil(2013, "Belles", "Tamsin"));
-        processor.onEvent(new Pupil(2013, "Belles", "Ayola"));
         processor.onEvent(new Pupil(2015, "Belles", "Sunita"));
+
+        System.out.println("left outer join\n");
+        //left outer
+        processor.onEvent(new School("Framling"));
     }
 }
 {% endhighlight %}
@@ -1834,8 +1833,8 @@ Running the example code above logs to console
 {Belles=pupils[], RGS=pupils[Bob]}
 {Belles=pupils[], RGS=pupils[Bob,Ashkay]}
 {Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
-{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin,Ayola], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin,Ayola,Sunita], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Sunita], RGS=pupils[Bob,Ashkay]}
+left outer join
+
+{Belles=pupils[Channing,Sunita], RGS=pupils[Bob,Ashkay], Framling=pupils[]}
 {% endhighlight %}
