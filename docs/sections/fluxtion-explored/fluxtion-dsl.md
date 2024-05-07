@@ -1769,10 +1769,10 @@ Running the example code above logs to console
 {Belles=pupils[Channing,Tamsin,Ayola,Sunita], RGS=pupils[Bob,Ashkay,Chelsea]}
 {% endhighlight %}
 
-## Right outer join
+## Left outer join
 Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
 
-`JoinFlowBuilder.rightJoin(schools, pupils)`
+`JoinFlowBuilder.leftJoin(schools, pupils)`
 
 A default value of an empty collection is assigned to the pupil groupBy so the first school can join against a non-null
 value.
@@ -1839,10 +1839,10 @@ left outer join
 {Belles=pupils[Channing,Sunita], RGS=pupils[Bob,Ashkay], Framling=pupils[]}
 {% endhighlight %}
 
-## Left outer join
+## right outer join
 Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
 
-`JoinFlowBuilder.leftJoin(schools, pupils)`
+`JoinFlowBuilder.rightJoin(schools, pupils)`
 
 A default value of an empty collection is assigned to the pupil groupBy so the first school can join against a non-null
 value.
@@ -1886,7 +1886,7 @@ public class GroupByRightOuterJoinSample {
         processor.onEvent(new Pupil(2013, "Belles", "Channing"));
 
         System.out.println("right outer join\n");
-        //full outer
+        //right outer
         processor.onEvent(new Pupil(2015, "Framling", "Sunita"));
     }
 }
@@ -1952,7 +1952,7 @@ public class GroupByFullOuterJoinSample {
         processor.onEvent(new Pupil(2013, "Belles", "Channing"));
 
         System.out.println("full outer join\n");
-        //left outer
+        //full outer
         processor.onEvent(new Pupil(2015, "Framling", "Sunita"));
         processor.onEvent(new School("St trinians"));
     }
