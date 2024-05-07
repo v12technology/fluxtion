@@ -7,7 +7,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
 import com.fluxtion.runtime.dataflow.groupby.MutableTuple;
 import lombok.Data;
-import lombok.experimental.var;
+import lombok.val;
 import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,9 +37,9 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void innerJoinTest() {
         sep(c -> {
-                    var schools = DataFlow.subscribe(School.class)
+                    val schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
-                    var pupils = DataFlow.subscribe(Pupil.class)
+                    val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
                             .defaultValue(GroupBy.emptyCollection());
 
@@ -82,9 +82,9 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void leftJoinTest() {
         sep(c -> {
-                    var schools = DataFlow.subscribe(School.class)
+                    val schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
-                    var pupils = DataFlow.subscribe(Pupil.class)
+                    val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
                             .defaultValue(GroupBy.emptyCollection());
 
@@ -127,9 +127,9 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void rightJoinTest() {
         sep(c -> {
-                    var schools = DataFlow.subscribe(School.class)
+                    val schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
-                    var pupils = DataFlow.subscribe(Pupil.class)
+                    val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
                             .defaultValue(GroupBy.emptyCollection());
 
@@ -172,9 +172,9 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void outerJoinTest() {
         sep(c -> {
-                    var schools = DataFlow.subscribe(School.class)
+                    val schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
-                    var pupils = DataFlow.subscribe(Pupil.class)
+                    val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
                             .defaultValue(GroupBy.emptyCollection());
 
