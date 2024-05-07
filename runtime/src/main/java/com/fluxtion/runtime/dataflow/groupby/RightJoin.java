@@ -10,12 +10,11 @@ public class RightJoin extends AbstractJoin {
             GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
         reset();
         if (rightGroupBY != null) {
-            rightGroupBY.toMap().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
-//              joinedGroup.toMap().put(e.getKey(), Tuple.build(value1, e.getValue()));
+            rightGroupBY.toMap().entrySet().forEach(right -> {
+                V1 left = leftGroupBy == null ? null : leftGroupBy.toMap().get(right.getKey());
                 joinedGroup.toMap().put(
-                        e.getKey(),
-                        tupleObjectPool.checkOut().setFirst(e.getValue()).setSecond(value1));
+                        right.getKey(),
+                        tupleObjectPool.checkOut().setFirst(left).setSecond(right.getValue()));
             });
         }
         return (GroupBy<K1, Tuple<V1, V2>>) (Object) joinedGroup;
