@@ -25,7 +25,7 @@ public interface JoinFlowBuilder {
         return leftGroupBy.mapBiFunction(new LeftJoin()::join, rightGroupBy);
     }
 
-    static <K1, V1, K2 extends K1, V2> GroupByFlowBuilder<K1, Tuple<V1, V2>> rightJoinStreams(
+    static <K1, V1, K2 extends K1, V2> GroupByFlowBuilder<K1, Tuple<V1, V2>> rightJoin(
             GroupByFlowBuilder<K1, V1> leftGroupBy,
             GroupByFlowBuilder<K2, V2> rightGroupBy) {
         return leftGroupBy.mapBiFunction(new RightJoin()::join, rightGroupBy);

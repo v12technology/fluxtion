@@ -10,21 +10,19 @@ public class OuterJoin extends AbstractJoin {
             GroupBy<K1, V1> leftGroupBy, GroupBy<K2, V2> rightGroupBY) {
         reset();
         if (leftGroupBy != null) {
-            leftGroupBy.toMap().entrySet().forEach(e -> {
-                V2 value2 = rightGroupBY == null ? null : rightGroupBY.toMap().get(e.getKey());
-//                joinedGroup.toMap().put(e.getKey(), Tuple.build(e.getValue(), value2));
+            leftGroupBy.toMap().entrySet().forEach(left -> {
+                V2 right = rightGroupBY == null ? null : rightGroupBY.toMap().get(left.getKey());
                 joinedGroup.toMap().put(
-                        e.getKey(),
-                        tupleObjectPool.checkOut().setFirst(e.getValue()).setSecond(value2));
+                        left.getKey(),
+                        tupleObjectPool.checkOut().setFirst(left.getValue()).setSecond(right));
             });
         }
         if (rightGroupBY != null) {
-            rightGroupBY.toMap().entrySet().forEach(e -> {
-                V1 value1 = leftGroupBy == null ? null : leftGroupBy.toMap().get(e.getKey());
-//                joinedGroup.toMap().put(e.getKey(), Tuple.build(value1, e.getValue()));
+            rightGroupBY.toMap().entrySet().forEach(right -> {
+                V1 left = leftGroupBy == null ? null : leftGroupBy.toMap().get(right.getKey());
                 joinedGroup.toMap().put(
-                        e.getKey(),
-                        tupleObjectPool.checkOut().setFirst(e.getValue()).setSecond(value1));
+                        right.getKey(),
+                        tupleObjectPool.checkOut().setFirst(left).setSecond(right.getValue()));
             });
         }
         return (GroupBy<K1, Tuple<V1, V2>>) (Object) joinedGroup;

@@ -1799,9 +1799,7 @@ public class GroupByLeftOuterJoinSample {
     }
 
     private static String prettyPrint(School schoolName, List<Pupil> pupils) {
-        if(pupils == null || pupils.isEmpty()) {
-            return "0";
-        }
+        pupils = pupils == null ? Collections.emptyList() : pupils;
         return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "]") );
     }
 
@@ -1818,10 +1816,11 @@ public class GroupByLeftOuterJoinSample {
         processor.onEvent(new Pupil(2015, "RGS", "Bob"));
         processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
         processor.onEvent(new Pupil(2013, "Belles", "Channing"));
-        processor.onEvent(new Pupil(2013, "RGS", "Chelsea"));
-        processor.onEvent(new Pupil(2013, "Belles", "Tamsin"));
-        processor.onEvent(new Pupil(2013, "Belles", "Ayola"));
         processor.onEvent(new Pupil(2015, "Belles", "Sunita"));
+
+        System.out.println("left outer join\n");
+        //left outer
+        processor.onEvent(new School("Framling"));
     }
 }
 {% endhighlight %}
@@ -1834,8 +1833,142 @@ Running the example code above logs to console
 {Belles=pupils[], RGS=pupils[Bob]}
 {Belles=pupils[], RGS=pupils[Bob,Ashkay]}
 {Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
-{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin,Ayola], RGS=pupils[Bob,Ashkay,Chelsea]}
-{Belles=pupils[Channing,Tamsin,Ayola,Sunita], RGS=pupils[Bob,Ashkay,Chelsea]}
+{Belles=pupils[Channing,Sunita], RGS=pupils[Bob,Ashkay]}
+left outer join
+
+{Belles=pupils[Channing,Sunita], RGS=pupils[Bob,Ashkay], Framling=pupils[]}
+{% endhighlight %}
+
+## right outer join
+Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
+
+`JoinFlowBuilder.rightJoin(schools, pupils)`
+
+A default value of an empty collection is assigned to the pupil groupBy so the first school can join against a non-null
+value.
+
+{% highlight java %}
+public class GroupByRightOuterJoinSample {
+
+    public record Pupil(int year, String school, String name){}
+    public record School(String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+
+        var schools = DataFlow.subscribe(School.class)
+                .groupBy(School::name);
+        var pupils = DataFlow.subscribe(Pupil.class)
+                .groupByToList(Pupil::school);
+
+        JoinFlowBuilder.rightJoin(schools, pupils)
+                .mapValues(Tuples.mapTuple(GroupByRightOuterJoinSample::prettyPrint))
+                .map(GroupBy::toMap)
+                .console();
+    }
+
+    private static String prettyPrint(School schoolName, List<Pupil> pupils) {
+        pupils = pupils == null ? Collections.emptyList() : pupils;
+        return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "]") );
+    }
+
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByRightOuterJoinSample::buildGraph);
+        processor.init();
+
+        //register some schools
+        processor.onEvent(new School("RGS"));
+        processor.onEvent(new School("Belles"));
+
+        //register some pupils
+        processor.onEvent(new Pupil(2015, "RGS", "Bob"));
+        processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Belles", "Channing"));
+
+        System.out.println("right outer join\n");
+        //right outer
+        processor.onEvent(new Pupil(2015, "Framling", "Sunita"));
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+{RGS=pupils[Bob]}
+{RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
+right outer join
+
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay], Framling=pupils[Sunita]}
+{% endhighlight %}
+
+
+## Full outer join
+Joins are create with the data flow node of a group by or using the [JoinFlowBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/JoinFlowBuilder.java)
+
+`JoinFlowBuilder.outerJoin(schools, pupils)`
+
+A default value of an empty collection is assigned to the pupil groupBy so the first school can join against a non-null
+value.
+
+{% highlight java %}
+public class GroupByFullOuterJoinSample {
+
+    public record Pupil(int year, String school, String name){}
+    public record School(String name){}
+
+    public static void buildGraph(EventProcessorConfig processorConfig) {
+
+        var schools = DataFlow.subscribe(School.class)
+                .groupBy(School::name);
+        var pupils = DataFlow.subscribe(Pupil.class)
+                .groupByToList(Pupil::school);
+
+        JoinFlowBuilder.outerJoin(schools, pupils)
+                .mapValues(Tuples.mapTuple(GroupByFullOuterJoinSample::prettyPrint))
+                .map(GroupBy::toMap)
+                .console();
+    }
+
+    private static String prettyPrint(School schoolName, List<Pupil> pupils) {
+        pupils = pupils == null ? Collections.emptyList() : pupils;
+        return pupils.stream().map(Pupil::name).collect(Collectors.joining(",", "pupils[", "]") );
+    }
+
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(GroupByFullOuterJoinSample::buildGraph);
+        processor.init();
+
+        //register some schools
+        processor.onEvent(new School("RGS"));
+        processor.onEvent(new School("Belles"));
+
+        //register some pupils
+        processor.onEvent(new Pupil(2015, "RGS", "Bob"));
+        processor.onEvent(new Pupil(2013, "RGS", "Ashkay"));
+        processor.onEvent(new Pupil(2013, "Belles", "Channing"));
+
+        System.out.println("full outer join\n");
+        //full outer
+        processor.onEvent(new Pupil(2015, "Framling", "Sunita"));
+        processor.onEvent(new School("St trinians"));
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+07-May-24 21:31:33 [main] INFO GenerationContext - classloader:jdk.internal.loader.ClassLoaders$AppClassLoader@4e0e2f2a
+{Belles=pupils[], RGS=pupils[Bob]}
+{Belles=pupils[], RGS=pupils[Bob,Ashkay]}
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay]}
+full outer join
+
+{Belles=pupils[Channing], RGS=pupils[Bob,Ashkay], Framling=pupils[Sunita]}
+{Belles=pupils[Channing], St trinians=pupils[], RGS=pupils[Bob,Ashkay], Framling=pupils[Sunita]}
 {% endhighlight %}
