@@ -4,6 +4,7 @@ has_children: true
 nav_order: 10
 published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/jmh
+example_nodes: https://github.com/v12technology/fluxtion-examples/tree/main/jmh/src/main/java/com/fluxtion/example/jmh/pricer/node
 
 ---
 
@@ -50,12 +51,12 @@ The goal is to create a representative test with randomly distributed input data
 
 ### Node description
 
-| Node number | Description                                                                                    |
-|-------------|------------------------------------------------------------------------------------------------|
-| Node 1      | mid price calculator                                                                           |
-| Node 2      | Skew calculation, move all prices at each level by the skew amount                             |
-| Node 3      | Remove levels by setting to zero for price and volume if max levels < input ladder level count |
-| Node 4      | Publish the calculated PriceLadder to a consumer for distribution                              |
+| Eval order  | Class                                                                    | Description                                                                                    |
+|-------------|--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| Node 1      | [MidCalculator]({{page.example_nodes}}/MidCalculator.java)               | mid price calculator                                                                           |
+| Node 2      | [SkewCalculator]({{page.example_nodes}}/SkewCalculator.java)             | Skew calculation, move all prices at each level by the skew amount                             |
+| Node 3      | [LevelsCalculator]({{page.example_nodes}}/LevelsCalculator.java)         | Remove levels by setting to zero for price and volume if max levels < input ladder level count |
+| Node 4      | [PriceLadderPublisher]({{page.example_nodes}}/PriceLadderPublisher.java) | Publish the calculated PriceLadder to a consumer for distribution                              |
 
 ## Jmh results
 
