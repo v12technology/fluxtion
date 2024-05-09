@@ -10,14 +10,15 @@ example_nodes: https://github.com/v12technology/fluxtion-examples/tree/main/jmh/
 
 # Introduction
 
-A Fluxtion event processor is a high performance event processor, below are the performance results for a test project. 
+A Fluxtion can generate ahead of time high performance event processors that are suitable for the most demanding low 
+latency environments. This section documents the performance results for a test project. 
 
 Jmh is used to measure throughput per second and latency for a single calculation cycle. 
 
 HdrHistogram is used to record latency percentiles for an execution run
 
 {: .info }
-All the results are in the nanosecond range as Fluxtion operates in the sub-microsecond range
+**Results are in the nanosecond range as Fluxtion operates with sub-microsecond response times**
 {: .fs-4 }
 
 ## Summary results
@@ -73,7 +74,9 @@ The average time to process an event is 30 nanoseconds, this includes the applic
 
 ## Latency distribution 
 At 99.99% the latency is measured at 0.625 microseconds, which includes the underlying machine jitter. The results are 
-recorded using HdrHistogram which adds an overhead of several nanoseconds to each reading.
+recorded using HdrHistogram which adds an overhead of several nanoseconds to each reading. The tail of the app latency 
+follows the tail for jitter on the test machine with no app code executing, this tells us the jitter at the higher 
+end is due to the machine and not the application.
 
 ![](../images/latyency.png)
 
