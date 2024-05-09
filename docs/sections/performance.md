@@ -26,6 +26,7 @@ All the results are in the nanosecond range as Fluxtion operates in the sub-micr
 * **Average latency is 30 nanoseconds to process one event including app logic** 
 * **The Fluxtion event processor is in the low nanosecond range for event processing overhead**
 * **Zero gc**
+* **Single threaded application**
 
 ## Test setup
 
