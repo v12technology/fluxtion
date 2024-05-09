@@ -98,7 +98,7 @@ that relies on end of day batch processing is not positioned for today's custome
 * Event driven microservices
 * Edge AI processing
 
-# Integrating Fluxtion
+# Embedded stream processing
 Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
 
 ![](../images/embedding-fluxtion.png)
