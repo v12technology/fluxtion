@@ -5,7 +5,7 @@ nav_order: 1
 published: true
 ---
 
-# Fluxtion automating event driven development
+# Fluxtion embedded stream processing
 
 ---
 
@@ -30,7 +30,7 @@ efficiency, and ease of use in handling streaming data.
 <div class="col-1-2">
 <div class="content">
 <ul>
-  <li><strong>Low latency microsecond response</strong></li>
+  <li><strong>Low latency nanosecond response</strong></li>
   <li><strong>Event sourcing compatible</strong></li>
   <li><strong>Optimised for zero gc to reduce running costs</strong></li>
 </ul>
@@ -40,16 +40,17 @@ efficiency, and ease of use in handling streaming data.
 
 {: .info }
 Overall, Fluxtion provides a powerful framework for building real-time streaming applications in Java, offering high
-performance, flexibility, and ease of use for developers working with streaming data.
+performance, flexibility, and ease of use for developers working with streaming data. Processing more than 30 million 
+events per second on a single thread 
 {: .fs-4 }
 
-# Embedded stream processing 
+# Application integration 
 ---
 Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
 
 ![](images/embedding-fluxtion.png)
 
-# What is Fluxtion
+# Fluxtion technology
 ---
 **Event-driven Programming**: Fluxtion is based on the concept of event-driven programming, where components react to
 incoming events in real-time. Events can represent changes in data, user actions, or any other relevant triggers.
@@ -81,6 +82,8 @@ real-time responsiveness is critical, such as financial trading systems.
 **Support for Complex Event Processing (CEP)**: Fluxtion includes support for complex event processing, allowing
 developers
 to define complex event patterns and rules using a high-level DSL (Domain-Specific Language).
+
+**Instantaneous Startup:** Our innovative Ahead-of-Time (AOT) compiled streaming engine minimizes startup times to near zero.
 
 **Integration with External Systems**: Fluxtion can easily integrate with external systems and libraries, allowing
 developers to incorporate Fluxtion-based event processing logic into existing applications or frameworks.
