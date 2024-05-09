@@ -43,7 +43,7 @@ Overall, Fluxtion provides a powerful framework for building real-time streaming
 performance, flexibility, and ease of use for developers working with streaming data.
 {: .fs-4 }
 
-# Integrating 
+# Embedded stream processing 
 ---
 Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
 
