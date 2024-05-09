@@ -1,5 +1,5 @@
 ---
-title: Service Hello world
+title: Service hello world
 has_children: false
 parent: Hello fluxtion world
 nav_order: 2
@@ -11,6 +11,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/servic
 ---
 
 # 5 minute Service hello world 
+---
 
 Hello world using a service programming style with Fluxtion. Event handler methods are replaced with service methods that
 are defined in an interface. The bound class exports the service interface with an `@ExportService` annotation. A bound

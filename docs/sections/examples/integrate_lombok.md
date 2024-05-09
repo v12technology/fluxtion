@@ -7,7 +7,8 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/lombok
 ---
 
-## Introduction
+# Lombok integration example
+---
 
 Lombok is a utility that removes the need to write java boiler plate code for getters / setters / constructors etc. 
 integrating Fluxtion with Lombok reduces the amount of code to write. **As of Fluxtion 8.0.5 this integration is now 

@@ -1,12 +1,14 @@
 ---
 title: Integrate event processor
+parent: Reference documentation
 has_children: true
-nav_order: 8
+nav_order: 3
 published: true
 ---
 
-# Introduction
+# Integrate an event processor
 {: .no_toc }
+---
 
 Building and executing an event processor are independent functions that can run in separate processes. This section
 documents integrating an event processor into an application and unit testing the event processor.

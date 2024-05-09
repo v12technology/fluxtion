@@ -1,6 +1,7 @@
 ---
 title: Processing events
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 1
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Processing event streams
 {: .no_toc }
+---
 
 This section documents the runtime event processing callback api and behaviour taking an imperative approach to using
 Fluxtion.

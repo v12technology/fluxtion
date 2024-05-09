@@ -1,13 +1,14 @@
 ---
 title: Fluxtion DSL deep dive
-parent: Fluxtion explored
+parent: Reference documentation
 has_children: false
-nav_order: 3
+nav_order: 4
 published: true
 ---
 
 # Fluxtion DSL Deep dive
 {: .no_toc }
+---
 
 The Fluxtion compiler supports functional construction of event processing logic, this allows developers to bind
 functions into the processor without having to construct classes marked with Fluxtion annotations. The goal of using the

@@ -7,8 +7,9 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/imperative-helloworld-aot/src/main/java/com/fluxtion/example/imperative/helloworld
 ---
 
-# 5 minute hello world - AOT
+# 5 minute AOT hello world
 {: .no_toc }
+---
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,

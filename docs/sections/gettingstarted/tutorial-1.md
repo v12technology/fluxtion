@@ -6,6 +6,10 @@ nav_order: 2
 published: true
 ---
 
+# 1st tutorial - Spring
+{: .no_toc }
+---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -17,6 +21,7 @@ published: true
 
 
 # Introduction
+---
 
 This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
 proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection.

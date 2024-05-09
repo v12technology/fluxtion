@@ -43,12 +43,14 @@ Overall, Fluxtion provides a powerful framework for building real-time streaming
 performance, flexibility, and ease of use for developers working with streaming data.
 {: .fs-4 }
 
-# Integrating Fluxtion
+# Integrating 
+---
 Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
 
 ![](images/embedding-fluxtion.png)
 
-
+# What is Fluxtion
+---
 **Event-driven Programming**: Fluxtion is based on the concept of event-driven programming, where components react to
 incoming events in real-time. Events can represent changes in data, user actions, or any other relevant triggers.
 
@@ -86,7 +88,33 @@ developers to incorporate Fluxtion-based event processing logic into existing ap
 **Developer Productivity**: Fluxtion has been designed to increases developer productivity when building and
 supporting event driven applications
 
+# Getting started
+---
+
+## Developers
+For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
+
+A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
+
+A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
+Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
+
+## Architects
+
+For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
+[Fluxtion explored section](sections/fluxtion-explored).
+
+## Reference documentation
+
+* [Reference docs index](sections/reference-documentation)
+* [Mark event handling methods](sections/runtime.md)
+* [Build an event processor](sections/build-event-processor)
+* [Integrate an event processor](sections/integrate-eventprocessor)
+* [Fluxtion DSL deep dive](sections/fluxtion-explored/fluxtion-dsl)
+
+
 # Example
+---
 
 [This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish
 times are received as a stream of events,
@@ -320,29 +348,10 @@ Image is generated as part of the code generator
 </div>
 </div>
 
-# Getting started
-
-## Developers
-For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
-
-A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
-
-A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
-Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
-
-## Architects
-
-For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
-[Fluxtion explored section](sections/fluxtion-explored).
-
-## Reference documentation
-
-* [Mark event handling](sections/runtime.md)
-* [Build event processor](sections/build-event-processor)
-* [Integrate event processor](sections/integrate-eventprocessor)
-* [Quick reference](sections/quick-reference.md)
-
 # Latest release
+---
+
+Open source on [GitHub]({{site.fluxtion_src}}), artifacts published to maven central.
 
 | component | maven central                                                                                                                                                                    |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -350,6 +359,7 @@ For a deeper understanding of the architecture, design and paradigms that underp
 | Compiler  | [![Fluxtion compiler](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler) |
 
 ## Build dependencies
+
 
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')">Maven</button>

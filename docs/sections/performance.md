@@ -8,9 +8,10 @@ example_nodes: https://github.com/v12technology/fluxtion-examples/tree/main/jmh/
 
 ---
 
-# Introduction
+# Performance
+---
 
-A Fluxtion can generate ahead of time high performance event processors that are suitable for the most demanding low 
+Fluxtion can generate ahead of time high performance event processors that are suitable for the most demanding low 
 latency environments. This section documents the performance results for a test project. 
 
 Jmh is used to measure throughput per second and latency for a single calculation cycle. 
