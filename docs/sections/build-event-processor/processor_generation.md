@@ -1,6 +1,7 @@
 ---
 title: Processor generation
 parent: Build event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 2
 published: true
@@ -44,6 +45,7 @@ compiler_libs:
 
 # Generating an event processor
 {: .no_toc }
+---
 
 The Fluxtion compiler library provides several tools for generating an event processor from a model supplied by the
 client.

@@ -8,7 +8,8 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbo
 resources_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/resources/com/fluxtion/example/cookbook/spring
 ---
 
-## Introduction
+# Spring integration example
+---
 
 Spring is a popular DI container in the java world, this tutorial demonstrates how the construction logic of spring can
 be combined with the dispatching logic of Fluxtion to simplify building event driven applications. The goal is to allow

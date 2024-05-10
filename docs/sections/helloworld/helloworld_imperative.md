@@ -8,6 +8,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/impera
 
 # 5 minute hello world
 {: .no_toc }
+---
 
 Use Fluxtion to add two numbers from different event streams and log when the sum > 100.
 The sum is the addition of the current value from each event stream. The stream of events can be infinitely long,

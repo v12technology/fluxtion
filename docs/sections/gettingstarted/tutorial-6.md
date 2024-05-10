@@ -6,6 +6,10 @@ nav_order: 7
 published: true
 ---
 
+# 6th tutorial - adding logic
+{: .no_toc }
+---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -16,6 +20,7 @@ published: true
 </details>
 
 # Introduction
+---
 
 This tutorial covers extending an existing application with new functionality and support for new event types. The reader 
 should be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before starting

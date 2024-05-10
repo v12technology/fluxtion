@@ -1,6 +1,7 @@
 ---
 title: Event sourcing and replay
 parent: Integrate event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 2
 published: true
@@ -10,6 +11,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/refere
 
 # Event sourcing and replay
 {: .no_toc }
+---
 
 Fluxtion supports event sourcing and replay of event based inputs to an event processor. An event source style system
 captures the event stream for later replay. If the only changes in the event processor occur from processing

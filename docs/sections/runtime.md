@@ -1,11 +1,13 @@
 ---
 title: Mark event handling
+parent: Reference documentation
 has_children: true
-nav_order: 6
+nav_order: 1
 published: true
 ---
 
-# Introduction
+# Mark event handling methods
+---
 
 Building and executing an event processor are independent functions that can run in separate processes. This section
 describes how to mark user functions as event handling methods and when the functions should be invoked. Event handler 

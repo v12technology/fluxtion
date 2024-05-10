@@ -9,6 +9,10 @@ processor_src: tutorial4-lottery-auditlog/src/main/java/com/fluxtion/example/coo
 slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.properties
 ---
 
+# 5th tutorial - event tracing
+{: .no_toc }
+---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -19,6 +23,8 @@ slf4j_config: tutorial4-lottery-auditlog/src/main/resources/simplelogger.propert
 </details>
 
 # Introduction
+---
+
 This tutorial is an introduction to tracing event processing at runtime, we call this **event audit**.
 The reader should be proficient in Java, maven, git, Spring and have completed the [first lottery tutorial](tutorial-1.md) before
 starting this tutorial.

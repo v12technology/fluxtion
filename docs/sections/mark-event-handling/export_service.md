@@ -1,12 +1,14 @@
 ---
 title: Exporting services
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 3
 published: true
 ---
 # Exporting services
 {: .no_toc }
+---
 
 This section documents the runtime invocation of services that nodes bound within an event processor implement using
 Fluxtion.
