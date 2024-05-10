@@ -51,6 +51,7 @@ freedom to choose the best solution for your needs.
 * **Cost-Effective Integration:** Effortlessly integrate stream processing into your existing system, maximizing your current investment.
 * **Real-Time Big Data Processing:** Handle massive data streams with ease, ensuring you get insights from your data the moment it arrives.
 * **Multi-Messaging System Support:** Fluxtion seamlessly ingests data from various messaging systems, eliminating the need for complex data plumbing.
+* **Batch Big Data Processing:** Slash those big data queries costs, store data in tables, generate reports cheaply with Fluxtion.
 * **AI/ML on a Budget:** Integrate AI and Machine Learning models cost-effectively, unlocking powerful real-time analytics.
 * **Business Logic to the Rescue:** Re-use your existing business logic within the stream processing engine, accelerating development and reducing costs.
 * **Nanosecond Performance:** Zero garbage collections and blazing-fast response times in the nanosecond range, perfect for demanding applications.

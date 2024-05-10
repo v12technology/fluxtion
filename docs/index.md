@@ -22,7 +22,7 @@ efficiency, and ease of use in handling streaming data.
 <div class="content">
 <ul>
   <li><strong>Streaming event processing</strong></li>
-  <li><strong>AOT compilation for fast start</strong></li>
+  <li><strong>AOT compiled for fast cloud start</strong></li>
   <li><strong>Spring integration</strong></li>
 </ul>
 </div>
@@ -30,9 +30,9 @@ efficiency, and ease of use in handling streaming data.
 <div class="col-1-2">
 <div class="content">
 <ul>
-  <li><strong>Low latency nanosecond response</strong></li>
-  <li><strong>Event sourcing compatible</strong></li>
-  <li><strong>Optimised for zero gc to reduce running costs</strong></li>
+  <li><strong>Optimised to reduce processing costs</strong></li>
+  <li><strong>Low latency nanosecond response with zero gc</strong></li>
+  <li><strong>30 million events per second per core</strong></li>
 </ul>
 </div>
 </div>
