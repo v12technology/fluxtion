@@ -38,20 +38,20 @@ when external events are posted to the processor. A trigger callback method is c
 to an incoming event. Boolean return type from trigger or event handler method indicates a change notification should be
 propagated.
 
-| Use                     | Annotation                         | DSL Equivalent                                                                                                        | Description                                                                                                       |
-|-------------------------|------------------------------------|-----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| Event listener          | `@OnEvent`                         | `DataFlow.subscribe(Class<T> eventClass)`                                                                             | Marks method as a subscriber callback<br/> to event stream of a type T                                            |
-| Filter events           | `@OnEvent(filterId)`               | `subscribe(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`Class<T> classSubscription, ` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`int filter)` | Marks method as a subscriber callback<br/> to a filtered event stream                                             |
-| Trigger                 | `@OnTrigger`                       | `[flow].map.(Function<T, R> mapFunction)`                                                                             | Marks method as callback calc method<br/>in a process cycle<br/>                                                  |
-| Identify trigger source | `@@OnParentUpdate`                 |                                                                                                                       | Marks method as callback method <br/>identifying changed parent. <br/>Called before trigger method                |
-| No trigger subscriber   | `@OnEventHandler(propagate=false)` |                                                                                                                       | Subscribe to event stream.<br/>No triggering of child callbacks                                                   |
-| Data only parent        | `@NoTriggerReference`              |                                                                                                                       | Mark a parent reference as data only.<br/>Parent changes are non-triggering                                       |
-| Push data to child      | `@@PushReference`                  | `[flow].push.(Consumer<T, R> mapFunction)`                                                                            | Marks a parent reference to invert <br/>the normal pull based data access model. <br/>Parent pushes data to child |
+| Use                       | Annotation                         | DSL Equivalent                                                                                                                 | Description                                                                                                 |
+|---------------------------|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Event listener            | `@OnEventHandler`                  | `DataFlow.subscribe(Class<T> eventClass)`                                                                                      | Marks method as a subscriber callback<br/> to event stream of type T                                        |
+| Trigger                   | `@OnTrigger`                       | `[flow].map.(Function<T, R> mapFunction)`                                                                                      | Marks method as callback calc method<br/>in a process cycle<br/>                                            |
+| Identify trigger source   | `@OnParentUpdate`                  |                                                                                                                                | Marks method as callback method <br/>identifying changed parent. <br/>Called before trigger method          |
+| No trigger Event listener | `@OnEventHandler(propagate=false)` |                                                                                                                                | Marks method as a subscriber callback<br/>No triggering of child callbacks                                  |
+| Data only parent          | `@NoTriggerReference`              |                                                                                                                                | Mark a parent reference as data only.<br/>Parent changes are non-triggering for this                        |
+| Push data to child        | `@PushReference`                   | `[flow].push.(Consumer<T, R> mapFunction)`                                                                                     | Marks a parent reference as a push target<br/> This pushes data to parent. <br/>Parent triggers after child |
+| Filter events             | `@OnEvent(filterId)`               | `DataFlow.subscribe(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`Class<T> classSubscription, ` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`int filter)` | Marks method as a subscriber callback<br/> to a filtered event stream of type T                             |
 
 ## Service export
 
 Mark an interface as exported and the event processor will implement the interface and route any calls to the instance.
-The interface method acts exactly as Event listener cal back method.
+An interface method behaves as an event listener call back method that is annotated with `@OnEventHandler`.
 
 | Use                   | Annotation                        | Description                                                          |
 |-----------------------|-----------------------------------|----------------------------------------------------------------------|
@@ -66,11 +66,23 @@ subscription and then can be manipulated with functional operations.
 
 | Use                        | DSL                                                                                                                                                                                                                       | Description                                                           |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| DataFlow from event stream | `DataFlow.subscribe(Class eventClass)`                                                                                                                                                                                    | Subscribe to event stream of a type                                   |
-| DataFlow from a node       | `DataFlow.subscribeToNode(T sourceNode)`                                                                                                                                                                                  | Create a flow of T. Triggers when T triggers                          |
+| DataFlow from event stream | `DataFlow.subscribe(Class<T> eventClass)`                                                                                                                                                                                 | Subscribe to event of type T, creates a data flow of T                |
+| DataFlow from a node       | `DataFlow.subscribeToNode(T sourceNode)`                                                                                                                                                                                  | Create a data flow of T. Triggers when T triggers                     |
 | Map                        | `[flow].map(Function<T, R> mapFunction)`                                                                                                                                                                                  | Maps T to R when triggered                                            |
 | Filter                     | `[flow].filter(Function<T, Boolean> filterFunction)`                                                                                                                                                                      | Filters T when triggered                                              |
 | Tumbling window            | `[flow].tumblingAggregate(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`Supplier<AggregateFlowFunction> aggregateFunction, ` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`int bucketSizeMillis)`                                                     | Aggregates T with aggregate function <br/>in a tumbling window        |
 | Sliding window             | `[flow].slidingAggregate(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`Supplier<AggregateFlowFunction> aggregateFunction, ` <br/>&nbsp;&nbsp;&nbsp;&nbsp;`int bucketSizeMillis, ` <br/>&nbsp;&nbsp;&nbsp;&nbsp;`int bucketsPerWindow)` | Aggregates T with aggregate function <br/>in a sliding window         |
 | Group by                   | `[flow].groupBy(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`Function<T, K1> keyFunction, ` <br/>&nbsp;&nbsp;&nbsp;&nbsp;`Supplier<F> aggregateFunctionSupplier`                                                                      | Groups T with key function applies an aggregate function to each item |
 | Joining                    | `JoinFlowBuilder.innerJoin(` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`GroupByFlow<K1, V1> leftGroupBy, ` <br/> &nbsp;&nbsp;&nbsp;&nbsp;`GroupByFlow<K2, V2> rightGroupBy)`                                                          | Joins two group by data flows on their keys                           |
+
+## Lifecycle
+
+Mark methods to receive lifecycle callbacks that are invoked on the event processor. None of the lifecycle calls are
+automatic it is the client code that is responsible for calling lifecycle methods on the event processor.
+
+| Phase      | Annotation    | Description                                                                            |
+|------------|---------------|----------------------------------------------------------------------------------------|
+| Initialise | `@Initialise` | Called by client code once on an event processor. Must be called before start          |
+| Start      | `@Start`      | Called by client code 0 to many time. Must be called after start                       |
+| Stop       | `@Stop`       | Called by client code 0 to many time. Must be called after start                       |
+| TearDown   | `@TearDown`   | Called by client code 0 or once on an event processor before the processor is disposed |
