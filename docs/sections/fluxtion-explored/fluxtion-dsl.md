@@ -145,6 +145,30 @@ Running the example code above logs to console
 biMap ans: 555
 {% endhighlight %}
 
+## Default value
+A default value can be assigned to any flow. This can be useful when calculating a bi map function and one data flow
+argument is optional
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c -> {
+        var strings = DataFlow.subscribe(String.class).defaultValue("99999944");
+        var ints = DataFlow.subscribe(Integer.class);
+        DataFlow.mapBiFunction((a, b) -> Integer.parseInt(a) + b, strings, ints)
+                .console("biMap with default value ans: {}");
+    });
+    processor.init();
+
+    processor.onEvent(55);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+biMap with default value ans: 99999999
+{% endhighlight %}
+
 ## Filter
 A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
 the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
