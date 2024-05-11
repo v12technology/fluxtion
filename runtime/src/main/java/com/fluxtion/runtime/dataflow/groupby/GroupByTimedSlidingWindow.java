@@ -85,6 +85,7 @@ public class GroupByTimedSlidingWindow<T, K, V, R, S extends FlowFunction<T>, F 
         slidingCalculator.roll(rollTrigger.getTriggerCount());
         if (slidingCalculator.isAllBucketsFilled()) {
             cacheWindowValue();
+            publishOverrideTriggered = !overridePublishTrigger & !overrideUpdateTrigger;
             inputStreamTriggered_1 = true;
             inputStreamTriggered = true;
         }
