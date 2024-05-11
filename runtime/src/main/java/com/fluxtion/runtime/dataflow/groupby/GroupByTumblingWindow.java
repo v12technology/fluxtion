@@ -68,10 +68,16 @@ public class GroupByTumblingWindow<T, K, V, R, S extends FlowFunction<T>, F exte
 
     @OnParentUpdate
     public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-        cacheWindowValue();
+        if (rollTrigger.getTriggerCount() == 1) {
+            cacheWindowValue();
+        }
+        publishOverrideTriggered = !overridePublishTrigger & !overrideUpdateTrigger;
         inputStreamTriggered_1 = true;
         inputStreamTriggered = true;
         groupByWindowedCollection.reset();
+        if (rollTrigger.getTriggerCount() != 1) {
+            cacheWindowValue();
+        }
     }
 
     @OnParentUpdate
