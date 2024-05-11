@@ -120,6 +120,31 @@ string mapped aaa
 string mapped bbb
 {% endhighlight %}
 
+## BiMap
+Two data flows can be mapped with a bi map function. Both flows must have triggered at least once for the bimap function
+to be invoked
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c -> {
+        var strings = DataFlow.subscribe(String.class);
+        var ints = DataFlow.subscribe(Integer.class);
+        DataFlow.mapBiFunction((a, b) -> Integer.parseInt(a) + b, strings, ints)
+                .console("biMap ans: {}");
+    });
+    processor.init();
+
+    processor.onEvent("500");
+    processor.onEvent(55);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+biMap ans: 555
+{% endhighlight %}
+
 ## Filter
 A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
 the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
@@ -270,6 +295,94 @@ Running the example code above logs to console
 
 {% highlight console %}
 new customer : MergeAndMapSample.MyData(customer=John Doe, date=Sat May 11 19:17:11 BST 2024, id=123)
+{% endhighlight %}
+
+## Sink
+
+An application can register for output from the EventProcessor by supplying a consumer to addSink and removed with a 
+call to removeSink. Bound classes can publish to sinks during an event process cycle, any registered sinks will see 
+the update as soon as the data is published, not at the end of the cycle. 
+
+* Adding sink - `processor.addSink("mySink", (Consumer<T> t) ->{})`
+* Removing sink - `processor.removeSink("mySink")`
+
+
+{% highlight java %}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg ->
+            DataFlow.subscribeToIntSignal("myIntSignal")
+                    .mapToObj(d -> "intValue:" + d)
+                    .sink("mySink")//CREATE A SINK IN THE PROCESSOR
+    );
+    processor.init();
+
+    //ADDING A SINK
+    processor.addSink("mySink", (Consumer<String>) System.out::println);
+
+    processor.publishSignal("myIntSignal", 10);
+    processor.publishSignal("myIntSignal", 256);
+
+    //REMOVING A SINK
+    processor.removeSink("mySink");
+    processor.publishSignal("myIntSignal", 512);
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+intValue:10
+intValue:256
+{% endhighlight %}
+
+## DataFlow node lookup by id
+DataFlow nodes are available for lookup from an event processor instance using their name. In this case the lookup 
+returns a reference to the wrapped value and not the wrapping node. The application can then use the reference to 
+pull data from the node without requiring an event process cycle to push data to an output.
+
+When building the graph with DSL a call to `id` makes that element addressable for lookup.
+
+{% highlight java %}
+
+public class GetFlowNodeByIdExample {
+    public static void main(String[] args) throws NoSuchFieldException {
+        var processor = Fluxtion.interpret(c ->{
+            DataFlow.subscribe(String.class)
+                    .filter(s -> s.equalsIgnoreCase("monday"))
+                    //ID START - this makes the wrapped value accessible via the id
+                    .mapToInt(Mappers.count()).id("MondayChecker")
+                    //ID END
+                    .console("Monday is triggered");
+        });
+        processor.init();
+
+        processor.onEvent("Monday");
+        processor.onEvent("Tuesday");
+        processor.onEvent("Wednesday");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        Integer mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount + "\n");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        processor.onEvent("Monday");
+        mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount);
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Monday is triggered
+Monday count:1
+
+Monday is triggered
+Monday count:2
 {% endhighlight %}
 
 ## Automatic wrapping of functions
@@ -472,6 +585,43 @@ last 4 elements:[B, C, D, E]
 
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
+{% endhighlight %}
+
+## Re-entrant events
+
+Events can be added for processing from inside the graph for processing in the next available cycle. Internal events
+are added to LIFO queue for processing in the correct order. The EventProcessor instance maintains the LIFO queue, any
+new input events are queued if there is processing currently acting. Support for internal event publishing is built
+into the streaming api.
+
+Maps an int signal to a String and republishes to the graph
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received [" + stringToProcess +"]");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        DataFlow.subscribeToIntSignal("myIntSignal")
+            .mapToObj(d -> "intValue:" + d)
+            .console("republish re-entrant [{}]")
+            .processAsNewGraphEvent();
+        cfg.addNode(new MyNode());
+    });
+
+    processor.init();
+    processor.publishSignal("myIntSignal", 256);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+republish re-entrant [intValue:256]
+received [intValue:256]
 {% endhighlight %}
 
 # Trigger control
