@@ -385,7 +385,7 @@ Monday is triggered
 Monday count:2
 {% endhighlight %}
 
-## Automatic wrapping of functions
+## Graph of functions
 Fluxtion automatically wraps the function in a node, actually a monad, and binds both into the event processor. The wrapping node
 handles all the event notifications, invoking the user function when it is triggered. Each wrapping node can be the
 head of multiple child flows forming complex graph structures that obey the dispatch rules. This is in contrast to
