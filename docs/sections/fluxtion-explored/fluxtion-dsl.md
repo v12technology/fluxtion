@@ -237,6 +237,41 @@ int : 123
 MERGED FLOW -> 123
 {% endhighlight %}
 
+## Map and merge flows
+
+Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.mergeMap(
+                    MergeAndMapFlowBuilder.of(MyData::new)
+                            .required(subscribe(String.class), MyData::setCustomer)
+                            .required(subscribe(Date.class), MyData::setDate)
+                            .required(subscribe(Integer.class), MyData::setId))
+                    .console("new customer : {}")
+    );
+    processor.init();
+
+    processor.onEvent(new Date());
+    processor.onEvent("John Doe");
+    processor.onEvent(123);
+}
+
+@Data
+public static class MyData {
+    private String customer;
+    private Date date;
+    private int id;
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+new customer : MergeAndMapSample.MyData(customer=John Doe, date=Sat May 11 19:17:11 BST 2024, id=123)
+{% endhighlight %}
+
 ## Automatic wrapping of functions
 Fluxtion automatically wraps the function in a node, actually a monad, and binds both into the event processor. The wrapping node
 handles all the event notifications, invoking the user function when it is triggered. Each wrapping node can be the
