@@ -1,12 +1,15 @@
 ---
 title: Maven plugin
 parent: Build event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 3
 published: true
 ---
 
 # Maven fluxtion plugin
+---
+
 Fluxtion provides a maven plugin that automates the AOT generation of event processors. This confines the generation 
 process to a build time activity which means only the runtime libraries are required at runtime, and the compiler library
 can be provided scope.

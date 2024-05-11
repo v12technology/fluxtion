@@ -6,6 +6,10 @@ nav_order: 4
 published: true
 ---
 
+# 3rd tutorial - AOT no spring
+{: .no_toc }
+---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -16,6 +20,7 @@ published: true
 </details>
 
 # Introduction
+---
 
 This tutorial is an introduction to building Fluxtion dependency injection container ahead of time without Spring. The 
 reader should be proficient in Java, maven, git and have completed the [second lottery tutorial](tutorial-2.md) before 

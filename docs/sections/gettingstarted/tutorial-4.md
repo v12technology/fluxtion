@@ -8,6 +8,10 @@ auditor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbo
 processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cookbook/lottery/aot/LotteryProcessor.java
 ---
 
+# 4th tutorial - auditor
+{: .no_toc }
+---
+
 <details open markdown="block">
   <summary>
     Table of contents
@@ -18,6 +22,8 @@ processor_src: tutorial3-lottery-auditor/src/main/java/com/fluxtion/example/cook
 </details>
 
 # Introduction
+---
+
 This tutorial is an introduction to monitoring the dependency injection container at runtime, we call this **auditing**. 
 The reader should be proficient in Java, maven, git, Spring and have completed the [second lottery tutorial](tutorial-2.md) before 
 starting this tutorial.

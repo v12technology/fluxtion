@@ -1,6 +1,7 @@
 ---
 title: Gradle integration
 parent: Build event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 4
 published: true
@@ -10,6 +11,7 @@ example_gradle: https://github.com/v12technology/fluxtion-examples/blob/main/gra
 ---
 
 # Gradle integration
+---
 
 Although no Fluxtion gradle plugin is available to scan and generate event processors AOT, gradle's open architecture
 makes it easy to integrate a task to wrap a utility. To integrate `Fluxtion.scanAndCompileFluxtionBuilders` as a build 

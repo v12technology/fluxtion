@@ -1,6 +1,7 @@
 ---
 title: Complex graphs
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 6
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Complex graph event stream processing
 {: .no_toc }
+---
 
 Complex object graphs can be bound into an [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java) and register for event callbacks with annotations. 
 The generated EventProcessor then notifies annotated callback methods according to the [dispatch rules](../fluxtion-explored#event-dispatch-rules). Any callback

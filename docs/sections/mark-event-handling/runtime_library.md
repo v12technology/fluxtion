@@ -1,6 +1,7 @@
 ---
 title: Library functions
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 5
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Runtime library functions
 {: .no_toc }
+---
 
 The runtime environment provides several library functions that bound classes can use. This section documents the runtime
 environment and how to access the library functions.

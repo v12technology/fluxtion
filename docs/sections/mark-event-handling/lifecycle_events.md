@@ -1,6 +1,7 @@
 ---
 title: Lifecycle callback
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 4
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Processing lifecycle callbacks
 {: .no_toc }
+---
 
 The section documents the lifecycle api and its behaviour. 
 

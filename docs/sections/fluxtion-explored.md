@@ -5,7 +5,8 @@ nav_order: 5
 published: true
 ---
 
-# Introduction
+# Fluxtion explored
+---
 
 Fluxtion is a DI container that combines dependency injection with event dispatch for realtime data processing.
 The Fluxtion container can be thought of as a spreadsheet on steroids, each bean is like a formula cell, if any input

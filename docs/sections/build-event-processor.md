@@ -1,11 +1,14 @@
 ---
 title: Build event processor 
 has_children: true
-nav_order: 7
+parent: Reference documentation
+nav_order: 2
 published: true
 ---
 
-# Introduction
+# Build an event processor
+---
+
 Building and executing an event processor are independent functions that can run in separate processes. This section 
 documents the binding of functions into an event processor and the generation of the processor for use at runtime.
 

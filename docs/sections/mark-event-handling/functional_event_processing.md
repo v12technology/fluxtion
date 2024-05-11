@@ -1,6 +1,7 @@
 ---
 title: Functional DSL
 parent: Mark event handling
+grand_parent: Reference documentation
 has_children: false
 nav_order: 2
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Functional DSL event stream processing
 {: .no_toc }
+---
 
 This section documents the use of functional programming to construct event processing logic. For a more in-depth
 description of the dsl head over to [Fluxtion DSL deep dive](../fluxtion-explored/fluxtion-dsl).
