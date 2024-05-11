@@ -105,6 +105,78 @@ environment the reduce operation combines a collection of items into a single va
 the set of values is never complete, we can view the current value of a stateful map operation which is equivalent to the
 reduce operation. The question is rather, when is the value of the stateful map published and reset.
 
+## FlatMap
+
+A Flatmap operation flattens a collection in a data flow. Any operations applied after the flatmap operation are 
+performed on each element in the collection. 
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .console("\ncsv in [{}]")
+                    .flatMap(s -> Arrays.asList(s.split(",")))
+                    .console("flattened item [{}]"));
+    processor.init();
+
+    processor.onEvent("A,B,C");
+    processor.onEvent("2,3,5,7,11");
+}
+{% endhighlight %}
+
+Arrays can be flattened with:
+
+
+`[data flow].flatMapFromArray(Function<T, R[]> iterableFunction)`
+
+
+Running the example code above logs to console
+
+{% highlight console %}
+csv in [A,B,C]
+flattened item [A]
+flattened item [B]
+flattened item [C]
+
+csv in [2,3,5,7,11]
+flattened item [2]
+flattened item [3]
+flattened item [5]
+flattened item [7]
+flattened item [11]
+{% endhighlight %}
+
+## Merge flows
+Flows can be merged to output a single flow that can be operated on
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.merge(
+                    subscribe(Long.class).console("long : {}"),
+                    subscribe(String.class).console("string : {}").map(Mappers::parseLong),
+                    subscribe(Integer.class).console("int : {}").map(Integer::longValue))
+                    .console("MERGED FLOW -> {}")
+    );
+    processor.init();
+
+    processor.onEvent(1234567890835L);
+    processor.onEvent("9994567890835");
+    processor.onEvent(123);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+long : 1234567890835
+MERGED FLOW -> 1234567890835
+string : 9994567890835
+MERGED FLOW -> 9994567890835
+int : 123
+MERGED FLOW -> 123
+{% endhighlight %}
+
 ## Automatic wrapping of functions
 Fluxtion automatically wraps the function in a node, actually a monad, and binds both into the event processor. The wrapping node
 handles all the event notifications, invoking the user function when it is triggered. Each wrapping node can be the
