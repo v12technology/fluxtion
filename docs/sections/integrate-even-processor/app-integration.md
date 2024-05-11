@@ -1,6 +1,7 @@
 ---
 title: Application integration
 parent: Integrate event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 1
 published: true
@@ -11,6 +12,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/refere
 
 # Application integration of an event processor
 {: .no_toc }
+---
 
 Once the event processor has been generated it can be used by the application. An instance of an
 [EventProcessor](https://github.com/v12technology/fluxtion/tree/{{site.fluxtion_version}}/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java)

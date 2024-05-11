@@ -5,7 +5,7 @@ nav_order: 1
 published: true
 ---
 
-# Fluxtion automating event driven development
+# Fluxtion embedded stream processing
 
 ---
 
@@ -22,7 +22,7 @@ efficiency, and ease of use in handling streaming data.
 <div class="content">
 <ul>
   <li><strong>Streaming event processing</strong></li>
-  <li><strong>AOT compilation for fast start</strong></li>
+  <li><strong>AOT compiled for fast cloud start</strong></li>
   <li><strong>Spring integration</strong></li>
 </ul>
 </div>
@@ -30,9 +30,9 @@ efficiency, and ease of use in handling streaming data.
 <div class="col-1-2">
 <div class="content">
 <ul>
-  <li><strong>Low latency microsecond response</strong></li>
-  <li><strong>Event sourcing compatible</strong></li>
-  <li><strong>Optimised for zero gc to reduce running costs</strong></li>
+  <li><strong>Optimised to reduce processing costs</strong></li>
+  <li><strong>Low latency nanosecond response with zero gc</strong></li>
+  <li><strong>30 million events per second per core</strong></li>
 </ul>
 </div>
 </div>
@@ -40,15 +40,18 @@ efficiency, and ease of use in handling streaming data.
 
 {: .info }
 Overall, Fluxtion provides a powerful framework for building real-time streaming applications in Java, offering high
-performance, flexibility, and ease of use for developers working with streaming data.
+performance, flexibility, and ease of use for developers working with streaming data. Processing more than 30 million 
+events per second on a single thread 
 {: .fs-4 }
 
-# Integrating Fluxtion
+# Application integration 
+---
 Embed a Fluxtion stream processing engine in your application, freeing your business logic from messaging vendor lock-in.
 
 ![](images/embedding-fluxtion.png)
 
-
+# Fluxtion technology
+---
 **Event-driven Programming**: Fluxtion is based on the concept of event-driven programming, where components react to
 incoming events in real-time. Events can represent changes in data, user actions, or any other relevant triggers.
 
@@ -80,13 +83,41 @@ real-time responsiveness is critical, such as financial trading systems.
 developers
 to define complex event patterns and rules using a high-level DSL (Domain-Specific Language).
 
+**Instantaneous Startup:** Our innovative Ahead-of-Time (AOT) compiled streaming engine minimizes startup times to near zero.
+
 **Integration with External Systems**: Fluxtion can easily integrate with external systems and libraries, allowing
 developers to incorporate Fluxtion-based event processing logic into existing applications or frameworks.
 
 **Developer Productivity**: Fluxtion has been designed to increases developer productivity when building and
 supporting event driven applications
 
+# Getting started
+---
+
+## Developers
+For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
+
+A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
+
+A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
+Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
+
+## Architects
+
+For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
+[Fluxtion explored section](sections/fluxtion-explored).
+
+## Reference documentation
+
+* [Reference docs index](sections/reference-documentation)
+* [Mark event handling methods](sections/runtime.md)
+* [Build an event processor](sections/build-event-processor)
+* [Integrate an event processor](sections/integrate-eventprocessor)
+* [Fluxtion DSL deep dive](sections/fluxtion-explored/fluxtion-dsl)
+
+
 # Example
+---
 
 [This example]({{site.reference_examples}}/racing) tracks and calculates times for runners in a race. Start and finish
 times are received as a stream of events,
@@ -320,29 +351,10 @@ Image is generated as part of the code generator
 </div>
 </div>
 
-# Getting started
-
-## Developers
-For a quick introduction to programming Fluxtion visit the [hello world](sections/helloworld/helloworld_imperative) examples.
-
-A [developer workflow document](gettingstarted/developer-workflow) describes the approach integrating Fluxtion into your work cycle
-
-A series of tutorials are provided that a developer should follow to become familiar with the practical coding of
-Fluxtion, start with [tutorial 1](sections/gettingstarted/tutorial-1.md).
-
-## Architects
-
-For a deeper understanding of the architecture, design and paradigms that underpin Fluxtion head over to the
-[Fluxtion explored section](sections/fluxtion-explored).
-
-## Reference documentation
-
-* [Mark event handling](sections/runtime.md)
-* [Build event processor](sections/build-event-processor)
-* [Integrate event processor](sections/integrate-eventprocessor)
-* [Quick reference](sections/quick-reference.md)
-
 # Latest release
+---
+
+Open source on [GitHub]({{site.fluxtion_src}}), artifacts published to maven central.
 
 | component | maven central                                                                                                                                                                    |
 |-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -350,6 +362,7 @@ For a deeper understanding of the architecture, design and paradigms that underp
 | Compiler  | [![Fluxtion compiler](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fluxtion/compiler) |
 
 ## Build dependencies
+
 
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Maven')">Maven</button>

@@ -12,6 +12,7 @@ example_test: https://github.com/v12technology/fluxtion-examples/tree/main/getti
 
 # Developer workflow with Fluxtion
 {: .no_toc }
+---
 
 Fluxtion has been designed to have a simple on ramp that decreases developer inertia for building event driven logic.
 A good approach to using Fluxtion for the first time or integrating into an existing project is:

@@ -7,7 +7,8 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook/parallel
 ---
 
-## Introduction
+# Parallel processing example
+---
 
 Fluxtion supports parallel processing of trigger operations to reduce total response times for long running operations.
 A divide and conquer approach for parallel processing is supported:

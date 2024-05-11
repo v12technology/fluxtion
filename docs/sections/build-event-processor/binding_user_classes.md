@@ -1,6 +1,7 @@
 ---
 title: Binding user classes
 parent: Build event processor
+grand_parent: Reference documentation
 has_children: false
 nav_order: 1
 published: true
@@ -8,6 +9,7 @@ published: true
 
 # Binding user classes to an event processor
 {: .no_toc }
+---
 
 The Fluxtion compiler generates an event processor from a model supplied by the client. A model represents the set of user classes
 that are bound into the event processor. This section documents the various ways the model can be created by the developer. 

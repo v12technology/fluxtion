@@ -1,5 +1,5 @@
 ---
-title: Functional Hello world
+title: Functional hello world
 has_children: false
 parent: Hello fluxtion world
 nav_order: 1
@@ -7,7 +7,8 @@ published: true
 example_src: https://github.com/v12technology/fluxtion-examples/tree/main/functional-helloworld/src/main/java/com/fluxtion/example/functional/helloworld
 ---
 
-# 5 minute Functional hello world 
+# 5 minute Functional hello world
+---
 
 Hello world using a functional programming style with Fluxtion DSL. Business logic resides in user functions removing
 the need to write classes and annotate event handling methods with fluxtion annotations. 

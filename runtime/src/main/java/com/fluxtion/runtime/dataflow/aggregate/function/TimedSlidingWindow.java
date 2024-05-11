@@ -2,11 +2,7 @@ package com.fluxtion.runtime.dataflow.aggregate.function;
 
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.dataflow.DoubleFlowFunction;
-import com.fluxtion.runtime.dataflow.FlowFunction;
-import com.fluxtion.runtime.dataflow.IntFlowFunction;
-import com.fluxtion.runtime.dataflow.LongFlowFunction;
-import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
+import com.fluxtion.runtime.dataflow.*;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateDoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateIntFlowFunction;
@@ -59,6 +55,7 @@ public class TimedSlidingWindow
         windowFunction.roll(rollTrigger.getTriggerCount());
         if (windowFunction.isAllBucketsFilled()) {
             cacheWindowValue();
+            publishOverrideTriggered = !overridePublishTrigger & !overrideUpdateTrigger;
             inputStreamTriggered_1 = true;
             inputStreamTriggered = true;
         }

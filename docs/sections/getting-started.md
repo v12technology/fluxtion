@@ -5,7 +5,8 @@ nav_order: 4
 published: true
 ---
 
-# Introduction
+# Developer resources
+---
 
 Start here to learn how to implement event driven logic with Fluxtion. 
 
@@ -26,10 +27,11 @@ For a deeper understanding of the architecture, design and paradigms that underp
 [Fluxtion explored section](fluxtion-explored).
 
 ## Reference documentation
-* [Mark event handling](runtime.md)
-* [Build event processor](build-event-processor)
-* [Integrate event processor](integrate-eventprocessor)
-* [Quick reference](quick-reference.md)
+* [Reference docs index](reference-documentation)
+* [Mark event handling methods](runtime.md)
+* [Build an event processor](build-event-processor)
+* [Integrate an event processor](integrate-eventprocessor)
+* [Fluxtion DSL deep dive](fluxtion-explored/fluxtion-dsl)
 
 ## Examples
 A series of [cookbook examples](examples.md) are available that explore applying Fluxtion to various use cases.  
