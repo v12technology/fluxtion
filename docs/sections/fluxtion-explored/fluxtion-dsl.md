@@ -827,9 +827,7 @@ public class TumblingWindowSample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent(rand.nextInt(100));
-                    },
+                    () -> processor.onEvent(rand.nextInt(100)),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -955,9 +953,7 @@ public class SlidingWindowSample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent(rand.nextInt(100));
-                    },
+                    () -> processor.onEvent(rand.nextInt(100)),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1243,10 +1239,7 @@ public class TumblingGroupBySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1299,10 +1292,7 @@ public class SlidingGroupBySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1363,10 +1353,7 @@ public class TumblingGroupByCompoundKeySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1460,10 +1447,7 @@ public class SlidingGroupByCompoundKeySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
