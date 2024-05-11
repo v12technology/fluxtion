@@ -262,7 +262,7 @@ int : 123
 MERGED FLOW -> 123
 {% endhighlight %}
 
-## Map and merge flows
+## Merge and map flows
 
 Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
 
@@ -585,6 +585,34 @@ last 4 elements:[B, C, D, E]
 
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
+{% endhighlight %}
+
+## Push to node
+A data flow can push a value to any normal java class
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .push(new MyPushTarget()::updated)
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+
+public class MyPushTarget{
+    public void updated(String in){
+        System.out.println("received push: " + in);
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+{% highlight console %}
+received push: AAA
+received push: BBB
 {% endhighlight %}
 
 ## Re-entrant events
