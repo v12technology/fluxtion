@@ -828,7 +828,6 @@ public class TumblingWindowSample {
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
                     () -> {
-                        processor.onEvent("tick");
                         processor.onEvent(rand.nextInt(100));
                     },
                     10,10, TimeUnit.MILLISECONDS);
@@ -957,7 +956,6 @@ public class SlidingWindowSample {
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
                     () -> {
-                        processor.onEvent("tick");
                         processor.onEvent(rand.nextInt(100));
                     },
                     10,10, TimeUnit.MILLISECONDS);
