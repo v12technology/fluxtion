@@ -51,6 +51,8 @@ with `@OnEventHandler` or an interface exported with `@ExportService`.
 The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods to create and bind flows in an event processor. There is no restriction 
 on the number of data flows bound inside an event processor.
 
+## Subscribe to event
+
 To create a flow for String events, call  `DataFlow.subscribe(String.class)`, any call to processor.onEvent("myString") will be 
 routed to this flow.
 
@@ -60,16 +62,33 @@ DataFlow.subscribe(String.class)
 
 Once a flow has been created map, filter, groupBy, etc. functions can be applied as chained calls.
 
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .console("string in {}")
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+string in AAA
+string in BBB
+{% endhighlight %}
 
 ## Map
 A map operation takes the output from a parent node and then applies a function to it. If the return of the
 function is null then the event notification no longer propagates down that path.
 
 {% highlight java %}
-var stringFlow = DataFlow.subscribe(String.class);
-
-stringFlow.map(String::toLowerCase);
-stringFlow.mapToInt(s -> s.length()/2);
+DataFlow.subscribe(String.class);
+    .map(String::toLowerCase);
 {% endhighlight %}
 
 **Map supports**
@@ -80,15 +99,35 @@ stringFlow.mapToInt(s -> s.length()/2);
 - Method references
 - Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .map(String::toLowerCase)
+                    .console("string mapped {}")
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+string mapped aaa
+string mapped bbb
+{% endhighlight %}
+
 ## Filter
 A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
 the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
 event processor.
 
 {% highlight java %}
-DataFlow.subscribe(String.class)
-    .filter(Objects::nonNull)
-    .mapToInt(s -> s.length()/2);
+DataFlow.subscribe(Integer.class)
+    .filter(i -> i > 10)
 {% endhighlight %}
 
 **Filter supports**
@@ -98,6 +137,27 @@ DataFlow.subscribe(String.class)
 - Primitive specialisation
 - Method references
 - Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(Integer.class)
+                    .filter(i -> i > 10)
+                    .console("int {} > 10 ")
+    );
+    processor.init();
+
+    processor.onEvent(1);
+    processor.onEvent(17);
+    processor.onEvent(4);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+int 17 > 10
+{% endhighlight %}
 
 ## Reduce
 There is no reduce function required in Fluxtion, stateful map functions perform the role of reduce. In a classic batch
