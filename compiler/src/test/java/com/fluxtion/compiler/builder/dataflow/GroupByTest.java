@@ -434,7 +434,8 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
             subscribe(KeyedData.class).groupBy(KeyedData::getId)
                     .coGroup(
-                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()), GroupByTest::applyFactor,
+                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()),
+                            GroupByTest::applyFactor,
                             new Data("default", 3)
                     )
                     .map(GroupBy::toMap)
