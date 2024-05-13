@@ -2331,9 +2331,9 @@ public class MultiJoinSample {
     public static void main(String[] args) {
 
         var processor = Fluxtion.interpret(c -> {
-            GroupByFlowBuilder<String, LeftData> leftBuilder = DataFlow.groupBy(LeftData::getName);
-            GroupByFlowBuilder<String, MiddleData> middleBuilder = DataFlow.groupBy(MiddleData::getName);
-            GroupByFlowBuilder<String, RightData> rightBuilder = DataFlow.groupBy(RightData::getName);
+            var leftBuilder = DataFlow.groupBy(LeftData::getName);
+            var middleBuilder = DataFlow.groupBy(MiddleData::getName);
+            var rightBuilder = DataFlow.groupBy(RightData::getName);
 
             MultiJoinBuilder.builder(String.class, MergedData::new)
                     .addJoin(leftBuilder, MergedData::setLeftData)
