@@ -51,6 +51,8 @@ with `@OnEventHandler` or an interface exported with `@ExportService`.
 The [DataFlow]({{site.fluxtion_src_compiler}}/builder/dataflow/DataFlow.java) class provides builder methods to create and bind flows in an event processor. There is no restriction 
 on the number of data flows bound inside an event processor.
 
+## Subscribe to event
+
 To create a flow for String events, call  `DataFlow.subscribe(String.class)`, any call to processor.onEvent("myString") will be 
 routed to this flow.
 
@@ -60,16 +62,33 @@ DataFlow.subscribe(String.class)
 
 Once a flow has been created map, filter, groupBy, etc. functions can be applied as chained calls.
 
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .console("string in {}")
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+string in AAA
+string in BBB
+{% endhighlight %}
 
 ## Map
 A map operation takes the output from a parent node and then applies a function to it. If the return of the
 function is null then the event notification no longer propagates down that path.
 
 {% highlight java %}
-var stringFlow = DataFlow.subscribe(String.class);
-
-stringFlow.map(String::toLowerCase);
-stringFlow.mapToInt(s -> s.length()/2);
+DataFlow.subscribe(String.class);
+    .map(String::toLowerCase);
 {% endhighlight %}
 
 **Map supports**
@@ -80,15 +99,84 @@ stringFlow.mapToInt(s -> s.length()/2);
 - Method references
 - Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .map(String::toLowerCase)
+                    .console("string mapped {}")
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+string mapped aaa
+string mapped bbb
+{% endhighlight %}
+
+## BiMap
+Two data flows can be mapped with a bi map function. Both flows must have triggered at least once for the bimap function
+to be invoked
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c -> {
+        var strings = DataFlow.subscribe(String.class);
+        var ints = DataFlow.subscribe(Integer.class);
+        DataFlow.mapBiFunction((a, b) -> Integer.parseInt(a) + b, strings, ints)
+                .console("biMap ans: {}");
+    });
+    processor.init();
+
+    processor.onEvent("500");
+    processor.onEvent(55);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+biMap ans: 555
+{% endhighlight %}
+
+## Default value
+A default value can be assigned to any flow. This can be useful when calculating a bi map function and one data flow
+argument is optional
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c -> {
+        var strings = DataFlow.subscribe(String.class).defaultValue("99999944");
+        var ints = DataFlow.subscribe(Integer.class);
+        DataFlow.mapBiFunction((a, b) -> Integer.parseInt(a) + b, strings, ints)
+                .console("biMap with default value ans: {}");
+    });
+    processor.init();
+
+    processor.onEvent(55);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+biMap with default value ans: 99999999
+{% endhighlight %}
+
 ## Filter
 A filter predicate can be applied to a node to control event propagation, true continues the propagation and false swallows
 the notification. If the predicate returns true then the input to the predicate is passed to the next operation in the
 event processor.
 
 {% highlight java %}
-DataFlow.subscribe(String.class)
-    .filter(Objects::nonNull)
-    .mapToInt(s -> s.length()/2);
+DataFlow.subscribe(Integer.class)
+    .filter(i -> i > 10)
 {% endhighlight %}
 
 **Filter supports**
@@ -99,13 +187,229 @@ DataFlow.subscribe(String.class)
 - Method references
 - Inline lambdas - **interpreted mode only support, AOT mode will not serialise the inline lambda**
 
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(Integer.class)
+                    .filter(i -> i > 10)
+                    .console("int {} > 10 ")
+    );
+    processor.init();
+
+    processor.onEvent(1);
+    processor.onEvent(17);
+    processor.onEvent(4);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+int 17 > 10
+{% endhighlight %}
+
 ## Reduce
 There is no reduce function required in Fluxtion, stateful map functions perform the role of reduce. In a classic batch
 environment the reduce operation combines a collection of items into a single value. In a streaming environment
 the set of values is never complete, we can view the current value of a stateful map operation which is equivalent to the
 reduce operation. The question is rather, when is the value of the stateful map published and reset.
 
-## Automatic wrapping of functions
+## FlatMap
+
+A Flatmap operation flattens a collection in a data flow. Any operations applied after the flatmap operation are 
+performed on each element in the collection. 
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .console("\ncsv in [{}]")
+                    .flatMap(s -> Arrays.asList(s.split(",")))
+                    .console("flattened item [{}]"));
+    processor.init();
+
+    processor.onEvent("A,B,C");
+    processor.onEvent("2,3,5,7,11");
+}
+{% endhighlight %}
+
+Arrays can be flattened with:
+
+
+`[data flow].flatMapFromArray(Function<T, R[]> iterableFunction)`
+
+
+Running the example code above logs to console
+
+{% highlight console %}
+csv in [A,B,C]
+flattened item [A]
+flattened item [B]
+flattened item [C]
+
+csv in [2,3,5,7,11]
+flattened item [2]
+flattened item [3]
+flattened item [5]
+flattened item [7]
+flattened item [11]
+{% endhighlight %}
+
+## Merge flows
+Flows can be merged to output a single flow that can be operated on
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.merge(
+                    subscribe(Long.class).console("long : {}"),
+                    subscribe(String.class).console("string : {}").map(Mappers::parseLong),
+                    subscribe(Integer.class).console("int : {}").map(Integer::longValue))
+                    .console("MERGED FLOW -> {}")
+    );
+    processor.init();
+
+    processor.onEvent(1234567890835L);
+    processor.onEvent("9994567890835");
+    processor.onEvent(123);
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+long : 1234567890835
+MERGED FLOW -> 1234567890835
+string : 9994567890835
+MERGED FLOW -> 9994567890835
+int : 123
+MERGED FLOW -> 123
+{% endhighlight %}
+
+## Merge and map flows
+
+Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.mergeMap(
+                    MergeAndMapFlowBuilder.of(MyData::new)
+                            .required(subscribe(String.class), MyData::setCustomer)
+                            .required(subscribe(Date.class), MyData::setDate)
+                            .required(subscribe(Integer.class), MyData::setId))
+                    .console("new customer : {}")
+    );
+    processor.init();
+
+    processor.onEvent(new Date());
+    processor.onEvent("John Doe");
+    processor.onEvent(123);
+}
+
+@Data
+public static class MyData {
+    private String customer;
+    private Date date;
+    private int id;
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+new customer : MergeAndMapSample.MyData(customer=John Doe, date=Sat May 11 19:17:11 BST 2024, id=123)
+{% endhighlight %}
+
+## Sink
+
+An application can register for output from the EventProcessor by supplying a consumer to addSink and removed with a 
+call to removeSink. Bound classes can publish to sinks during an event process cycle, any registered sinks will see 
+the update as soon as the data is published, not at the end of the cycle. 
+
+* Adding sink - `processor.addSink("mySink", (Consumer<T> t) ->{})`
+* Removing sink - `processor.removeSink("mySink")`
+
+
+{% highlight java %}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg ->
+            DataFlow.subscribeToIntSignal("myIntSignal")
+                    .mapToObj(d -> "intValue:" + d)
+                    .sink("mySink")//CREATE A SINK IN THE PROCESSOR
+    );
+    processor.init();
+
+    //ADDING A SINK
+    processor.addSink("mySink", (Consumer<String>) System.out::println);
+
+    processor.publishSignal("myIntSignal", 10);
+    processor.publishSignal("myIntSignal", 256);
+
+    //REMOVING A SINK
+    processor.removeSink("mySink");
+    processor.publishSignal("myIntSignal", 512);
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+intValue:10
+intValue:256
+{% endhighlight %}
+
+## DataFlow node lookup by id
+DataFlow nodes are available for lookup from an event processor instance using their name. In this case the lookup 
+returns a reference to the wrapped value and not the wrapping node. The application can then use the reference to 
+pull data from the node without requiring an event process cycle to push data to an output.
+
+When building the graph with DSL a call to `id` makes that element addressable for lookup.
+
+{% highlight java %}
+
+public class GetFlowNodeByIdExample {
+    public static void main(String[] args) throws NoSuchFieldException {
+        var processor = Fluxtion.interpret(c ->{
+            DataFlow.subscribe(String.class)
+                    .filter(s -> s.equalsIgnoreCase("monday"))
+                    //ID START - this makes the wrapped value accessible via the id
+                    .mapToInt(Mappers.count()).id("MondayChecker")
+                    //ID END
+                    .console("Monday is triggered");
+        });
+        processor.init();
+
+        processor.onEvent("Monday");
+        processor.onEvent("Tuesday");
+        processor.onEvent("Wednesday");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        Integer mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount + "\n");
+
+        //ACCESS THE WRAPPED VALUE BY ITS ID
+        processor.onEvent("Monday");
+        mondayCheckerCount = processor.getStreamed("MondayChecker");
+        System.out.println("Monday count:" + mondayCheckerCount);
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+Monday is triggered
+Monday count:1
+
+Monday is triggered
+Monday count:2
+{% endhighlight %}
+
+## Graph of functions
 Fluxtion automatically wraps the function in a node, actually a monad, and binds both into the event processor. The wrapping node
 handles all the event notifications, invoking the user function when it is triggered. Each wrapping node can be the
 head of multiple child flows forming complex graph structures that obey the dispatch rules. This is in contrast to
@@ -305,6 +609,71 @@ last 4 elements:[B, C, D, E]
 
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
+{% endhighlight %}
+
+## Push to node
+A data flow can push a value to any normal java class
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c ->
+            DataFlow.subscribe(String.class)
+                    .push(new MyPushTarget()::updated)
+    );
+    processor.init();
+
+    processor.onEvent("AAA");
+    processor.onEvent("BBB");
+}
+
+public class MyPushTarget{
+    public void updated(String in){
+        System.out.println("received push: " + in);
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+{% highlight console %}
+received push: AAA
+received push: BBB
+{% endhighlight %}
+
+## Re-entrant events
+
+Events can be added for processing from inside the graph for processing in the next available cycle. Internal events
+are added to LIFO queue for processing in the correct order. The EventProcessor instance maintains the LIFO queue, any
+new input events are queued if there is processing currently acting. Support for internal event publishing is built
+into the streaming api.
+
+Maps an int signal to a String and republishes to the graph
+{% highlight java %}
+public static class MyNode {
+    @OnEventHandler
+    public boolean handleStringEvent(String stringToProcess) {
+        System.out.println("received [" + stringToProcess +"]");
+        return true;
+    }
+}
+
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(cfg -> {
+        DataFlow.subscribeToIntSignal("myIntSignal")
+            .mapToObj(d -> "intValue:" + d)
+            .console("republish re-entrant [{}]")
+            .processAsNewGraphEvent();
+        cfg.addNode(new MyNode());
+    });
+
+    processor.init();
+    processor.publishSignal("myIntSignal", 256);
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+republish re-entrant [intValue:256]
+received [intValue:256]
 {% endhighlight %}
 
 # Trigger control
@@ -827,10 +1196,7 @@ public class TumblingWindowSample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(rand.nextInt(100));
-                    },
+                    () -> processor.onEvent(rand.nextInt(100)),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -956,10 +1322,7 @@ public class SlidingWindowSample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(rand.nextInt(100));
-                    },
+                    () -> processor.onEvent(rand.nextInt(100)),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1245,10 +1608,7 @@ public class TumblingGroupBySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1301,10 +1661,7 @@ public class SlidingGroupBySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1365,10 +1722,7 @@ public class TumblingGroupByCompoundKeySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
@@ -1462,10 +1816,7 @@ public class SlidingGroupByCompoundKeySample {
 
         try (ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor()) {
             executor.scheduleAtFixedRate(
-                    () -> {
-                        processor.onEvent("tick");
-                        processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100)));
-                    },
+                    () -> processor.onEvent(new Trade(symbols[rand.nextInt(symbols.length)], clients[rand.nextInt(clients.length)], rand.nextInt(100))),
                     10,10, TimeUnit.MILLISECONDS);
             Thread.sleep(4_000);
         }
