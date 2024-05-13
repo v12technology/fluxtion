@@ -2323,7 +2323,24 @@ full outer join
 
 ## Multi join or Co-group
 
-Multi leg joins are supported
+Multi leg joins are supported with no limitation on the number of joins, The [MultiJoinBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/MultiJoinBuilder.java)
+is used to construct a multi leg join with a builder style pattern
+
+`MultiJoinBuilder.builder(Class<K> keyClass, Supplier<T> target`
+
+Legs are joined on a common key class results are sent to target class. Each join is added from a flow and pushed into
+the target class by specifying the consumer method on the target instance.
+
+`[multijoinbuilder].addJoin(GroupByFlowBuilder<K2, B> flow, BiConsumer<T, B> setter)`
+
+The GroupBy data flow is created by calling
+
+`[multijoinbuilder].dataFlow()`
+
+The example joins three groupBy data flows for a person, using the String name as a key. When a matching join is found
+individual item are set on MergedData instance. The MergedData instance is added to the GroupBy data flow keyed by name.
+The multi join data flow can be operated on as any normal flow, in this case we are mapping the value with a 
+pretty printing function.
 
 {% highlight java %}
 public class MultiJoinSample {
