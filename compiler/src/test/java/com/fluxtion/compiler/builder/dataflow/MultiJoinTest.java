@@ -5,7 +5,10 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
 import lombok.Data;
 import lombok.Value;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Map;
 
 public class MultiJoinTest extends MultipleSepTargetInProcessTest {
     public MultiJoinTest(SepTestConfig testConfig) {
@@ -15,7 +18,6 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void resetJoin() {
         writeSourceFile = true;
-//        MutableNumber mutableNumber = new MutableNumber();
         sep(c -> {
 
 
@@ -29,7 +31,9 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
                     .addJoin(middleBuilder, MergedData::setMiddleData)
                     .addJoin(rightBuilder, MergedData::setRightData)
                     .dataFlow()
+                    .mapValues(MergedData::formattedString)
                     .map(GroupBy::toMap)
+                    .id("results")
                     .console("This is it : {}")
             ;
         });
@@ -38,10 +42,23 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
 //        addSink("joined", (GroupBy g) -> mutableNumber.set(g.toMap().size()));
 //
         onEvent(new LeftData("greg", 47));
-//        Assert.assertEquals(0, mutableNumber.intValue());
-//
         onEvent(new MiddleData("greg", "male"));
         onEvent(new RightData("greg", "UK"));
+
+        Map<String, String> resultMap = getStreamed("results");
+
+        Assert.assertEquals(1, resultMap.size());
+        Assert.assertEquals(resultMap.get("greg"), "47 male UK");
+
+        onEvent(new LeftData("greg", 55));
+        Assert.assertEquals(resultMap.get("greg"), "55 male UK");
+
+
+        onEvent(new LeftData("tim", 47));
+        onEvent(new MiddleData("greg", "male"));
+        onEvent(new RightData("greg", "UK"));
+
+
 //        Assert.assertEquals(1, mutableNumber.intValue());
 //
 //        onEvent(new RightData("Bill", "UK"));
@@ -63,6 +80,10 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
         private LeftData leftData;
         private MiddleData middleData;
         private RightData rightData;
+
+        public String formattedString() {
+            return leftData.getAge() + " " + middleData.getSex() + " " + rightData.getCountry();
+        }
     }
 
     @Value
