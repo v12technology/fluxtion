@@ -370,12 +370,9 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
 
     /*
-    TODO:
-    ================
-    co-group joining multiple aggregates into a single row/object
-
     Done:
     ================
+    co-group joining multiple aggregates into a single row/object
     outer joins
     innerjoin
     groupBy - sliding window

@@ -7,8 +7,8 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 /**
  * Builds a co-group or multi leg join
  *
- * @param <K>
- * @param <T>
+ * @param <K> The key type for join stream
+ * @param <T> Target type of results for multi join
  */
 public class MultiJoinBuilder<K, T> {
 
