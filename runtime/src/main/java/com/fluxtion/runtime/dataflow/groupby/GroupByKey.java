@@ -41,7 +41,7 @@ public class GroupByKey<T> {
             }
         }
         valueClass = (Class<T>) accessors.get(0).method().getDeclaringClass();
-        name = valueClass.getName() + tmpName;
+        name = valueClass.getName() + tmpName.substring(0, tmpName.length());
     }
 
     public GroupByKey(LambdaReflection.SerializableFunction<T, ?> accessor) {
@@ -88,6 +88,7 @@ public class GroupByKey<T> {
             cloned.keyHolder.append(accessor.apply(input).toString());
             cloned.keyHolder.append("_");
         }
+        cloned.keyHolder.setLength(cloned.keyHolder.length() - 1);
         cloned.key = cloned.keyHolder.toString();
         return cloned;
     }
