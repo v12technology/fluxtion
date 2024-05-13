@@ -27,6 +27,18 @@ public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void mergeTestBasicWithBuilder() {
+        sep(c ->
+                MergeAndMapFlowBuilder.of(MyData::new)
+                        .required(subscribe(String.class), MyData::setValue)
+                        .dataFlow()
+                        .push(new ResultsHolder()::setMyData));
+        ResultsHolder resultsHolder = getField(ResultsHolder.NAME);
+        onEvent("hello world");
+        Assert.assertEquals("hello world", resultsHolder.getMyData().getValue());
+    }
+
+    @Test
     public void mergeTwoRequiredPropertiesTest() {
         sep(c -> DataFlow.mergeMap(
                         MergeAndMapFlowBuilder.of(MyData::new)
