@@ -2320,3 +2320,97 @@ full outer join
 {Belles=pupils[Channing], RGS=pupils[Bob,Ashkay], Framling=pupils[Sunita]}
 {Belles=pupils[Channing], St trinians=pupils[], RGS=pupils[Bob,Ashkay], Framling=pupils[Sunita]}
 {% endhighlight %}
+
+## Multi join or Co-group
+
+Multi leg joins are supported with no limitation on the number of joins, The [MultiJoinBuilder]({{site.fluxtion_src_compiler}}/builder/dataflow/MultiJoinBuilder.java)
+is used to construct a multi leg join with a builder style pattern
+
+`MultiJoinBuilder.builder(Class<K> keyClass, Supplier<T> target`
+
+Legs are joined on a common key class results are sent to target class. Each join is added from a flow and pushed into
+the target class by specifying the consumer method on the target instance.
+
+`[multijoinbuilder].addJoin(GroupByFlowBuilder<K2, B> flow, BiConsumer<T, B> setter)`
+
+The GroupBy data flow is created by calling
+
+`[multijoinbuilder].dataFlow()`
+
+The example joins three groupBy data flows for a person, using the String name as a key. When a matching join is found
+individual item are set on MergedData instance. The MergedData instance is added to the GroupBy data flow keyed by name.
+The multi join data flow can be operated on as any normal flow, in this case we are mapping the value with a 
+pretty printing function.
+
+{% highlight java %}
+public class MultiJoinSample {
+
+    public static void main(String[] args) {
+
+        var processor = Fluxtion.interpret(c -> {
+            var leftBuilder = DataFlow.groupBy(LeftData::getName);
+            var middleBuilder = DataFlow.groupBy(MiddleData::getName);
+            var rightBuilder = DataFlow.groupBy(RightData::getName);
+
+            MultiJoinBuilder.builder(String.class, MergedData::new)
+                    .addJoin(leftBuilder, MergedData::setLeftData)
+                    .addJoin(middleBuilder, MergedData::setMiddleData)
+                    .addJoin(rightBuilder, MergedData::setRightData)
+                    .dataFlow()
+                    .mapValues(MergedData::formattedString)
+                    .map(GroupBy::toMap)
+                    .console("multi join result : {}");
+        });
+        processor.init();
+
+        processor.onEvent(new LeftData("greg", 47));
+        processor.onEvent(new MiddleData("greg", "male"));
+        processor.onEvent(new RightData("greg", "UK"));
+        //update
+        processor.onEvent(new LeftData("greg", 55));
+        //new record
+        processor.onEvent(new LeftData("tim", 47));
+        processor.onEvent(new MiddleData("tim", "male"));
+        processor.onEvent(new RightData("tim", "UK"));
+
+    }
+
+    @Data
+    public static class MergedData {
+        private LeftData leftData;
+        private MiddleData middleData;
+        private RightData rightData;
+
+        public String formattedString() {
+            return leftData.getAge() + " " + middleData.getSex() + " " + rightData.getCountry();
+        }
+    }
+
+    @Value
+    public static class LeftData {
+        String name;
+        int age;
+    }
+
+    @Value
+    public static class MiddleData {
+        String name;
+        String sex;
+    }
+
+
+    @Value
+    public static class RightData {
+        String name;
+        String country;
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+multi join result : {greg=47 male UK}
+multi join result : {greg=55 male UK}
+multi join result : {tim=47 male UK, greg=55 male UK}
+{% endhighlight %}

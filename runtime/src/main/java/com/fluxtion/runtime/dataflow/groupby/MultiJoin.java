@@ -30,11 +30,11 @@ public class MultiJoin<K, T> implements TriggeredFlowFunction<GroupBy<K, T>>, Gr
 
 
     public <A, B> MultiJoin<K, T> addJoin(FlowSupplier<GroupBy<A, B>> flow1, LambdaReflection.SerializableBiConsumer<T, B> setter1) {
-        LegMapper<T> legMapper = new MultiJoin.LegMapper<>();
-        legMapper.setFlow(flow1);
-        legMapper.setSetter(setter1);
-        legMappers.add(legMapper);
-        return this;
+        return _addOptionalJoin(flow1, setter1, false);
+    }
+
+    public <A, B> MultiJoin<K, T> addOptionalJoin(FlowSupplier<GroupBy<A, B>> flow1, LambdaReflection.SerializableBiConsumer<T, B> setter1) {
+        return _addOptionalJoin(flow1, setter1, true);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,9 +57,13 @@ public class MultiJoin<K, T> implements TriggeredFlowFunction<GroupBy<K, T>>, Gr
         for (int i = 0, legMappersSize = legMappers.size(); i < legMappersSize; i++) {
             LegMapper<T> legMapper = legMappers.get(i);
             if (legMapper.flow.get() == null || legMapper.flow.get().toMap().get(key) == null) {
-                updated = false;
-                joinedGroup.toMap().remove(key);
-                return;
+                if (legMapper.optional) {
+                    continue;
+                } else {
+                    updated = false;
+                    joinedGroup.toMap().remove(key);
+                    return;
+                }
             }
             Object value = legMapper.flow.get().toMap().get(key);
             legMapper.updateTarget(target, value);
@@ -73,6 +77,19 @@ public class MultiJoin<K, T> implements TriggeredFlowFunction<GroupBy<K, T>>, Gr
         boolean tempUpdateFLag = updated;
         updated = false;
         return tempUpdateFLag;
+    }
+
+    public <A, B> MultiJoin<K, T> _addOptionalJoin(
+            FlowSupplier<GroupBy<A, B>> flow1,
+            LambdaReflection.SerializableBiConsumer<T, B> setter1,
+            boolean optional
+    ) {
+        LegMapper<T> legMapper = new MultiJoin.LegMapper<>();
+        legMapper.setFlow(flow1);
+        legMapper.setSetter(setter1);
+        legMapper.setOptional(optional);
+        legMappers.add(legMapper);
+        return this;
     }
 
     @Override
@@ -146,6 +163,7 @@ public class MultiJoin<K, T> implements TriggeredFlowFunction<GroupBy<K, T>>, Gr
     public static class LegMapper<T> {
         private FlowSupplier<GroupBy<Object, Object>> flow;
         private LambdaReflection.SerializableBiConsumer<T, Object> setter;
+        private boolean optional = false;
 
         @SuppressWarnings("unchecked")
         public <A, B> void setFlow(FlowSupplier<GroupBy<A, B>> flow1) {
