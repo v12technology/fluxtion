@@ -29,6 +29,13 @@ public class MultiJoinBuilder<K, T> {
         return this;
     }
 
+    public <K2 extends K, B> MultiJoinBuilder<K, T> addOptionalJoin(
+            GroupByFlowBuilder<K2, B> flow1,
+            LambdaReflection.SerializableBiConsumer<T, B> setter1) {
+        multiLegJoin.addOptionalJoin(flow1.flowSupplier(), setter1);
+        return this;
+    }
+
     public GroupByFlowBuilder<K, T> dataFlow() {
         EventProcessorBuilderService.service().add(multiLegJoin);
         return new GroupByFlowBuilder<>(multiLegJoin);
