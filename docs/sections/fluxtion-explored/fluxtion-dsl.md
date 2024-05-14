@@ -541,6 +541,22 @@ public class MyFunctions {
 }
 {% endhighlight %}
 
+# Connecting DataFlow and nodes
+
+An event processor supports bi-directional linking between flows and normal java classes, also known as nodes,  in the 
+event processor. 
+
+{: .info }
+Connecting DataFlow and nodes is a powerful mechanism for joining functional and imperative programming in a streaming environment
+{: .fs-4 }
+
+Supported bindings:
+
+* Node to data flow. The node is the start of a data flow
+* Data flow to node. The node has runtime access to pull current value of a data flow
+* Data flow Push to node. Data is pushed from the data flow to the node
+* Data flow to event processor. Data flow pushes re-entrant events to parent event processor, triggers new calculation cycle
+
 ## Node to DataFlow
 A Dataflow can be created by subscribing to a node that has been imperatively added to the event processor. When the node 
 triggers in a calculation cycle the DataFlow will be triggered. Create a DataFlow from a node with:
@@ -609,6 +625,48 @@ last 4 elements:[B, C, D, E]
 
 node triggered -> SubscribeToNodeSample.MyComplexNode(in=F)
 last 4 elements:[C, D, E, F]
+{% endhighlight %}
+
+
+## DataFlow to node
+A data flow can be consumed by a normal java class within the event processor. The data flow runtime class is
+
+[FlowSupplier]({{site.fluxtion_src_runtime}}/dataflow/FlowSupplier.java)
+
+FlowSupplier is a normal java Supplier the current value can be accessed by calling get(). When the data flow triggers
+the OnTrigger callback method in the child class will be called.
+
+When building the processor, the FlowSupplier is accessed with:
+
+`[DataFlow].flowSupplier()`
+
+This example binds a data flow of String's to a java record that has an onTrigger method annotated with `@OnTrigger`
+
+{% highlight java %}
+public static void main(String[] args) {
+    var processor = Fluxtion.interpret(c -> {
+        var flowSupplier = DataFlow.subscribe(String.class).flowSupplier();
+        new MyFlowHolder(flowSupplier);
+    });
+    processor.init();
+
+    processor.onEvent("test");
+}
+
+public record MyFlowHolder(FlowSupplier<String> flowSupplier) {
+    @OnTrigger
+    public boolean onTrigger() {
+        //FlowSupplier is used at runtime to access the current value of the data flow
+        System.out.println("data flow value : " + flowSupplier.get().toUpperCase());
+        return true;
+    }
+}
+
+{% endhighlight %}
+
+Running the example code above logs to console
+{% highlight console %}
+triggered by data flow -> TEST
 {% endhighlight %}
 
 ## Push to node
@@ -2333,13 +2391,20 @@ the target class by specifying the consumer method on the target instance.
 
 `[multijoinbuilder].addJoin(GroupByFlowBuilder<K2, B> flow, BiConsumer<T, B> setter)`
 
+An optional join can be specified. The optional will be null in the target instance until a key match is found
+
+`[multijoinbuilder].addOptionalJoin(GroupByFlowBuilder<K2, B> flow, BiConsumer<T, B> setter)`
+
 The GroupBy data flow is created by calling
 
 `[multijoinbuilder].dataFlow()`
 
-The example joins three groupBy data flows for a person, using the String name as a key. When a matching join is found
-individual item are set on MergedData instance. The MergedData instance is added to the GroupBy data flow keyed by name.
-The multi join data flow can be operated on as any normal flow, in this case we are mapping the value with a 
+The example joins four groupBy data flows for a person, using the String name as a key. When a matching join is found
+individual item are set on MergedData instance. Dependents are an optional requirement for the join, so is not required
+to publish a MergedData record to the flow. 
+
+The MergedData instance is added to the GroupBy data flow keyed by name. The multi join data flow can be operated on 
+as any normal flow, in this case we are mapping the value with a 
 pretty printing function.
 
 {% highlight java %}
@@ -2348,14 +2413,16 @@ public class MultiJoinSample {
     public static void main(String[] args) {
 
         var processor = Fluxtion.interpret(c -> {
-            var leftBuilder = DataFlow.groupBy(LeftData::getName);
-            var middleBuilder = DataFlow.groupBy(MiddleData::getName);
-            var rightBuilder = DataFlow.groupBy(RightData::getName);
+            var ageDataFlow = DataFlow.groupBy(Age::getName);
+            var genderDataFlow = DataFlow.groupBy(Gender::getName);
+            var nationalityDataFlow = DataFlow.groupBy(Nationality::getName);
+            var dependentDataFlow = DataFlow.groupByToList(Dependent::getGuardianName);
 
             MultiJoinBuilder.builder(String.class, MergedData::new)
-                    .addJoin(leftBuilder, MergedData::setLeftData)
-                    .addJoin(middleBuilder, MergedData::setMiddleData)
-                    .addJoin(rightBuilder, MergedData::setRightData)
+                    .addJoin(ageDataFlow, MergedData::setAge)
+                    .addJoin(genderDataFlow, MergedData::setGender)
+                    .addJoin(nationalityDataFlow, MergedData::setNationality)
+                    .addOptionalJoin(dependentDataFlow, MergedData::setDependent)
                     .dataFlow()
                     .mapValues(MergedData::formattedString)
                     .map(GroupBy::toMap)
@@ -2363,46 +2430,62 @@ public class MultiJoinSample {
         });
         processor.init();
 
-        processor.onEvent(new LeftData("greg", 47));
-        processor.onEvent(new MiddleData("greg", "male"));
-        processor.onEvent(new RightData("greg", "UK"));
+        processor.onEvent(new Age("greg", 47));
+        processor.onEvent(new Gender("greg", "male"));
+        processor.onEvent(new Nationality("greg", "UK"));
         //update
-        processor.onEvent(new LeftData("greg", 55));
+        processor.onEvent(new Age("greg", 55));
         //new record
-        processor.onEvent(new LeftData("tim", 47));
-        processor.onEvent(new MiddleData("tim", "male"));
-        processor.onEvent(new RightData("tim", "UK"));
+        processor.onEvent(new Age("tim", 47));
+        processor.onEvent(new Gender("tim", "male"));
+        processor.onEvent(new Nationality("tim", "UK"));
+
+        processor.onEvent(new Dependent("greg", "ajay"));
+        processor.onEvent(new Dependent("greg", "sammy"));
 
     }
 
     @Data
     public static class MergedData {
-        private LeftData leftData;
-        private MiddleData middleData;
-        private RightData rightData;
+        private Age age;
+        private Gender gender;
+        private Nationality nationality;
+        private List<Dependent> dependent;
 
         public String formattedString() {
-            return leftData.getAge() + " " + middleData.getSex() + " " + rightData.getCountry();
+            String dependentString = " no dependents";
+            if (dependent != null) {
+                dependentString = dependent.stream()
+                        .map(Dependent::getDependentName)
+                        .collect(Collectors.joining(", ", " guardian for: [", "]"));
+            }
+            return age.getAge() + " " + gender.getSex() + " " + nationality.getCountry() + dependentString;
         }
     }
 
     @Value
-    public static class LeftData {
+    public static class Age {
         String name;
         int age;
     }
 
     @Value
-    public static class MiddleData {
+    public static class Gender {
         String name;
         String sex;
     }
 
 
     @Value
-    public static class RightData {
+    public static class Nationality {
         String name;
         String country;
+    }
+
+    @Value
+    public static class Dependent {
+        String guardianName;
+        String dependentName;
     }
 }
 {% endhighlight %}
@@ -2410,7 +2493,9 @@ public class MultiJoinSample {
 Running the example code above logs to console
 
 {% highlight console %}
-multi join result : {greg=47 male UK}
-multi join result : {greg=55 male UK}
-multi join result : {tim=47 male UK, greg=55 male UK}
+multi join result : {greg=47 male UK no dependents}
+multi join result : {greg=55 male UK no dependents}
+multi join result : {tim=47 male UK no dependents, greg=55 male UK no dependents}
+multi join result : {tim=47 male UK no dependents, greg=55 male UK guardian for: [ajay]}
+multi join result : {tim=47 male UK no dependents, greg=55 male UK guardian for: [ajay, sammy]}
 {% endhighlight %}
