@@ -428,40 +428,9 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(getStreamed("value"), is(new KeyedData("B", 50)));
     }
 
-    @Test
-    public void bimapKeyedParamStream() {
-        Map<String, KeyedData> expected = new HashMap<>();
-        sep(c -> {
-            subscribe(KeyedData.class).groupBy(KeyedData::getId)
-                    .coGroup(
-                            subscribe(Data.class).groupBy(Data::getName).defaultValue(GroupBy.emptyCollection()), GroupByTest::applyFactor,
-                            new Data("default", 3)
-                    )
-                    .map(GroupBy::toMap)
-                    .id("results");
-        });
-
-        onEvent(new KeyedData("A", 400));
-        expected.put("A", new KeyedData("A", 1200));
-        MatcherAssert.assertThat(getStreamed("results"), is(expected));
-
-        onEvent(new KeyedData("B", 10));
-        expected.put("B", new KeyedData("B", 30));
-        MatcherAssert.assertThat(getStreamed("results"), is(expected));
-
-        onEvent(new Data("B", 5));
-        expected.put("B", new KeyedData("B", 50));
-        MatcherAssert.assertThat(getStreamed("results"), is(expected));
-
-        onEvent(new Data("A", 1));
-        expected.put("A", new KeyedData("A", 400));
-        MatcherAssert.assertThat(getStreamed("results"), is(expected));
-    }
-
     public static KeyedData applyFactor(KeyedData keyedData, Data factor) {
         return new KeyedData(keyedData.getId(), keyedData.getAmount() * factor.getValue());
     }
-
 
     @Value
     public static class Data {
@@ -748,40 +717,6 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         public boolean hasUsdRate() {
             return getUsdContraCcy() != null;
         }
-    }
-
-    @Test
-    public void complexGroupByJoinThenBiMapThenReduceTest() {
-        sep(c -> {
-            val positionMap = JoinFlowBuilder.outerJoin(
-                            DataFlow.groupBy(Trade::getDealtCcy, Trade::getDealtVolume, Aggregates.doubleSumFactory()),
-                            DataFlow.groupBy(Trade::getContraCcy, Trade::getContraVolume, DoubleSumFlowFunction::new))
-                    .mapValues(Tuples.replaceNull(0d, 0d))
-                    .mapValues(Tuples.mapTuple(Mappers::addDoubles));
-
-            val rateMap = subscribe(MidPrice.class)
-                    .filter(MidPrice::hasUsdRate)
-                    .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
-                    .defaultValue(GroupBy.emptyCollection());
-
-            positionMap.coGroup(rateMap, Mappers::multiplyDoubles, Double.NaN)
-                    .reduceValues(DoubleSumFlowFunction::new)
-                    .id("pnl");
-        });
-
-        onEvent(new Trade("EURUSD", 100, -200));
-        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
-        onEvent(new Trade("EURUSD", 100, -200));
-        onEvent(new Trade("USDJPY", 500, -200000));
-
-        onEvent(new MidPrice("USDUSD", 1));
-        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
-        onEvent(new MidPrice("GBPUSD", 1.2));
-        onEvent(new MidPrice("EURUSD", 1.5));
-        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
-
-        onEvent(new MidPrice("USDJPY", 100));
-        MatcherAssert.assertThat(getStreamed("pnl"), is(closeTo(-1600, 0.01)));
     }
 
     @Test

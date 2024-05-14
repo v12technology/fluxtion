@@ -13,7 +13,7 @@ public class Tuples {
         return new ReplaceNull<>(first, second)::replaceNull;
     }
 
-    public static <F, S, R> SerializableFunction<Tuple<F, S>, R>
+    public static <F, S, R, T extends Tuple<F, S>> SerializableFunction<T, R>
     mapTuple(SerializableBiFunction<F, S, R> tupleMapFunction) {
         return new MapTuple<>(tupleMapFunction)::mapTuple;
     }

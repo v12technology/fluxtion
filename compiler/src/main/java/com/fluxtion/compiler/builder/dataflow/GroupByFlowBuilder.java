@@ -69,42 +69,6 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new GroupByMapFlowFunction(mappingFunction)::mapValues));
     }
 
-    /**
-     * Joins to stream together by key, specifying the aggregate operation that should be used to join the values
-     *
-     * @param streamToJoin        the other GroupBy flow to join with
-     * @param mergeValuesFunction The bi map function that will merge values from the two streams
-     * @param <K2>                Key type of other GroupBy flow
-     * @param <V2>                Value type of other GroupBy flow
-     * @param <VOUT>              Output type of bi map merge function
-     * @return The co-grouped GroupByFlowBuilder
-     */
-    public <K2 extends K, V2, VOUT>
-    GroupByFlowBuilder<K, VOUT> coGroup(
-            GroupByFlowBuilder<K2, V2> streamToJoin,
-            SerializableBiFunction<V, V2, VOUT> mergeValuesFunction
-    ) {
-        return coGroup(streamToJoin, mergeValuesFunction, null);
-    }
-
-    /**
-     * @param streamToJoin          the other GroupBy flow to join with
-     * @param mergeValuesFunction   The bi map function that will merge values from the two streams
-     * @param defaultSecondArgument default initial value
-     * @param <K2>                  Key type of other GroupBy flow
-     * @param <V2>                  Value type of other GroupBy flow
-     * @param <VOUT>                Output type of bi map merge function
-     * @return The co-grouped GroupByFlowBuilder
-     */
-    public <K2 extends K, V2, VOUT>
-    GroupByFlowBuilder<K, VOUT> coGroup(
-            GroupByFlowBuilder<K2, V2> streamToJoin,
-            SerializableBiFunction<V, V2, VOUT> mergeValuesFunction,
-            V2 defaultSecondArgument) {
-        GroupByMapFlowFunction invoker = new GroupByMapFlowFunction(null, mergeValuesFunction, defaultSecondArgument);
-        return mapBiFunction(invoker::biMapValuesWithParamMap, streamToJoin);
-    }
-
     public <R, F extends AggregateFlowFunction<V, R, F>> FlowBuilder<R> reduceValues(
             SerializableSupplier<F> aggregateFactory) {
         return new FlowBuilder<>(new MapRef2RefFlowFunction<>(eventStream,

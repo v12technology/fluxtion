@@ -5,6 +5,7 @@ import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
+import com.fluxtion.runtime.dataflow.groupby.MultiJoin;
 import com.fluxtion.runtime.dataflow.helpers.GroupingFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -188,6 +189,10 @@ public class FieldSerializer implements MapFieldToJavaSource {
         if (instance instanceof GroupByKey) {
             GroupByKey groupByKey = (GroupByKey) instance;
             return "<" + classNameConverter.apply(groupByKey.getValueClass()) + ">";
+        }
+        if (instance instanceof MultiJoin.LegMapper<?>) {
+            MultiJoin.LegMapper<?> multiLegJoin = (MultiJoin.LegMapper<?>) instance;
+            return "<" + classNameConverter.apply(multiLegJoin.targetClass()) + ">";
         }
         return "";
     }
