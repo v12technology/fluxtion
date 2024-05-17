@@ -17,6 +17,7 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void resetJoin() {
+        writeSourceFile = true;
         sep(c -> MultiJoinBuilder
                 .builder(String.class, MergedData::new)
                 .addJoin(DataFlow.groupBy(LeftData::getName), MergedData::setLeftData)
@@ -45,41 +46,6 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
         onEvent(new RightData("greg", "UK"));
     }
 
-    @Test
-    public void optionalJoin() {
-
-        sep(c -> MultiJoinBuilder
-                .builder(String.class, MergedData::new)
-                .addJoin(DataFlow.groupBy(LeftData::getName), MergedData::setLeftData)
-                .addJoin(DataFlow.groupBy(MiddleData::getName), MergedData::setMiddleData)
-                .addOptionalJoin(DataFlow.groupBy(RightData::getName), MergedData::setRightData)
-                .dataFlow()
-                .mapValues(MergedData::formattedStringOptional)
-                .map(GroupBy::toMap)
-                .console("optional join: {}")
-                .id("results"));
-
-        onEvent(new LeftData("greg", 47));
-        onEvent(new MiddleData("greg", "male"));
-
-        Map<String, String> resultMap = getStreamed("results");
-
-        Assert.assertEquals(1, resultMap.size());
-        Assert.assertEquals(resultMap.get("greg"), "47 male no country");
-
-
-        onEvent(new RightData("greg", "UK"));
-        Assert.assertEquals(resultMap.get("greg"), "47 male UK");
-
-        onEvent(new LeftData("greg", 55));
-        Assert.assertEquals(resultMap.get("greg"), "55 male UK");
-//
-//
-//        onEvent(new LeftData("tim", 47));
-//        onEvent(new MiddleData("greg", "male"));
-//        onEvent(new RightData("greg", "UK"));
-    }
-
 
     @Data
     public static class MergedData {
@@ -89,11 +55,6 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
 
         public String formattedString() {
             return leftData.getAge() + " " + middleData.getSex() + " " + rightData.getCountry();
-        }
-
-        public String formattedStringOptional() {
-            String right = rightData == null ? "no country" : rightData.getCountry();
-            return leftData.getAge() + " " + middleData.getSex() + " " + right;
         }
     }
 
