@@ -430,4 +430,15 @@ public interface StaticEventProcessor extends NodeDiscovery {
             serviceConsumer.accept(exportedService);
         }
     }
+
+
+    /**
+     * Register a Consumer that will be called whenever an event is posted to the processor but there are no registered
+     * event handlers for that type.
+     *
+     * @param consumer The Unknown event type handler
+     * @param <T>      The type of the event
+     */
+    default <T> void setUnKnownEventHandler(Consumer<T> consumer) {
+    }
 }
