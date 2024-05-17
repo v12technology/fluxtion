@@ -737,9 +737,13 @@ public class JavaSourceGenerator {
                 dispatchStringNoId += String.format("%16shandleEvent(event);%n", "");
                 dispatchStringNoId += String.format("%12s}%n", "");
             } else if (!keySet.contains(Object.class) && patternSwitch) {
-                dispatchStringNoId += "default -> {}";
+                dispatchStringNoId += "default -> {unKnownEventHandler(event);}";
             }
             dispatchStringNoId += String.format("%8s}%n", "");
+        } else if (!keySet.contains(Object.class)) {
+            dispatchStringNoId += String.format("%12selse{ %n", "");
+            dispatchStringNoId += String.format("%12sunKnownEventHandler(event); %n", "");
+            dispatchStringNoId += String.format("%12s}%n", "");
         }
         if (isInlineEventHandling) {
             dispatchStringNoId += String.format("%8safterEvent();%n", "");
@@ -1473,7 +1477,7 @@ public class JavaSourceGenerator {
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassTypeName)
                     .sorted()
-                    .collect(Collectors.joining(", ", ", ", ""));
+                    .collect(Collectors.joining(", ", "\n /*--- @ExportService start ---*/\n ", ",\n/*--- @ExportService end ---*/\n"));
         }
     }
 

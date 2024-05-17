@@ -8,6 +8,7 @@ example_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbo
 ---
 
 # Work in progress
+**TO BE COMPLETED**
 
 # Realtime data ingestion example
 ---
@@ -49,6 +50,10 @@ flowchart TB
   input(Csv record stream) --> csv_validator 
   config(x-former config) --> x-former 
 
+  csv_writer --> postProcessHouse.csv[(postProcessHouse.csv)]
+  stats --> processStats.rpt[(processStats.rpt)]
+  binary_writer --> postProcessHouse.binary[(postProcessHouse.binary)]
+  invalid --> processingErrors.log[(processingErrors.log)]
 ```
 ## Solution design
 This example using the Fluxtion DataFlow api to manage event subscription and notification to user supplied functions.
@@ -61,11 +66,6 @@ in the business logic only pure vanilla java. The advantages of this approach:
 * Business code is not tied to a library api
 * There is a clear separation between event notification and business logic
 * The aot generated source file DataIngestionPipeline simplifies debugging
-
-## API
-
-## User functions
-
 
 ## Pipeline building
 The [PipelineBuilder]({{page.example_src}}/dataingestion/PipelineBuilder.java) builds the processing pipeline with the 
@@ -135,7 +135,68 @@ public class PipelineBuilder implements FluxtionGraphBuilder {
 }
 ```
 
+## User functions
+
+User functions are bound into the event processor and perform the actual business processing. The dsl binds a function 
+into the graph, all state management and event dispatch is handled by the event processor. Developers can concentrate on
+writing business logic confident that all dispatch will be automatically generated.
+
+There are a several user functions for handling and processing data in the pipeline. All the functions are simple java
+POJO's, an export service annotation allows a function to receive a config callback from the outside world.
+
+* **CsvToHouseRecordSerializer** - converts csv string to a HouseRecord pojo
+* **HouseRecordTransformer** - applies a custom transformer to a HouseRecord. The transformer is supplied at runtime and is dynamic
+* **HouseRecordValidator** - applies a custom validator to a HouseRecord. The validator is supplied at runtime and is dynamic
+* **InvalidLogWriter** - writes error log to a custom writer. The writer is supplied at runtime and is dynamic
+* **PostProcessBinaryWriter** - writes binary output of valid records to a custom writer. The writer is supplied at runtime and is dynamic
+* **PostProcessCsvWriter** - writes csv output of valid records to a custom writer. The writer is supplied at runtime and is dynamic
+* **ProcessingStats** - writes processing stats report to a custom writer. The writer is supplied at runtime and is dynamic
+
+A sample user function is shown below, all the user functions are [in this package]({{page.example_src}}/dataingestion/function)
+
+```java
+public class InvalidLogWriter
+        implements
+        DataIngestLifecycle,
+        @ExportService(propagate = false) DataIngestComponent {
+
+    private Writer logWriter;
+
+    @Override
+    public void init() {
+        logWriter = NullWriter.NULL_WRITER;
+    }
+
+    @Override
+    public boolean configUpdate(DataIngestConfig config) {
+        logWriter = config.getInvalidLogWriter() == null ? NullWriter.NULL_WRITER : config.getInvalidLogWriter();
+        return false;
+    }
+
+    @SneakyThrows
+    public void badCsvRecord(CsvToHouseRecordSerializer message) {
+        String inputString = message.getInputString().substring(0, message.getInputString().length() - 1);
+        logWriter.append("csv error " + message.getProcessingException().getMessage() + " msg[" + inputString + "]\n");
+    }
+
+    @SneakyThrows
+    public void invalidHouseRecord(HouseRecordValidator message) {
+        logWriter.append("validation error record[" + message.getInValidHouseRecord() + "]\n");
+    }
+
+    @Override
+    @SneakyThrows
+    public void tearDown() {
+        logWriter.flush();
+    }
+}
+```
+
+## API
+**TO BE COMPLETED**
+
 ## Testing
+**TO BE COMPLETED**
 
 ## Running
 The main method uses the executes a DataIngestionPipeline with data from kaggle's AmesHousing.csv data file.

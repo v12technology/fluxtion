@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -63,6 +64,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     private boolean isDefaultHandling;
     private boolean initCalled = false;
     private Object exportingWrapper;
+    private Consumer unKnownEventHandler = (e) -> {
+    };
 
     public InMemoryEventProcessor(SimpleEventProcessorModel simpleEventProcessorModel, EventProcessorConfig config) {
         this.simpleEventProcessorModel = simpleEventProcessorModel;
@@ -195,13 +198,18 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         log.debug("dirtyBitset, after:{}", updateBitset);
         log.debug("======== GRAPH CYCLE START EVENT:[{}] ========", event);
         log.debug("======== process event ========");
+        boolean eventMatched = false;
         for (int i = checkForForkedTask(-1, updateBitset); i >= 0; i = checkForForkedTask(i, updateBitset)) {
             log.debug("event dispatch bitset index[{}] handler[{}::{}]",
                     i,
                     eventHandlers.get(i).callbackHandle.getVariableName(),
                     eventHandlers.get(i).callbackHandle.getMethod().getName()
             );
+            eventMatched = true;
             eventHandlers.get(i).onEvent(event);
+        }
+        if (!eventMatched) {
+            unKnownEventHandler.accept(event);
         }
         postProcessBufferingBitset.or(updateBitset);
         if (!buffer) {
@@ -826,4 +834,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
     }
 
+    @Override
+    public <T> void setUnKnownEventHandler(Consumer<T> consumer) {
+        this.unKnownEventHandler = consumer;
+    }
 }

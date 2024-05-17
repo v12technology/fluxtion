@@ -44,7 +44,7 @@ ${MODEL.javaDocEventClassList}
 */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ${className} implements
-EventProcessor<${className}>, StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle ${MODEL.additionalInterfaces}{
+EventProcessor<${className}>, ${MODEL.additionalInterfaces} StaticEventProcessor, InternalEventProcessor, BatchHandler, Lifecycle {
 
 //Node declarations
 ${MODEL.nodeDeclarations}
@@ -60,6 +60,8 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     ${MODEL.forkDeclarations}
     //Filter constants
     ${MODEL.filterConstantDeclarations}
+    //unknown event handler
+    Consumer unKnownEventHandler = (e) -> {};
 
     public  ${className} (Map<Object, Object> contextMap) {
         context.replaceMappings(contextMap);
@@ -251,5 +253,14 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
         } catch (Throwable e) {
             return "";
         }
+    }
+
+    public void unKnownEventHandler(Object object) {
+        unKnownEventHandler.accept(object);
+    }
+
+    @Override
+    public <T> void setUnKnownEventHandler(Consumer<T> consumer){
+        unKnownEventHandler = consumer;
     }
 }

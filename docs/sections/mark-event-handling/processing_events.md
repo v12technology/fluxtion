@@ -193,6 +193,41 @@ MyNode-A::handleIntSignal - 22
 MyNode-B::handleIntSignal - 45
 {% endhighlight %}
 
+## Handling unknown event types
+An unknown event handler can be registered at runtime with the event processor, to catch any event types that are not handled
+by the processor. Register the unKnownEventHandler with:
+
+`[processor].setUnKnownEventHandler(Consumer<T> consumer)`
+
+{% highlight java %}
+public class UnknownEventHandling {
+
+    public static void main(String[] args) {
+        var processor = Fluxtion.interpret(new MyNode());
+        processor.init();
+        //set an unknown event handler
+        processor.setUnKnownEventHandler(e -> System.out.println("Unregistered event type -> " + e.getClass().getName()));
+        processor.onEvent("TEST");
+        //handled by unKnownEventHandler
+        processor.onEvent(Collections.emptyList());
+    }
+
+    public static class MyNode {
+        @OnEventHandler
+        public boolean handleStringEvent(String stringToProcess) {
+            System.out.println("received:" + stringToProcess);
+            return true;
+        }
+    }
+}
+{% endhighlight %}
+
+Output
+{% highlight console %}
+received:TEST
+Unregistered event type -> java.util.Collections$EmptyList
+{% endhighlight %}
+
 ## Triggering children
 Event notification is propagated to child instances of event handlers. The notification is sent to any method that is
 annotated with an `@OnTrigger` annotation. Trigger propagation is in topological order.
