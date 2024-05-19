@@ -33,6 +33,8 @@ import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.time.Clock;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.typetools.TypeResolver;
 import org.reflections.ReflectionUtils;
@@ -212,6 +214,10 @@ public class SimpleEventProcessorModel {
      * subsequent event filtering.
      */
     private boolean supportDirtyFiltering;
+    @Setter
+    @Getter
+    private boolean dispatchOnlyVersion = false;
+
     private final FieldSerializer fieldSerializer;
     private List<CbMethodHandle> triggerOnlyCallBacks;
     private Set<Object> forkedTriggerInstances;

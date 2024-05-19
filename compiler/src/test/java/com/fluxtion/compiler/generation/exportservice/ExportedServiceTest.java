@@ -176,7 +176,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateAnyFunctionTest() {
-        writeOutputsToFile(true);
         sep(c -> {
             NoPropagateAnyMethodsMySvc noPropagateAnyMethodsMySvc = new NoPropagateAnyMethodsMySvc();
             noPropagateAnyMethodsMySvc.triggerObject = new StringHandler();
@@ -206,7 +205,6 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void noPropagateWholeServiceTest() {
-        writeOutputsToFile(true);
         sep(c -> {
             NoPropagateMySvc noPropagateAnyMethodsMySvc = new NoPropagateMySvc();
             noPropagateAnyMethodsMySvc.triggerObject = new StringHandler();

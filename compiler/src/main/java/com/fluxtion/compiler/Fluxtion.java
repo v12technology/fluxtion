@@ -74,6 +74,47 @@ public interface Fluxtion {
         return EventProcessorFactory.compile(sepConfig, cfgBuilder);
     }
 
+    /**
+     * Compile an event processor with a dispatch table using the object graph provided. This event processor will
+     * dispatch to the object instances provided in the EventProcessorConfig
+     *
+     * @param sepConfig the event processor config to build with
+     * @return A compiled event processor with a dispatch table calling instances supplied in the EventProcessorConfig
+     */
+    @SneakyThrows
+    static EventProcessor<?> compileDispatcher(SerializableConsumer<EventProcessorConfig> sepConfig) {
+        return compileDispatcher(sepConfig, null);
+    }
+
+    /**
+     * /**
+     * Compile an event processor with a dispatch table using the object graph provided. This event processor will
+     * dispatch to the object instances provided in the EventProcessorConfig
+     *
+     * @param sepConfig    the event processor config to build with
+     * @param sourceWriter target to write the generated source to
+     * @return A compiled event processor with a dispatch table calling instances supplied in the EventProcessorConfig
+     */
+    @SneakyThrows
+    static EventProcessor<?> compileDispatcher(SerializableConsumer<EventProcessorConfig> sepConfig, Writer sourceWriter) {
+        return EventProcessorFactory.compileDispatcher(sepConfig, sourceWriter);
+    }
+
+    /**
+     * Compile an event processor with a dispatch table using the object graph provided. This event processor will
+     * dispatch to the object instances provided as vara args
+     *
+     * @param nodes the instances to bind into the compiled event processor
+     * @return A compiled event processor with a dispatch table calling instances supplied in the EventProcessorConfig
+     */
+    static EventProcessor<?> compileDispatcher(Object... nodes) {
+        return compileDispatcher(c -> {
+            for (int i = 0; i < nodes.length; i++) {
+                c.addNode(nodes[i]);
+            }
+        });
+    }
+
     @SneakyThrows
     static EventProcessor compileAot(SerializableConsumer<EventProcessorConfig> cfgBuilder) {
         String packageName = (cfgBuilder.getContainingClass().getCanonicalName() + "." + cfgBuilder.method().getName()).toLowerCase();

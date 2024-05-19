@@ -17,7 +17,6 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void resetJoin() {
-        writeSourceFile = true;
         sep(c -> MultiJoinBuilder
                 .builder(String.class, MergedData::new)
                 .addJoin(DataFlow.groupBy(LeftData::getName), MergedData::setLeftData)

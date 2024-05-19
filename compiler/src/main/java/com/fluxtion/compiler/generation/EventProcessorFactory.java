@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation;
 
+import com.fluxtion.compiler.EventDispatcher;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
 import com.fluxtion.compiler.RootNodeConfig;
@@ -29,6 +30,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -88,6 +92,32 @@ public class EventProcessorFactory {
         return compile(name, pkg, builder);
     }
 
+    public static EventProcessor<?> compileDispatcher(SerializableConsumer<EventProcessorConfig> builder, Writer sourceWriter) throws Exception {
+        String className = "Processor";
+        String packageName = (builder.getContainingClass().getCanonicalName() + "." + builder.method().getName()).toLowerCase();
+
+        FluxtionCompilerConfig compilerCfg = new FluxtionCompilerConfig();
+        compilerCfg.setDispatchOnlyVersion(true);
+        compilerCfg.setInterpreted(false);
+        if (sourceWriter != null) {
+            compilerCfg.setSourceWriter(sourceWriter);
+        }
+        compilerCfg.setPackageName(packageName);
+        compilerCfg.setClassName(className);
+        compilerCfg.setWriteSourceToFile(false);
+        compilerCfg.setFormatSource(true);
+        compilerCfg.setGenerateDescription(false);
+
+        EventProcessorCompilation compiler = new EventProcessorCompilation();
+        Class<EventProcessor<?>> sepClass = compiler.compile(compilerCfg, new InProcessEventProcessorConfig(builder));
+        EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
+
+        Map<String, Object> instanceMap = new HashMap<>();
+        compiler.getSimpleEventProcessorModel().getNodeFields().forEach(f -> instanceMap.put(f.getName(), f.getInstance()));
+        ((EventDispatcher) sep).assignMembers(instanceMap);
+        return sep;
+    }
+
     public static EventProcessor compile(RootNodeConfig rootNode) throws Exception {
         SerializableConsumer<EventProcessorConfig> builder = (EventProcessorConfig cfg) -> cfg.setRootNodeConfig(rootNode);
         String name = "Processor";
@@ -113,6 +143,25 @@ public class EventProcessorFactory {
                 OutputRegistry.JAVA_TESTGEN_DIR,
                 OutputRegistry.RESOURCE_GENERATED_TEST_DIR,
                 false,
+                false,
+                writeSourceFile,
+                generateMetaInformation);
+    }
+
+    public static EventProcessor compileTestInstance(Consumer<EventProcessorConfig> cfgBuilder,
+                                                     String pckg,
+                                                     String sepName,
+                                                     boolean dispatchOnly,
+                                                     boolean writeSourceFile,
+                                                     boolean generateMetaInformation) throws Exception {
+        return compile(
+                cfgBuilder,
+                pckg,
+                sepName,
+                OutputRegistry.JAVA_TESTGEN_DIR,
+                OutputRegistry.RESOURCE_GENERATED_TEST_DIR,
+                dispatchOnly,
+                false,
                 writeSourceFile,
                 generateMetaInformation);
     }
@@ -134,6 +183,7 @@ public class EventProcessorFactory {
                 name,
                 OutputRegistry.JAVA_SRC_DIR,
                 OutputRegistry.RESOURCE_DIR,
+                false,
                 false,
                 false,
                 false);
@@ -159,11 +209,13 @@ public class EventProcessorFactory {
                                          String className,
                                          String srcGenDir,
                                          String resGenDir,
+                                         boolean dispatchOnly,
                                          boolean initialise,
                                          boolean writeSourceFile,
                                          boolean generateMetaInformation) throws InstantiationException, IllegalAccessException, Exception {
         EventProcessorCompilation compiler = new EventProcessorCompilation();
         FluxtionCompilerConfig compilerCfg = new FluxtionCompilerConfig();
+        compilerCfg.setDispatchOnlyVersion(dispatchOnly);
         compilerCfg.setOutputDirectory(new File(srcGenDir).getCanonicalPath());
         compilerCfg.setResourcesOutputDirectory(new File(resGenDir).getCanonicalPath());
         compilerCfg.setPackageName(packageName);
@@ -174,6 +226,12 @@ public class EventProcessorFactory {
 
         Class<EventProcessor> sepClass = compiler.compile(compilerCfg, new InProcessEventProcessorConfig(cfgBuilder));
         EventProcessor sep = sepClass.getDeclaredConstructor().newInstance();
+        if (dispatchOnly) {
+            Map<String, Object> instanceMap = new HashMap<>();
+            compiler.getSimpleEventProcessorModel().getNodeFields().forEach(f -> instanceMap.put(f.getName(), f.getInstance()));
+            ((EventDispatcher) sep).assignMembers(instanceMap);
+        }
+
         if (initialise) {
             sep.init();
         }

@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.generation.time;
+package com.fluxtion.compiler.builder.dataflow.time;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
