@@ -13,7 +13,6 @@ public class DefaultHandlerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void defaultTest() {
-        writeOutputsToFile(true);
         sep(new A(), new B());
         onEvent("test");
         onEvent(1323);

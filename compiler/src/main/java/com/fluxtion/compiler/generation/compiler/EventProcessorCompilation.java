@@ -24,7 +24,9 @@ import com.fluxtion.compiler.builder.factory.NodeFactoryRegistration;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.RuntimeConstants;
 import com.fluxtion.compiler.generation.compiler.classcompiler.StringCompilation;
+import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.google.googlejavaformat.java.Formatter;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +50,8 @@ public class EventProcessorCompilation {
     private static final Logger LOG = LoggerFactory.getLogger(EventProcessorCompilation.class);
     private FluxtionCompilerConfig compilerConfig;
     private EventProcessorConfig builderConfig;
+    @Getter
+    private SimpleEventProcessorModel simpleEventProcessorModel;
 
     public <T> Class<T> compile(FluxtionCompilerConfig compilerConfig, EventProcessorConfig configOverride) throws Exception {
         LOG.debug("starting SEP compiler");
@@ -106,6 +110,7 @@ public class EventProcessorCompilation {
 
         EventProcessorGenerator eventProcessorGenerator = new EventProcessorGenerator();
         eventProcessorGenerator.templateSep(builderConfig, compilerConfig, writer);
+        simpleEventProcessorModel = eventProcessorGenerator.getSimpleEventProcessorModel();
         GenerationContext generationConfig = GenerationContext.SINGLETON;
         String fqn = generationConfig.getPackageName() + "." + generationConfig.getSepClassName();
         File file = new File(generationConfig.getPackageDirectory(), generationConfig.getSepClassName() + ".java");

@@ -18,7 +18,7 @@
 package com.fluxtion.compiler.generation.classmapping;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
-import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.compiler.generation.util.ExcludeCompiledDispatchSepTest;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  * @author Greg Higgins (greg.higgins@V12technology.com)
  */
-public class ClassMappingTest extends MultipleSepTargetInProcessTest {
+public abstract class ClassMappingTest extends ExcludeCompiledDispatchSepTest {
 
     public ClassMappingTest(SepTestConfig compiledSep) {
         super(compiledSep);

@@ -126,7 +126,6 @@ public class RegressionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subscribeFlowExtractWithFeatureIncludeTest() {
-        writeSourceFile = true;
         sep(c -> {
             FlowSupplier<HouseDetails> processedDouseDetails = DataFlow.subscribe(HouseDetails.class).flowSupplier();
             c.addNode(new PredictiveLinearRegressionModel(Feature.include(processedDouseDetails, HouseDetails::getArea)), "predictiveModel");

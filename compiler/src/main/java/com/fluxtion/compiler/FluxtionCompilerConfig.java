@@ -31,6 +31,7 @@ import static com.fluxtion.compiler.generation.compiler.Templates.JAVA_TEMPLATE;
  *
  * @author Greg Higgins
  */
+@Getter
 public class FluxtionCompilerConfig {
 
     /**
@@ -38,43 +39,55 @@ public class FluxtionCompilerConfig {
      * <p>
      * required.
      */
+    @Setter
     private String packageName;
     /**
      * class name for generated SEP
      * <p>
      * required.
      */
+    @Setter
     private String className;
     /**
      * Output directory for generated SEP.
      * <p>
      * not required.
      */
+    @Setter
     private String outputDirectory;
     /**
      * Output directory where compiled artifacts should be written. If null
      * no artifacts are written.
      */
+    @Setter
     private String buildOutputDirectory;
     /**
      * Attempt to compile the generated source files
      */
+    @Setter
     private boolean compileSource;
     /**
      * Generate an interpreted version
      */
-    @Getter
     @Setter
     private boolean interpreted = false;
     /**
+     * Generate a compiled version that uses the objects supplied as nodes in the processor. The dispatch table is
+     * compiled
+     */
+    @Setter
+    private boolean dispatchOnlyVersion = false;
+    /**
      * Attempt to format the generated source files
      */
+    @Setter
     private boolean formatSource;
     /**
      * Output for any resources generated with the SEP, such as debug information.
      * <p>
      * not required.
      */
+    @Setter
     private String resourcesOutputDirectory;
     /**
      * The velocity template file to use in the SEP generation process. Default
@@ -82,6 +95,7 @@ public class FluxtionCompilerConfig {
      * <p>
      * required.
      */
+    @Setter
     private String templateSep;
 
     /**
@@ -89,6 +103,7 @@ public class FluxtionCompilerConfig {
      * <p>
      * not required, default = true.
      */
+    @Setter
     private boolean generateDescription;
 
     /**
@@ -96,6 +111,7 @@ public class FluxtionCompilerConfig {
      * <p>
      * not requires, default = true;
      */
+    @Setter
     private boolean writeSourceToFile;
 
     /**
@@ -105,8 +121,10 @@ public class FluxtionCompilerConfig {
     /**
      * Flag controlling adding build time to generated source files
      */
+    @Setter
     private boolean addBuildTime;
 
+    @Setter
     private transient ClassLoader classLoader;
 
     public FluxtionCompilerConfig() {
@@ -122,100 +140,8 @@ public class FluxtionCompilerConfig {
         sourceWriter = new StringWriter();
     }
 
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    public String getBuildOutputDirectory() {
-        return buildOutputDirectory;
-    }
-
-    public String getResourcesOutputDirectory() {
-        return resourcesOutputDirectory;
-    }
-
-    public String getTemplateSep() {
-        return templateSep;
-    }
-
-    public boolean isGenerateDescription() {
-        return generateDescription;
-    }
-
-    public boolean isCompileSource() {
-        return compileSource;
-    }
-
-    public boolean isFormatSource() {
-        return formatSource;
-    }
-
     public String getFqn() {
         return getPackageName() + "." + getClassName();
-    }
-
-    public boolean isWriteSourceToFile() {
-        return writeSourceToFile;
-    }
-
-    public void setWriteSourceToFile(boolean writeSourceToFile) {
-        this.writeSourceToFile = writeSourceToFile;
-    }
-
-    public boolean isAddBuildTime() {
-        return addBuildTime;
-    }
-
-    public void setAddBuildTime(boolean addBuildTime) {
-        this.addBuildTime = addBuildTime;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public void setOutputDirectory(String outputDirectory) {
-        this.outputDirectory = outputDirectory;
-    }
-
-    public void setBuildOutputDirectory(String buildOutputDirectory) {
-        this.buildOutputDirectory = buildOutputDirectory;
-    }
-
-    public void setResourcesOutputDirectory(String resourcesOutputDirectory) {
-        this.resourcesOutputDirectory = resourcesOutputDirectory;
-    }
-
-    public void setTemplateSep(String templateSep) {
-        this.templateSep = templateSep;
-    }
-
-    public void setGenerateDescription(boolean generateDescription) {
-        this.generateDescription = generateDescription;
-    }
-
-    public void setCompileSource(boolean compileSource) {
-        this.compileSource = compileSource;
-    }
-
-    public void setFormatSource(boolean formatSource) {
-        this.formatSource = formatSource;
-    }
-
-    public Writer getSourceWriter() {
-        return sourceWriter;
     }
 
     public void setSourceWriter(Writer sourceWriter) {
@@ -239,14 +165,6 @@ public class FluxtionCompilerConfig {
                 + ", templateSep=" + templateSep
                 + ", generateDescription=" + generateDescription
                 + '}';
-    }
-
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
     }
 
 }

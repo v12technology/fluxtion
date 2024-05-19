@@ -117,6 +117,7 @@ public class EventProcessorGenerator {
         );
         LOG.debug("start model gen");
         simpleEventProcessorModel = new SimpleEventProcessorModel(graph, config.getFilterMap(), context.getProxyClassMap());
+        simpleEventProcessorModel.setDispatchOnlyVersion(compilerConfig.isDispatchOnlyVersion());
         simpleEventProcessorModel.generateMetaModel(config.isSupportDirtyFiltering());
         //TODO add conditionality for different target languages
         //buildJava output
