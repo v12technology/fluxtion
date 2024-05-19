@@ -61,17 +61,25 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     //Filter constants
     ${MODEL.filterConstantDeclarations}
     //unknown event handler
-    Consumer unKnownEventHandler = (e) -> {};
+    private Consumer unKnownEventHandler = (e) -> {};
 
     public  ${className} (Map<Object, Object> contextMap) {
-        context.replaceMappings(contextMap);
+        if(context != null) {
+            context.replaceMappings(contextMap);
+        }
         ${MODEL.nodeMemberAssignments}
-        subscriptionManager.setSubscribingEventProcessor(this);
-        context.setEventProcessorCallback(this);
+        if(subscriptionManager != null){
+          subscriptionManager.setSubscribingEventProcessor(this);
+        }
+        if(context != null) {
+          context.setEventProcessorCallback(this);
+        }
     }
     public ${className} () {
         this(null);
     }
+
+    ${MODEL.dispatchOnlyNodeMemberAssignments}
 
     @Override
     public void init() {
@@ -244,6 +252,8 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     public ${className} newInstance(Map<Object, Object> contextMap){
         return new ${className}();
     }
+
+    ${MODEL.assignNodeField}
 
     @Override
     public String getLastAuditLogRecord() {

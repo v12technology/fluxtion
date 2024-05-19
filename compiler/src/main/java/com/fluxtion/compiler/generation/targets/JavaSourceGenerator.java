@@ -17,6 +17,7 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
+import com.fluxtion.compiler.EventDispatcher;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.EventProcessorConfig.DISPATCH_STRATEGY;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
@@ -34,6 +35,7 @@ import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
+import lombok.Getter;
 import net.vidageek.mirror.dsl.Mirror;
 import net.vidageek.mirror.list.dsl.MirrorList;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -65,6 +67,7 @@ public class JavaSourceGenerator {
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order, in a list.
      */
+    @Getter
     private final ArrayList<String> initialiseMethodList;
     /**
      * String representation of life-cycle callback methods for initialise,
@@ -80,30 +83,36 @@ public class JavaSourceGenerator {
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
+    @Getter
     private final ArrayList<String> batchEndMethodList;
     /**
      * String representation of life-cycle callback methods for after event
      * processing, sorted in call order.
      */
+    @Getter
     private final ArrayList<String> eventEndMethodList;
     /**
      * String representation of life-cycle callback methods for batch pause,
      * sorted in call order.
      */
+    @Getter
     private final ArrayList<String> batchPauseMethodList;
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
+    @Getter
     private final ArrayList<String> tearDownMethodList;
     /**
      * String representation of node declarations as a list.
      */
+    @Getter
     private final ArrayList<String> nodeDeclarationList;
     private final ArrayList<String> importList;
     /**
      * String representation of the initial member assignments for each node
      */
+    @Getter
     private final ArrayList<String> nodeMemberAssignmentList;
     /**
      * String representation of public nodes as a list.
@@ -127,81 +136,132 @@ public class JavaSourceGenerator {
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order.
      */
+    @Getter
     private String initialiseMethods;
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order.
      */
+    @Getter
     private String startMethods;
     /**
      * String representation of life-cycle callback methods for initialise,
      * sorted in call order.
      */
+    @Getter
     private String stopMethods;
     /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
+    @Getter
     private String batchEndMethods;
     /**
      * String representation of life-cycle callback methods for end of batch,
      * sorted in call order.
      */
+    @Getter
     private String eventEndMethods;
     /**
      * String representation of life-cycle callback methods for batch pause,
      * sorted in call order.
      */
+    @Getter
     private String batchPauseMethods;
     /**
      * String representation of life-cycle callback methods for tearDown, sorted
      * in call order.
      */
+    @Getter
     private String tearDownMethods;
     /**
      * String representation of node declarations.
      */
+    @Getter
     private String nodeDeclarations;
     /**
      * String representation of dirty flag.
      */
+    @Getter
     private String dirtyFlagDeclarations;
     /**
      * String representation of looking up dirty flag by instance
      */
+    @Getter
     private String dirtyFlagLookup;
     /**
      * String representation of updating dirty flag by instance
      */
+    @Getter
     private String dirtyFlagUpdate;
     /**
      * String representation of all dirty flag reset to false.
      */
+    @Getter
     private String resetDirtyFlags;
     /**
      *
      */
+    @Getter
     private String guardCheckMethods;
     /**
      * String representation of filter constants declarations.
      */
+    @Getter
     private String filterConstantDeclarations;
     /**
      * String representation of the initial member assignments for each node
      */
+    @Getter
     private String nodeMemberAssignments;
+    @Getter
+    private String dispatchOnlyNodeMemberAssignments;
     /**
      * String representation of top level event dispatch, branches on event type
+     * -- GETTER --
+     * String representation of top level event dispatch
+     * <code> public void onEvent(com.fluxtion.api.event.Event event) </code>
+     * <p>
+     * <code>
+     * public void handleEvent([specific event] event)
+     * {
+     * [eventHandlers]
+     * <p>
+     * }
+     * </code>
+     *
+     * @return top level event dispatch string
      */
+    @Getter
     private String eventDispatch;
     /**
      * String representing the delegated event handling methods for a specific
      * event type, will include branching based on filterId.
+     * -- GETTER --
+     * String representation of java code handling subclass of
+     * <p>
+     * , with support for specific
+     * dispatch based upon
+     * <p>
+     * filterID. If
+     * inlining is false the following output will be produced:
+     * <p>
+     * <code>
+     * public void handleEvent([specific event] event)
+     * {
+     * [eventHandlers]
+     * <p>
+     * }
+     * </code>
+     *
+     * @return type specific event dispatch code
      */
+    @Getter
     private String eventHandlers;
     /**
      * String representing exported events
      */
+    @Getter
     private String exportedMethods;
     /**
      * determines whether separate delegate eventHandling methods are generated.
@@ -212,15 +272,25 @@ public class JavaSourceGenerator {
      */
     private String eventAuditDispatch;
     /**
+     * String representing event audit dispatch
+     */
+    @Getter
+    private String assignNodeField;
+    /**
      * are any auditors registered for this SEP
      */
     private boolean auditingEvent;
     private boolean auditingInvocations;
     private String auditMethodString;
     private String additionalInterfaces;
+    @Getter
     private String javaDocEventClassList;
+    @Getter
     private String forkDeclarations;
+    @Getter
     private String resetForkTasks;
+    final Set<Class<?>> nonUserClass;
+    private String forkedAssignments;
 
     public JavaSourceGenerator(
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
@@ -241,6 +311,8 @@ public class JavaSourceGenerator {
         nodeMemberAssignmentList = new ArrayList<>();
         publicNodeIdentifierList = new ArrayList<>();
         importList = new ArrayList<>();
+        nonUserClass = new HashSet<>();
+        nonUserClass.add(EventLogManager.class);
     }
 
     private static boolean hasIdField(Class e) {
@@ -263,6 +335,7 @@ public class JavaSourceGenerator {
         buildFilterConstantDeclarations();
         buildMemberAssignments();
         buildNodeRegistrationListeners();
+        buildNodeFieldAssigner();
         buildEventDispatch();
 
         initialiseMethods = "";
@@ -303,13 +376,46 @@ public class JavaSourceGenerator {
         tearDownMethods = StringUtils.chomp(tearDownMethods);
 
         nodeMemberAssignments = "";
+        dispatchOnlyNodeMemberAssignments = "";
         final StringBuilder memberAssignments = new StringBuilder(200 * nodeMemberAssignmentList.size());
         firstLine = true;
         for (String initialiseMethod : nodeMemberAssignmentList) {
             memberAssignments.append(firstLine ? "    " : "\n    ").append(initialiseMethod);
             firstLine = false;
         }
-        nodeMemberAssignments = memberAssignments.toString();
+
+        if (model.isDispatchOnlyVersion()) {
+            dispatchOnlyNodeMemberAssignments = "    @Override\n" +
+                    "   public final void assignMembers(Map<String, Object> memberMap) {\n" +
+                    "        memberMap.forEach((k, v) -> setField(k, v));\n" +
+                    "        " + memberAssignments +
+                    "        " + forkedAssignments +
+                    "        if(subscriptionManager != null){\n" +
+                    "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
+                    "        }\n" +
+                    "        if(context != null) {\n" +
+                    "            context.setEventProcessorCallback(this);\n" +
+                    "        }\n" +
+                    "  }\n\n";
+
+            dispatchOnlyNodeMemberAssignments += "    @Override\n" +
+                    "   public final void assignMembers(Map<String, Object> memberMap, Map<Object, Object> contextMap) {\n" +
+                    "        memberMap.forEach((k, v) -> setField(k, v));\n" +
+                    "        if(context != null) {\n" +
+                    "            context.replaceMappings(contextMap);\n" +
+                    "        }" +
+                    "        " + memberAssignments +
+                    "        " + forkedAssignments +
+                    "        if(subscriptionManager != null){\n" +
+                    "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
+                    "        }\n" +
+                    "        if(context != null) {\n" +
+                    "            context.setEventProcessorCallback(this);\n" +
+                    "        }\n" +
+                    "  }\n";
+        } else {
+            nodeMemberAssignments = memberAssignments.toString();
+        }
     }
 
     private void checkAuditInvocations() {
@@ -323,12 +429,30 @@ public class JavaSourceGenerator {
 
     private void buildForkDeclarations() {
         String forkWrapperClass = getClassTypeName(ForkedTriggerTask.class);
-        forkDeclarations = model.getTriggerOnlyCallBacks().stream()
-                .filter(CbMethodHandle::isForkExecution)
-                .map(c -> "private final " + forkWrapperClass + " " + c.forkVariableName()
-                        + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
-                        + ", \"" + c.variableName + "\" );")
-                .collect(Collectors.joining("\n", "//Forked declarations\n", "\n"));
+        forkDeclarations = "";
+        forkedAssignments = "";
+        if (model.getTriggerOnlyCallBacks().isEmpty()) {
+            return;
+        }
+        if (model.isDispatchOnlyVersion()) {
+            forkDeclarations = model.getTriggerOnlyCallBacks().stream()
+                    .filter(CbMethodHandle::isForkExecution)
+                    .map(c -> "private " + forkWrapperClass + " " + c.forkVariableName() + ";")
+                    .collect(Collectors.joining("\n", "//Forked declarations\n", "\n"));
+            forkedAssignments = model.getTriggerOnlyCallBacks().stream()
+                    .filter(CbMethodHandle::isForkExecution)
+                    .map(c -> c.forkVariableName()
+                            + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
+                            + ", \"" + c.variableName + "\" );")
+                    .collect(Collectors.joining(";\n", "\n//Forked assignment\n", "\n"));
+        } else {
+            forkDeclarations = model.getTriggerOnlyCallBacks().stream()
+                    .filter(CbMethodHandle::isForkExecution)
+                    .map(c -> "private final " + forkWrapperClass + " " + c.forkVariableName()
+                            + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
+                            + ", \"" + c.variableName + "\" );")
+                    .collect(Collectors.joining("\n", "\n//Forked declarations\n", "\n"));
+        }
 
         resetForkTasks = model.getTriggerOnlyCallBacks().stream()
                 .filter(CbMethodHandle::isForkExecution)
@@ -483,7 +607,6 @@ public class JavaSourceGenerator {
     }
 
     private void buildNodeDeclarations() {
-        //getClassName(Arrays.class.getName());
         nodeDeclarations = "";
         final StringBuilder declarationBuilder = new StringBuilder(2000);
         final StringBuilder fqnBuilder = new StringBuilder(500);
@@ -492,18 +615,23 @@ public class JavaSourceGenerator {
             declarationBuilder.append(s4).append("final net.vidageek.mirror.dsl.Mirror constructor = new net.vidageek.mirror.dsl.Mirror();\n");
         }
         for (Field field : model.getTopologicallySortedNodeFields()) {
-            final String access = field.publicAccess ? "public" : "private";
+            Class<?> fieldClass = field.instance.getClass();
+            boolean dispatchOnlyVersion = model.isDispatchOnlyVersion();
+            boolean isUserClass = !nonUserClass.contains(fieldClass);
+            final String access = (field.publicAccess | (dispatchOnlyVersion & isUserClass)) ? "public" : "private";
 
             fqnBuilder.append(getClassName(field.fqn));
             boolean syntheticConstructor = false;
-            Class<?> fieldClass = field.instance.getClass();
             try {
                 fieldClass.getConstructor();
             } catch (Exception e) {
                 syntheticConstructor = true;
             }
-            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" final ")
-                    .append(fqnBuilder)
+            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" ");
+            if (!dispatchOnlyVersion) {
+                declarationRoot.append(" final ");
+            }
+            declarationRoot.append(fqnBuilder)
                     .append(model.getFieldSerializer().buildTypeDeclaration(field, this::getClassTypeName))
                     .append(" ")
                     .append(field.name);
@@ -536,6 +664,8 @@ public class JavaSourceGenerator {
                     declarationRoot.append(" = (byte)").append(field.instance).append(";");
                 } else if (Character.class.isAssignableFrom(fieldClass)) {
                     declarationRoot.append(" = '").append(field.instance).append("';");
+                } else if (dispatchOnlyVersion && isUserClass) {
+                    declarationRoot.append(" = null;");
                 } else {
                     String generic = field.isGeneric() ? "<>" : "";
                     String args = constructorArgs.stream().map(Field.MappedField::value).collect(Collectors.joining(", "));
@@ -1063,6 +1193,7 @@ public class JavaSourceGenerator {
         if (assignPrivateMembers) {
             nodeMemberAssignmentList.add("    final net.vidageek.mirror.dsl.Mirror assigner = new net.vidageek.mirror.dsl.Mirror();");
         }
+        boolean dispatchOnlyVersion = model.isDispatchOnlyVersion();
         for (Field field : nodeFields) {
             Object object = field.instance;
             String varName = field.name;
@@ -1070,6 +1201,11 @@ public class JavaSourceGenerator {
             java.lang.reflect.Field[] fields = object.getClass().getFields();
             MirrorList<java.lang.reflect.Field> fields1 = new Mirror().on(object.getClass()).reflectAll().fields();
             fields = fields1.toArray(fields);
+            Class<?> fieldClass = object.getClass();
+            boolean isUserClass = !nonUserClass.contains(fieldClass);
+            if (isUserClass && dispatchOnlyVersion) {
+                continue;
+            }
             for (java.lang.reflect.Field instanceField : fields) {
                 boolean useRefelction = false;
                 if ((instanceField.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
@@ -1217,156 +1353,16 @@ public class JavaSourceGenerator {
         }
     }
 
-    public ArrayList<String> getInitialiseMethodList() {
-        return initialiseMethodList;
-    }
-
-    public String getInitialiseMethods() {
-        return initialiseMethods;
-    }
-
-    public String getStartMethods() {
-        return startMethods;
-    }
-
-    public String getStopMethods() {
-        return stopMethods;
-    }
-
-    public ArrayList<String> getBatchEndMethodList() {
-        return batchEndMethodList;
-    }
-
-    public ArrayList<String> getBatchPauseMethodList() {
-        return batchPauseMethodList;
-    }
-
-    public ArrayList<String> getEventEndMethodList() {
-        return eventEndMethodList;
-    }
-
-    public ArrayList<String> getTearDownMethodList() {
-        return tearDownMethodList;
-    }
-
-    public ArrayList<String> getNodeDeclarationList() {
-        return nodeDeclarationList;
-    }
-
-    public ArrayList<String> getNodeMemberAssignmentList() {
-        return nodeMemberAssignmentList;
-    }
-
     public ArrayList<String> getPublicNodeList() {
         return publicNodeIdentifierList;
-    }
-
-    public String getNodeMemberAssignments() {
-        return nodeMemberAssignments;
-    }
-
-    public String getFilterConstantDeclarations() {
-        return filterConstantDeclarations;
     }
 
     public String getAdditionalInterfaces() {
         return additionalInterfaces == null ? "" : additionalInterfaces;
     }
 
-    /**
-     * String representation of top level event dispatch
-     *
-     * <code> public void onEvent(com.fluxtion.api.event.Event event) </code>
-     * <p>
-     * <code>
-     * public void handleEvent([specific event] event) {
-     * [eventHandlers]
-     * }
-     * </code>
-     *
-     * @return top level event dispatch string
-     */
-    public String getEventDispatch() {
-        return eventDispatch;
-    }
-
-    /**
-     * String representation of java code handling subclass of
-     * {@link com.fluxtion.runtime.event.Event Event}, with support for specific
-     * dispatch based upon
-     * {@linkplain  Event#filterId()}  filterID. If
-     * inlining is false the following output will be produced:
-     * <p>
-     * <code>
-     * public void handleEvent([specific event] event) {
-     * [eventHandlers]
-     * }
-     * </code>
-     *
-     * @return type specific event dispatch code
-     */
-    public String getEventHandlers() {
-        return eventHandlers;
-    }
-
-    public String getExportedMethods() {
-        return exportedMethods;
-    }
-
-    public String getNodeDeclarations() {
-        return nodeDeclarations;
-    }
-
-    public String getDirtyFlagDeclarations() {
-        return dirtyFlagDeclarations;
-    }
-
-    public String getResetDirtyFlags() {
-        return resetDirtyFlags;
-    }
-
-    public String getDirtyFlagLookup() {
-        return dirtyFlagLookup;
-    }
-
-    public String getDirtyFlagUpdate() {
-        return dirtyFlagUpdate;
-    }
-
-    public String getGuardCheckMethods() {
-        return guardCheckMethods;
-    }
-
     public int getDirtyFlagCount() {
         return model.getDirtyFieldMap() == null ? 32 : model.getDirtyFieldMap().size();
-    }
-
-    public String getBatchEndMethods() {
-        return batchEndMethods;
-    }
-
-    public String getEventEndMethods() {
-        return eventEndMethods;
-    }
-
-    public String getBatchPauseMethods() {
-        return batchPauseMethods;
-    }
-
-    public String getTearDownMethods() {
-        return tearDownMethods;
-    }
-
-    public String getJavaDocEventClassList() {
-        return javaDocEventClassList;
-    }
-
-    public String getForkDeclarations() {
-        return forkDeclarations;
-    }
-
-    public String getResetForkTasks() {
-        return resetForkTasks;
     }
 
     public String getImports() {
@@ -1464,6 +1460,37 @@ public class JavaSourceGenerator {
         auditMethodString += initialiseAuditor;
     }
 
+    private void buildNodeFieldAssigner() {
+        boolean dispatchOnlyVersion = model.isDispatchOnlyVersion();
+        if (!dispatchOnlyVersion) {
+            assignNodeField = "";
+            return;
+        }
+
+        String prefix = "  public <T> void setField(String fieldName, T field){\n" +
+                "    switch (fieldName){\n";
+        String suffix = "      default: {}\n" +
+                "    }\n" +
+                "  }\n";
+
+        final List<Field> nodeFields = model.getNodeFields();
+        StringBuilder switchString = new StringBuilder(prefix);
+        for (Field nodeField : nodeFields) {
+            String nodeName = nodeField.name;
+            Class<?> nodeClass = nodeField.getInstance().getClass();
+            if (nonUserClass.contains(nodeClass)) {
+                continue;
+            }
+            String className = getClassTypeName(nodeClass);//.getCanonicalName();
+            switchString.append(
+                    String.format("%1$7s case \"%2$s\" :{\n%1$9s %2$s = (%3$s) field;\n%1$7s break;}\n", "", nodeName, className)
+            );
+        }
+
+        switchString.append(suffix);
+        assignNodeField = switchString.toString();
+    }
+
     private void addDefaultImports() {
         model.getImportClasses().stream()
                 .map(Class::getCanonicalName)
@@ -1473,12 +1500,15 @@ public class JavaSourceGenerator {
     }
 
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
+        additionalInterfaces = "";
         if (!interfacesToImplement.isEmpty()) {
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassTypeName)
                     .sorted()
                     .collect(Collectors.joining(", ", "\n /*--- @ExportService start ---*/\n ", ",\n/*--- @ExportService end ---*/\n"));
         }
+        if (model.isDispatchOnlyVersion()) {
+            additionalInterfaces += getClassTypeName(EventDispatcher.class) + ",\n";
+        }
     }
-
 }

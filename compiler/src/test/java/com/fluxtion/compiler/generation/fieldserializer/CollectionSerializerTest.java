@@ -19,7 +19,6 @@ public class CollectionSerializerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void collectionTest() {
-        writeSourceFile = true;
         CollectionHolder collectionHolder = CollectionHolder.builder()
                 .string2IdMap(MapBuilder.builder()
                         .put("id1", 1)

@@ -59,6 +59,18 @@ public class FluxtionBuilderTest {
         Assert.assertFalse(writer.toString().isEmpty());
     }
 
+    @Test
+    public void generateDispatchOnlyTestSuccess() {
+        StringWriter writer = new StringWriter();
+        MyStringHandler myStringHandler = new MyStringHandler();
+        EventProcessor<?> eventProcessor = Fluxtion.compileDispatcher(c -> {
+            c.addNode(myStringHandler);
+        }, writer);
+        Assert.assertFalse(writer.toString().isEmpty());
+        eventProcessor.init();
+        eventProcessor.onEvent("TEST");
+        Assert.assertEquals("TEST", myStringHandler.in);
+    }
 
     @Test
     public void writeBackupFileForFailedTest() throws IOException {

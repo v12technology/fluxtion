@@ -78,7 +78,9 @@ public abstract class MultipleSepTargetInProcessTest {
     protected TestMutableNumber time;
     protected boolean timeAdded = false;
     protected boolean callInit;
+    protected boolean callTearDown = true;
     protected boolean inlineCompiled = false;
+    protected boolean dispatchOnly = false;
     protected SimpleEventProcessorModel simpleEventProcessorModel;
     private boolean addAuditor = false;
     private InMemoryEventProcessor inMemorySep;
@@ -87,6 +89,7 @@ public abstract class MultipleSepTargetInProcessTest {
         this.compiledSep = testConfig.isCompiled();
         inlineCompiled = testConfig == SepTestConfig.COMPILED_INLINE;
         instanceOfDispatch = !(testConfig == SepTestConfig.COMPILED_SWITCH_DISPATCH);
+        dispatchOnly = testConfig == SepTestConfig.COMPILED_DISPATCH_ONLY;
     }
 
     @Parameterized.Parameters
@@ -94,7 +97,8 @@ public abstract class MultipleSepTargetInProcessTest {
         return Arrays.asList(
                 SepTestConfig.COMPILED_SWITCH_DISPATCH,
                 SepTestConfig.COMPILED_METHOD_PER_EVENT,
-                SepTestConfig.INTERPRETED
+                SepTestConfig.INTERPRETED,
+                SepTestConfig.COMPILED_DISPATCH_ONLY
         );
     }
 
@@ -186,7 +190,7 @@ public abstract class MultipleSepTargetInProcessTest {
                 }
                 if (sep == null) {
 
-                    sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), writeSourceFile, generateMetaInformation);
+                    sep = compileTestInstance(wrappedBuilder, pckName(), sepClassName(), dispatchOnly, writeSourceFile, generateMetaInformation);
                     sep.setContextParameterMap(contextMap);
                     init();
                 }
@@ -390,7 +394,7 @@ public abstract class MultipleSepTargetInProcessTest {
     }
 
     protected StaticEventProcessor tearDown() {
-        if (sep instanceof Lifecycle) {
+        if (sep instanceof Lifecycle && callTearDown) {
             ((Lifecycle) sep).tearDown();
         }
         return sep;

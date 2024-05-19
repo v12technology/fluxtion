@@ -1,6 +1,5 @@
-package com.fluxtion.compiler.generation.forkjoin;
+package com.fluxtion.compiler.builder.dataflow;
 
-import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.AfterEvent;
@@ -9,11 +8,7 @@ import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.audit.LogRecord;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.node.NamedNode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Singular;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

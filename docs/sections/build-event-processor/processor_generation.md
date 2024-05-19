@@ -77,11 +77,12 @@ dispatch rules.
 ## Generation modes comparison
 {: .no_toc }
 
-| Mode                      | Runtime libraries<br/>Required | Advantage                                  | Disadvantages                     | Use case |
-|---------------------------|--------------------------------|--------------------------------------------|-----------------------------------|----------|
-| Interpreted               | {{page.compiler_libs}}         | Supports 1000's nodes<br/>Quick to develop | {{page.interpreted_disadvantage}} |          |
-| In memory compilation     | {{page.compiler_libs}}         | {{page.compile_advantage}}                 | {{page.compile_disadvantage}}     |          |
-| Ahead of time compilation | Fluxtion - runtime             | {{page.aot_advantage}}                     | {{page.aot_disadvantage}}         |          |
+| Mode                                     | Runtime libraries<br/>Required | Advantage                                  | Disadvantages                     | Use case                                 |
+|------------------------------------------|--------------------------------|--------------------------------------------|-----------------------------------|------------------------------------------|
+| Interpreted                              | {{page.compiler_libs}}         | Supports 1000's nodes<br/>Quick to develop | {{page.interpreted_disadvantage}} |                                          |
+| In memory compilation<br/> dispatch only | {{page.compiler_libs}}         | {{page.compile_advantage}}                 | {{page.compile_disadvantage}}     | Uses the objects <br/> provided as nodes |
+| In memory compilation                    | {{page.compiler_libs}}         | {{page.compile_advantage}}                 | {{page.compile_disadvantage}}     | Constructs new objects<br/> as nodes     |
+| Ahead of time compilation                | Fluxtion - runtime             | {{page.aot_advantage}}                     | {{page.aot_disadvantage}}         |                                          |
 
 {: .no_toc }
 <details open markdown="block">
@@ -158,14 +159,17 @@ Fluxtion.interpret(cfg -> {
 
 The compiling mode generates a source file that represents the event processor, ready for compilation and use within an
 application. The source generation and compilation process can happen either in process or as part of the build stage.
-If
-the source generation happens as part of the build process the event processor is classed as ahead of time (AOT).
+If the source generation happens as part of the build process the event processor is classed as ahead of time (AOT).
 
-The generate source file is a serialised state of the event processor and all the instances it manages. This places
-stricter
-requirements on the nodes bound to the event processor than running in interpreted mode. Bound user classes are declared
-as fields
-in the generated event processor. The fields of a bound class will be serialized as well.
+The generate source file is a serialized state of the event processor and all the instances it manages. This places
+stricter requirements on the nodes bound to the event processor than running in interpreted mode. Bound user classes are 
+declared as fields in the generated event processor. The fields of a bound class will be serialized as well.
+
+The objects instances in the event processor can either be created with the event processor are not shared or they can
+be provided by the user and the event processor only manages the dispatch and not the lifetime of the bound instances.
+
+* **compiling dispatch only** The instances in the graph are provided by the user
+* **compiling** The instances in the graph are instantiated in the processor and not shared
 
 ## FluxtionCompilerConfig
 
@@ -207,8 +211,7 @@ The FluxtionCompilerConfig instance allows user code to configure the compilatio
 
 Compiling in process is a very similar process to generating an interpreted event processor, just replace the calls to
 `Fluxtion.interpret` with `Fluxtion.compile`. The source code will be generated and compiled in memory, no configuration
-of
-FluxtionCompilerConfig is required
+of FluxtionCompilerConfig is required
 
 ## Imperative generation example
 
@@ -239,8 +242,7 @@ processor.onEvent("hello world");
 
 ## Functional DSL generation example
 
-To generate an in process compiled version using Fluxtion DSL, the DataFlow calls must happen within the context of
-interpret
+To generate an in process compiled version using Fluxtion DSL, the DataFlow calls must happen within the context of interpret
 version that accepts an EventProcessorConfig consumer `Fluxtion.compile(Consumer<EventProcessorConfig> configProcessor)`
 
 {% highlight java %}
@@ -251,6 +253,45 @@ Fluxtion.compile(cfg -> {
             .push(new MyNode("node A")::handleStringEvent);        
 });
 
+{% endhighlight %}
+
+# Compiling dispatch only in process
+
+Compiling dispatch only in process is a very similar process to generating an interpreted event processor, just replace the calls to
+`Fluxtion.interpret` with `Fluxtion.compileDispatcher`. The source code will be generated and compiled in memory, no configuration
+of FluxtionCompilerConfig is required. The instances in the event processor receiving event callbacks are the ones provided
+by the user.
+
+## Imperative generation example
+
+Compile can be called with list of nodes that are implicitly added to the event processor or the use the version that
+accepts an EventProcessorConfig consumer for user code to imperatively add nodes.  The user can access the node from the
+reference passed into the compileDispatcher method
+
+{% highlight java %}
+EventProcessor<?> processor;
+
+//these are equivalent processors
+//add a list of nodes using short cut method
+var myNode = new MyNode("node A");
+var myNodeB = new MyNode("node B");
+processor = Fluxtion.compileDispatcher(myNode);
+
+//add nodes using supplied EventProcessorConfig
+processor = Fluxtion.compileDispatcher(cfg -> {
+    cfg.addNode(myNode);
+});
+
+//these are equivalent processors
+processor = Fluxtion.compileDispatcher(myNode, myNodeB);
+processor = Fluxtion.compileDispatcher(cfg -> {
+    cfg.addNode(myNode);
+    cfg.addNode(myNodeB);
+});
+
+//executing event processor
+processor.init();
+processor.onEvent("hello world");
 {% endhighlight %}
 
 # Compiling AOT - programmatically
