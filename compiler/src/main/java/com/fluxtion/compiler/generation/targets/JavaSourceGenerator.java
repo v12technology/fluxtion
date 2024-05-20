@@ -403,7 +403,7 @@ public class JavaSourceGenerator {
                     "        memberMap.forEach((k, v) -> setField(k, v));\n" +
                     "        if(context != null) {\n" +
                     "            context.replaceMappings(contextMap);\n" +
-                    "        }" +
+                    "        }\n" +
                     "        " + memberAssignments +
                     "        " + forkedAssignments +
                     "        if(subscriptionManager != null){\n" +
@@ -1197,15 +1197,15 @@ public class JavaSourceGenerator {
         for (Field field : nodeFields) {
             Object object = field.instance;
             String varName = field.name;
-            model.beanProperties(object).stream().forEach(s -> nodeMemberAssignmentList.add(varName + "." + s + ";"));
-            java.lang.reflect.Field[] fields = object.getClass().getFields();
-            MirrorList<java.lang.reflect.Field> fields1 = new Mirror().on(object.getClass()).reflectAll().fields();
-            fields = fields1.toArray(fields);
             Class<?> fieldClass = object.getClass();
             boolean isUserClass = !nonUserClass.contains(fieldClass);
             if (isUserClass && dispatchOnlyVersion) {
                 continue;
             }
+            model.beanProperties(object).stream().forEach(s -> nodeMemberAssignmentList.add(varName + "." + s + ";"));
+            java.lang.reflect.Field[] fields = object.getClass().getFields();
+            MirrorList<java.lang.reflect.Field> fields1 = new Mirror().on(object.getClass()).reflectAll().fields();
+            fields = fields1.toArray(fields);
             for (java.lang.reflect.Field instanceField : fields) {
                 boolean useRefelction = false;
                 if ((instanceField.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
