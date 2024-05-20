@@ -406,6 +406,21 @@ TriggeredChild -> 4
 {% endhighlight %}
 
 ## EventDispatcher - event re-dispatch
+Events can be dispatched into the event processor as re-entrant events from a node during a calculation cycle. The
+[EventDispatcher]({{site.fluxtion_src_runtime}}/callback/EventDispatcher.java) class gives access to event re-dispatch
+functions. In order to access the EventDispatcher for the containing event processor we use the `@Inject` annotation.
+
+{% highlight java %}
+@Inject
+public EventDispatcher eventDispatcher;
+{% endhighlight %}
+
+The event processor will inject the EventDispatcher instance at runtime.
+
+**Any events that re-entrant will be queued and only execute when the current cycle has completed.**
+
+In this example a String event handler method receives a csv like string and redispatches an int event for each element
+in the record. An Integer event handler method handles each int event in a separate event cycle.
 
 ### Code sample
 {: .no_toc }
