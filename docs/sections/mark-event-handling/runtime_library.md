@@ -53,7 +53,7 @@ intValue:256
 An application can remove sink using the call `EventProcessor#removeSink`
 
 ## Clock time
-A [Clock]({{site.fluxtion_src_runtime}}/time.Clock.java) provides system independent time source nodes can use to request
+A [Clock]({{site.fluxtion_src_runtime}}/time/Clock.java) provides system independent time source nodes can use to request
 the current time. Clock provides time query functionality for the processor as follows:
 
 * WallClock - current time UTC milliseconds
@@ -65,6 +65,8 @@ The clock can be data driven from a user supplied strategy supplied as an event
 MutableNumber n = new MutableNumber();
 [event processor].onEvent(new ClockStrategyEvent(n::longValue));
 {% endhighlight %}
+
+See the [replay example](../integrate-even-processor/replay) for details on data driving the clock
 
 ### Code sample
 {: .no_toc }
@@ -105,6 +107,13 @@ time 07:33:45.849
 {% endhighlight %}
 
 ## TImed alarm trigger
+A fixed rate time, [FixedRateTrigger]({{site.fluxtion_src_runtime}}/time/FixedRateTrigger.java) class, can be 
+referenced by user classes. The timer will trigger at regular intervals notifying any downstream classes the timer
+has expired. The FixedRateTrigger checks the time on any event process cycle
+
+{: .info }
+The event processor does not run threads, the FixedRateTrigger only checks for expiry on an event process cycle
+{: .fs-4 }
 
 ### Code sample
 {: .no_toc }
@@ -243,6 +252,9 @@ Child:triggered
 {% endhighlight %}
 
 ## Audit logging
+Structured audit log records can be published from the running event processor. See the 
+[audit logging](../integrate-even-processor/app-integration#audit-logging) section in application integration for more 
+details.
 
 ### Code sample
 {: .no_toc }
@@ -303,6 +315,22 @@ eventLogRecord:
 {% endhighlight %}
 
 ## EventProcessorContext - context parameters
+Context parameters can be passed into the running event processor in the form of a map. Any node can access the context 
+map and lookup a property using an injected EventProcessorContext.
+
+{% highlight java %}
+@Inject
+public EventProcessorContext context;
+
+//lookup
+context.getContextProperty(String key)
+{% endhighlight %}
+
+Setting a context parameter on the running instance
+
+{% highlight java %}
+processor.addContextParameter(String key, Object value);
+{% endhighlight %}
 
 ### Code sample
 {: .no_toc }
@@ -348,6 +376,19 @@ myContextParam2 -> [param2: update 1]
 {% endhighlight %}
 
 ## DirtyStateMonitor - node dirty flag control
+A user node can query the dirty state of any dependency that is in the event processor
+Any node can access the [DirtyStateMonitor]() using an injected instance
+
+{% highlight java %}
+@Inject
+public DirtyStateMonitor dirtyStateMonitor;
+{% endhighlight %}
+
+The dirty state of a object can be queried with:
+
+{% highlight java %}
+dirtyStateMonitor.isDirty(Object instanceToQuery)
+{% endhighlight %}
 
 ### Code sample
 {: .no_toc }
