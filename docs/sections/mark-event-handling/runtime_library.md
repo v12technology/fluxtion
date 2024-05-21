@@ -53,6 +53,18 @@ intValue:256
 An application can remove sink using the call `EventProcessor#removeSink`
 
 ## Clock time
+A [Clock]({{site.fluxtion_src_runtime}}/time.Clock.java) provides system independent time source nodes can use to request
+the current time. Clock provides time query functionality for the processor as follows:
+
+* WallClock - current time UTC milliseconds
+* ProcessTime - the time the event was received for processing
+* EventTime - the time the event was created
+
+The clock can be data driven from a user supplied strategy supplied as an event
+{% highlight java %}
+MutableNumber n = new MutableNumber();
+[event processor].onEvent(new ClockStrategyEvent(n::longValue));
+{% endhighlight %}
 
 ### Code sample
 {: .no_toc }
