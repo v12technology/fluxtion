@@ -473,34 +473,59 @@ The event processor will inject the EventDispatcher instance at runtime.
 **Any events that re-entrant will be queued and only execute when the current cycle has completed.**
 
 In this example a String event handler method receives a csv like string and redispatches an int event for each element
-in the record. An Integer event handler method handles each int event in a separate event cycle.
+in the record. An Integer event handler method handles each int event in a separate event cycle. The IntegerHandler class
+trigger method is fired before any re-entrant events are processed, the re-entrant events are queued.
 
 ### Code sample
 {: .no_toc }
 
 {% highlight java %}
 public class CallBackExample {
-    public static class MyCallbackNode{
+    public static class MyCallbackNode {
+
         @Inject
         public EventDispatcher eventDispatcher;
 
         @OnEventHandler
         public boolean processString(String event) {
+            System.out.println("MyCallbackNode::processString - " + event);
             for (String item : event.split(",")) {
                 eventDispatcher.processAsNewEventCycle(Integer.parseInt(item));
             }
-            return false;
+            return true;
         }
 
         @OnEventHandler
         public boolean processInteger(Integer event) {
-            System.out.println("received event: " + event);
+            System.out.println("MyCallbackNode::processInteger - " + event);
             return false;
         }
+
+    }
+
+    @Data
+    public static class IntegerHandler {
+
+        private final MyCallbackNode myCallbackNode;
+
+        @OnEventHandler
+        public boolean processInteger(Integer event) {
+            System.out.println("IntegerHandler::processInteger - " + event + "\n");
+            return true;
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            System.out.println("IntegerHandler::triggered\n");
+            return false;
+        }
+
     }
 
     public static void main(String[] args) {
-        var processor = Fluxtion.interpret(new MyCallbackNode());
+        MyCallbackNode myCallbackNode = new MyCallbackNode();
+        IntegerHandler intHandler = new IntegerHandler(myCallbackNode);
+        var processor = Fluxtion.interpret(intHandler);
         processor.init();
 
         processor.onEvent("20,45,89");
@@ -511,7 +536,15 @@ public class CallBackExample {
 ### Sample log
 {: .no_toc }
 {% highlight console %}
-received event: 20
-received event: 45
-received event: 89
+MyCallbackNode::processString - 20,45,89
+IntegerHandler::triggered
+
+MyCallbackNode::processInteger - 20
+IntegerHandler::processInteger - 20
+
+MyCallbackNode::processInteger - 45
+IntegerHandler::processInteger - 45
+
+MyCallbackNode::processInteger - 89
+IntegerHandler::processInteger - 89
 {% endhighlight %}
