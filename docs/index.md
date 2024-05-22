@@ -10,9 +10,11 @@ published: true
 ---
 
 
-**Vanilla java. No vendor lockin. Deploy anywhere. Use streaming DataFrames or your own classes 
-to develop stream processing pipelines in fewer lines of code.**
+**Vanilla java. No vendor lockin. Deploy anywhere.**
+{: .fs-5 }
 
+**Use streaming DataFlows or your own classes to develop stream processing pipelines in fewer lines of code.**
+{: .fs-5 }
 
 <div class="grid">
 <div class="col-1-2">
