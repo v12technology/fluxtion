@@ -41,6 +41,10 @@ kramdown:
     block:
       line_numbers: true
 
+# Set a path/url to a favicon that will be displayed by the browser
+favicon_ico: "/images/favicon.ico"
+
+
 mermaid:
   # Version of mermaid library
   # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/

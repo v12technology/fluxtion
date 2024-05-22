@@ -12,7 +12,9 @@ what Fluxtion does! Here's a breakdown:
 
 * Imagine data as a giant river constantly flowing in (think social media feeds, stock prices, sensor readings).
 * Traditional algorithms might try to dam up this river to analyze all the data at once.  This wouldn't work for real-time situations!
-* Streaming algorithms are like clever fish that can analyze the water (data) as it flows by. They use limited memory and only need one or few passes through the data to extract insights.
+* Streaming algorithms are like clever fish that can analyze the water (data) as it flows by. They use limited memory 
+and only need one or few passes through the data to extract insights.
+
 
 Here's why this is important for Fluxtion:
 
