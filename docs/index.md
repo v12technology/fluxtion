@@ -43,6 +43,7 @@ published: true
   <button class="tablinks2" onclick="openTab2(event, 'Windowing')" id="defaultExample">Windowing</button>
   <button class="tablinks2" onclick="openTab2(event, 'Filtering')">Filtering</button>
   <button class="tablinks2" onclick="openTab2(event, 'GroupBy')" >GroupBy and aggregate</button>
+  <button class="tablinks2" onclick="openTab2(event, 'AnomalyDetection')" >Anomaly detection</button>
 </div>
 
 
@@ -131,6 +132,39 @@ ODD/EVEN map:{}
 </div>
 </div>
 
+<div id="AnomalyDetection" class="tabcontent2">
+<div markdown="1">
+{% highlight java %}
+//create a streaming event processor
+var sep = Fluxtion.interpret(c -> {
+    //embed a stateful user class to notify support teams
+    var workScheduler = new WorkScheduler();
+    //live machine locations
+    DataFlow.subscribe(MachineLocation.class).push(workScheduler::setMachineLocation);
+    //live support details
+    DataFlow.subscribe(SupportContact.class).push(workScheduler::setSupportContact);
+    
+    //listen to machine temperature and groupBY id to a list of last 50 temperature readings
+    DataFlow.subscribe(MachineReadings.class)
+        .groupByFieldsGetAndAggregate(MachineReadings::temp, Collectors.listFactory(50), MachineReadings::id)
+        //reset readings signal
+        .resetTrigger(DataFlow.subscribeToSignal("reset"))
+        //wait for at least 10 readings
+        .filterValues(tempReadings -> tempReadings.size() > 10)
+        //User static function convert a list of doubles to an average
+        .mapValues(Mappers::listToAverage)
+        //filter for avg temp > 48
+        .filterValues(temp -> temp > 48)
+        //push to user class that notifies support in the correct region
+        .push(workScheduler::investigateMachine)
+};
+
+//init the streaming event processor and connect to your event flow source
+sep.init();
+connectEventFlow(sep);
+{% endhighlight %}
+</div>
+</div>
 
 # Embedded stream processing engine 
 ---
