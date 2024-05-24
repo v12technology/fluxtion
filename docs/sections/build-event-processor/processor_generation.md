@@ -356,6 +356,7 @@ public static void main(String[] args) {
 - Final non-transient fields must be assigned in the constructor
 - A constructor must exist that matches the final non-transient fields as arguments
 - Transient fields are not serialised
+- Fields annotated with `@FluxtionDontSerialize` are not serialised
 - Rules for serializing fields of bound classes
     - Only non-transient fields are serialized
     - All standard types are supported
