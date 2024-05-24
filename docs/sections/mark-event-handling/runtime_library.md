@@ -53,6 +53,20 @@ intValue:256
 An application can remove sink using the call `EventProcessor#removeSink`
 
 ## Clock time
+A [Clock]({{site.fluxtion_src_runtime}}/time/Clock.java) provides system independent time source nodes can use to request
+the current time. Clock provides time query functionality for the processor as follows:
+
+* WallClock - current time UTC milliseconds
+* ProcessTime - the time the event was received for processing
+* EventTime - the time the event was created
+
+The clock can be data driven from a user supplied strategy supplied as an event
+{% highlight java %}
+MutableNumber n = new MutableNumber();
+[event processor].onEvent(new ClockStrategyEvent(n::longValue));
+{% endhighlight %}
+
+See the [replay example](../integrate-even-processor/replay) for details on data driving the clock
 
 ### Code sample
 {: .no_toc }
@@ -93,6 +107,13 @@ time 07:33:45.849
 {% endhighlight %}
 
 ## TImed alarm trigger
+A fixed rate time, [FixedRateTrigger]({{site.fluxtion_src_runtime}}/time/FixedRateTrigger.java) class, can be 
+referenced by user classes. The timer will trigger at regular intervals notifying any downstream classes the timer
+has expired. The FixedRateTrigger checks the time on any event process cycle
+
+{: .info }
+The event processor does not run threads, the FixedRateTrigger only checks for expiry on an event process cycle
+{: .fs-4 }
 
 ### Code sample
 {: .no_toc }
@@ -231,6 +252,9 @@ Child:triggered
 {% endhighlight %}
 
 ## Audit logging
+Structured audit log records can be published from the running event processor. See the 
+[audit logging](../integrate-even-processor/app-integration#audit-logging) section in application integration for more 
+details.
 
 ### Code sample
 {: .no_toc }
@@ -291,6 +315,22 @@ eventLogRecord:
 {% endhighlight %}
 
 ## EventProcessorContext - context parameters
+Context parameters can be passed into the running event processor in the form of a map. Any node can access the context 
+map and lookup a property using an injected EventProcessorContext.
+
+{% highlight java %}
+@Inject
+public EventProcessorContext context;
+
+//lookup
+context.getContextProperty(String key)
+{% endhighlight %}
+
+Setting a context parameter on the running instance
+
+{% highlight java %}
+processor.addContextParameter(String key, Object value);
+{% endhighlight %}
 
 ### Code sample
 {: .no_toc }
@@ -336,6 +376,19 @@ myContextParam2 -> [param2: update 1]
 {% endhighlight %}
 
 ## DirtyStateMonitor - node dirty flag control
+A user node can query the dirty state of any dependency that is in the event processor
+Any node can access the [DirtyStateMonitor]() using an injected instance
+
+{% highlight java %}
+@Inject
+public DirtyStateMonitor dirtyStateMonitor;
+{% endhighlight %}
+
+The dirty state of a object can be queried with:
+
+{% highlight java %}
+dirtyStateMonitor.isDirty(Object instanceToQuery)
+{% endhighlight %}
 
 ### Code sample
 {: .no_toc }
@@ -406,33 +459,73 @@ TriggeredChild -> 4
 {% endhighlight %}
 
 ## EventDispatcher - event re-dispatch
+Events can be dispatched into the event processor as re-entrant events from a node during a calculation cycle. The
+[EventDispatcher]({{site.fluxtion_src_runtime}}/callback/EventDispatcher.java) class gives access to event re-dispatch
+functions. In order to access the EventDispatcher for the containing event processor we use the `@Inject` annotation.
+
+{% highlight java %}
+@Inject
+public EventDispatcher eventDispatcher;
+{% endhighlight %}
+
+The event processor will inject the EventDispatcher instance at runtime.
+
+**Any events that re-entrant will be queued and only execute when the current cycle has completed.**
+
+In this example a String event handler method receives a csv like string and redispatches an int event for each element
+in the record. An Integer event handler method handles each int event in a separate event cycle. The IntegerHandler class
+trigger method is fired before any re-entrant events are processed, the re-entrant events are queued.
 
 ### Code sample
 {: .no_toc }
 
 {% highlight java %}
 public class CallBackExample {
-    public static class MyCallbackNode{
+    public static class MyCallbackNode {
+
         @Inject
         public EventDispatcher eventDispatcher;
 
         @OnEventHandler
         public boolean processString(String event) {
+            System.out.println("MyCallbackNode::processString - " + event);
             for (String item : event.split(",")) {
                 eventDispatcher.processAsNewEventCycle(Integer.parseInt(item));
             }
-            return false;
+            return true;
         }
 
         @OnEventHandler
         public boolean processInteger(Integer event) {
-            System.out.println("received event: " + event);
+            System.out.println("MyCallbackNode::processInteger - " + event);
             return false;
         }
+
+    }
+
+    @Data
+    public static class IntegerHandler {
+
+        private final MyCallbackNode myCallbackNode;
+
+        @OnEventHandler
+        public boolean processInteger(Integer event) {
+            System.out.println("IntegerHandler::processInteger - " + event + "\n");
+            return true;
+        }
+
+        @OnTrigger
+        public boolean triggered() {
+            System.out.println("IntegerHandler::triggered\n");
+            return false;
+        }
+
     }
 
     public static void main(String[] args) {
-        var processor = Fluxtion.interpret(new MyCallbackNode());
+        MyCallbackNode myCallbackNode = new MyCallbackNode();
+        IntegerHandler intHandler = new IntegerHandler(myCallbackNode);
+        var processor = Fluxtion.interpret(intHandler);
         processor.init();
 
         processor.onEvent("20,45,89");
@@ -443,7 +536,15 @@ public class CallBackExample {
 ### Sample log
 {: .no_toc }
 {% highlight console %}
-received event: 20
-received event: 45
-received event: 89
+MyCallbackNode::processString - 20,45,89
+IntegerHandler::triggered
+
+MyCallbackNode::processInteger - 20
+IntegerHandler::processInteger - 20
+
+MyCallbackNode::processInteger - 45
+IntegerHandler::processInteger - 45
+
+MyCallbackNode::processInteger - 89
+IntegerHandler::processInteger - 89
 {% endhighlight %}

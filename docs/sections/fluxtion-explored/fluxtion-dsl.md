@@ -288,22 +288,38 @@ MERGED FLOW -> 123
 
 ## Merge and map flows
 
-Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types
+Merge multiple streams of different types into a single output, applying a mapping operation to combine the different types.
+Only when at least one element from each required flow is received will the data flow publish. The upstream flows are
+merged into a user class that is published as the output of the merge flow. The target class is specified with:
+
+`MergeAndMapFlowBuilder.of(Supplier<T> mergeTargetSupplier)`
+
+Upstream flows are set on the merge target class with a Consumer operation on the target class, T:
+
+`[merge and map builder]<T>.required(DataFlow<F> updstreamFlow, BiConsumer<T, F>)`
+
+Merge inputs are supported that do not have to trigger to publish the flow downstream. The value in the merge target 
+could be null if the upstream has not triggered and all the required flows have.
+
+`[merge and map builder]<T>.requiredNoTrigger(DataFlow<F> updstreamFlow, BiConsumer<T, F>)`
+
 
 {% highlight java %}
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->
-            DataFlow.mergeMap(
-                    MergeAndMapFlowBuilder.of(MyData::new)
-                            .required(subscribe(String.class), MyData::setCustomer)
-                            .required(subscribe(Date.class), MyData::setDate)
-                            .required(subscribe(Integer.class), MyData::setId))
+            MergeAndMapFlowBuilder.of(MyData::new)
+                    .required(subscribe(String.class), MyData::setCustomer)
+                    .required(subscribe(Date.class), MyData::setDate)
+                    .required(subscribe(Integer.class), MyData::setId)
+                    .dataFlow()
                     .console("new customer : {}")
     );
     processor.init();
 
     processor.onEvent(new Date());
     processor.onEvent("John Doe");
+
+    //only publishes when the last required flow is received
     processor.onEvent(123);
 }
 
