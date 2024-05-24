@@ -17,15 +17,16 @@
  */
 package com.fluxtion.compiler.generation.targets;
 
-import com.fluxtion.compiler.EventDispatcher;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.EventProcessorConfig.DISPATCH_STRATEGY;
+import com.fluxtion.compiler.NodeDispatchTable;
 import com.fluxtion.compiler.builder.filter.FilterDescription;
 import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.annotations.FluxtionDontSerialize;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.audit.Auditor;
@@ -739,6 +740,16 @@ public class JavaSourceGenerator {
     }
 
     private void generateEventBufferedDispatcher() {
+        if (!eventProcessorConfig.isSupportBufferAndTrigger()) {
+            eventHandlers += "\n    public void bufferEvent(Object event) {" +
+                    "        throw new UnsupportedOperationException(\"bufferEvent not supported\");\n" +
+                    "    }\n";
+            eventHandlers += "\n    public void triggerCalculation() {" +
+                    "        throw new UnsupportedOperationException(\"triggerCalculation not supported\");\n" +
+                    "    }\n";
+            return;
+        }
+
         boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
         StringBuilder noTriggerDispatch = new StringBuilder("\n    public void bufferEvent(Object event){\n" +
                 "        buffering = true;\n");
@@ -1211,6 +1222,9 @@ public class JavaSourceGenerator {
                 if ((instanceField.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
                     continue;
                 }
+                if (instanceField.getAnnotation(FluxtionDontSerialize.class) != null) {
+                    continue;
+                }
                 if (!assignPrivateMembers && (instanceField.getModifiers() & (Modifier.PRIVATE | Modifier.PROTECTED | Modifier.FINAL)) != 0) {
                     continue;
                 }
@@ -1508,7 +1522,7 @@ public class JavaSourceGenerator {
                     .collect(Collectors.joining(", ", "\n /*--- @ExportService start ---*/\n ", ",\n/*--- @ExportService end ---*/\n"));
         }
         if (model.isDispatchOnlyVersion()) {
-            additionalInterfaces += getClassTypeName(EventDispatcher.class) + ",\n";
+            additionalInterfaces += getClassTypeName(NodeDispatchTable.class) + ",\n";
         }
     }
 }

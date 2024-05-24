@@ -388,6 +388,8 @@ public class SimpleEventProcessorModel {
                     hasCstrAnnotations[0] = true;
                     LOGGER.debug("field marked as constructor arg: {}", fieldName);
                     LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
+                } else if (input.getAnnotation(FluxtionDontSerialize.class) != null) {
+                    return false;
                 } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
                     LOGGER.debug("ignoring field:{} public:{} final:{} transient:{} static:{}",
