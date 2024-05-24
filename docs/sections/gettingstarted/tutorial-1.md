@@ -23,20 +23,24 @@ published: true
 # Introduction
 ---
 
-This tutorial is an introduction to writing event driven application logic using Fluxtion. The reader should be
-proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection.
+This tutorial is an introduction to writing event driven application logic using Fluxtion and Spring. The reader should be
+proficient in Java, maven, git and possess a basic knowledge of Spring dependency injection. Spring is a very popular 
+dependency injection container, this example demonstrates Fluxtion Spring integration.
 
 Our goal is to build the logic for a simple lottery application that will be connected to request and response queues.
-Serialising requests to a queue makes our application event driven and easier to scale in the future, the response queue
-stores the output from the application. This example is focused on building event driven processing by wiring together
-software components using Fluxtion and not the connection to real queues.
+
+- Logic resides in user classes and functions
+- Spring config declares which beans to wire together
+- Fluxtion creates an event processor that manages the beans and dispatches events to the correct bean instance
+
+This example is focused on building event driven processing logic and not the connection to real queues.
 
 At the end of this tutorial you should understand how Fluxtion:
 
 - Exposes service interfaces for managed components
 - Calls lifecycle methods on managed components
 - Triggers event logic between dependent components
-- Wires components together
+- Wires components together using Spring configuration
 
 
 # Example project
