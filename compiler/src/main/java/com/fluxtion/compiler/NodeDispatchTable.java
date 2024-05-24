@@ -3,10 +3,10 @@ package com.fluxtion.compiler;
 import java.util.Map;
 
 /**
- * An EventDispatcher has a dispatch table but no members to dispatch to, use the {@link #setField(String, Object)} to
+ * An NodeDispatchTable has a dispatch table but no members to dispatch to, use the {@link #setField(String, Object)} to
  * assign a single members to the dispatch table. To set all the objects in the dispatch table use {@link #assignMembers(Map)}
  */
-public interface EventDispatcher {
+public interface NodeDispatchTable {
 
     /**
      * Assigns all members to the dispatch the table and initialises the event processor

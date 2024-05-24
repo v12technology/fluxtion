@@ -17,9 +17,9 @@
  */
 package com.fluxtion.compiler.generation;
 
-import com.fluxtion.compiler.EventDispatcher;
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.FluxtionCompilerConfig;
+import com.fluxtion.compiler.NodeDispatchTable;
 import com.fluxtion.compiler.RootNodeConfig;
 import com.fluxtion.compiler.generation.compiler.EventProcessorCompilation;
 import com.fluxtion.compiler.generation.compiler.EventProcessorGenerator;
@@ -114,7 +114,7 @@ public class EventProcessorFactory {
 
         Map<String, Object> instanceMap = new HashMap<>();
         compiler.getSimpleEventProcessorModel().getNodeFields().forEach(f -> instanceMap.put(f.getName(), f.getInstance()));
-        ((EventDispatcher) sep).assignMembers(instanceMap);
+        ((NodeDispatchTable) sep).assignMembers(instanceMap);
         return sep;
     }
 
@@ -229,7 +229,7 @@ public class EventProcessorFactory {
         if (dispatchOnly) {
             Map<String, Object> instanceMap = new HashMap<>();
             compiler.getSimpleEventProcessorModel().getNodeFields().forEach(f -> instanceMap.put(f.getName(), f.getInstance()));
-            ((EventDispatcher) sep).assignMembers(instanceMap);
+            ((NodeDispatchTable) sep).assignMembers(instanceMap);
         }
 
         if (initialise) {

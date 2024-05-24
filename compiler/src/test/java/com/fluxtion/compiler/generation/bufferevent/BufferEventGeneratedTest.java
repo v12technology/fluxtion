@@ -2,12 +2,7 @@ package com.fluxtion.compiler.generation.bufferevent;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.AfterTrigger;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnParentUpdate;
-import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import org.hamcrest.CoreMatchers;
@@ -121,6 +116,26 @@ public class BufferEventGeneratedTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(0));
         onEvent(14);
         MatcherAssert.assertThat(getField("combiner", Combiner.class).triggerCount, CoreMatchers.is(2));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedBufferTest() {
+        sep(c -> {
+            c.addNode(new EventHolder());
+            c.setSupportBufferAndTrigger(false);
+        });
+
+        bufferEvent("test");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void unsupportedTriggerTest() {
+        sep(c -> {
+            c.addNode(new EventHolder());
+            c.setSupportBufferAndTrigger(false);
+        });
+
+        triggerCalculation();
     }
 
 

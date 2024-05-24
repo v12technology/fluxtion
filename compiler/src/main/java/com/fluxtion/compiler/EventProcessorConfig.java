@@ -31,6 +31,8 @@ import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.dataflow.function.MergeProperty;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.time.Clock;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.io.File;
@@ -69,6 +71,9 @@ public class EventProcessorConfig {
     private boolean supportDirtyFiltering = true;
     private boolean assignPrivateMembers = false;
     private boolean instanceOfDispatch = true;
+    @Getter
+    @Setter
+    private boolean supportBufferAndTrigger = true;
     private DISPATCH_STRATEGY dispatchStrategy = DISPATCH_STRATEGY.INSTANCE_OF;
     private List<String> compilerOptions = new ArrayList<>();
 

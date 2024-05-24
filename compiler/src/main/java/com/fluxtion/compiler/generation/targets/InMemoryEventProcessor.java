@@ -99,12 +99,18 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
     @Override
     public void bufferEvent(Object event) {
+        if (!config.isSupportBufferAndTrigger()) {
+            throw new UnsupportedOperationException("bufferEvent not supported");
+        }
         buffering = true;
         processEvent(event, true);
     }
 
     @Override
     public void triggerCalculation() {
+        if (!config.isSupportBufferAndTrigger()) {
+            throw new UnsupportedOperationException("triggerCalculation not supported");
+        }
         log.debug("dirtyBitset, after:{}", dirtyBitset);
         log.debug("======== GRAPH CYCLE START TRIGGER ========");
         for (int i = dirtyBitset.nextSetBit(0); i >= 0; i = dirtyBitset.nextSetBit(i + 1)) {

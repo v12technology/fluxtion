@@ -677,6 +677,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
             if (field.getAnnotation(NoTriggerReference.class) != null) {
                 continue;
             }
+            if (field.getAnnotation(FluxtionDontSerialize.class) != null) {
+                continue;
+            }
             if (overrideEventTrigger && field.getAnnotation(TriggerEventOverride.class) == null) {
                 continue;
             }
@@ -834,6 +837,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
         fields = s.toArray(fields);
         for (Field field : fields) {
             if (!trySetAccessible(field) || Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
+            if (field.getAnnotation(FluxtionDontSerialize.class) != null) {
                 continue;
             }
             Object refField = field.get(object);
