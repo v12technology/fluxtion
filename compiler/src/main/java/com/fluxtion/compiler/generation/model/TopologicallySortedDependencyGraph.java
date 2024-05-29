@@ -31,6 +31,7 @@ import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.*;
 import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.dataflow.Tuple;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.Anchor;
 import com.fluxtion.runtime.node.EventHandlerNode;
@@ -581,7 +582,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     private void sortExportedServiceFunctionCallbacks() {
-        exportedFunctionMap.values().stream().map(ExportFunctionData::getFunctionCallBackList).forEach(this::sortNodeList);
+        exportedFunctionMap.values().stream().map(ExportFunctionData::getFunctionCallBackList).forEach(this::sortNodeListAsTuple);
     }
 
     @SuppressWarnings("unchecked")
@@ -749,10 +750,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     }
                     boolean propagateMethod = cbMethod.getAnnotation(NoPropagateFunction.class) == null && propagateClass;
                     ExportFunctionData exportFunctionData = exportedFunctionMap.computeIfAbsent(
-                            method, n -> new ExportFunctionData(method, propagateMethod));
+                            method, n -> new ExportFunctionData(method));
                     registerNode(object, null);
                     final String name = inst2Name.get(object);
-                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(cbMethod, object, name));
+                    exportFunctionData.addCbMethodHandle(new CbMethodHandle(cbMethod, object, name), propagateMethod);
                 }
             }
         }
@@ -1031,6 +1032,23 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
 
     void sortNodeList(List<CbMethodHandle> dispatchMethods) {
         dispatchMethods.sort((CbMethodHandle handle0, CbMethodHandle handle1) -> {
+            if (handle0.instance == handle1.instance) {
+                if (handle0.isEventHandler && !handle1.isEventHandler) {
+                    return -1;
+                } else if (!handle0.isEventHandler && handle1.isEventHandler) {
+                    return +1;
+                } else {
+                    return handle0.method.getName().compareTo(handle1.method.getName());
+                }
+            }
+            return (topologicalHandlers.indexOf(handle0.instance) - topologicalHandlers.indexOf(handle1.instance));
+        });
+    }
+
+    void sortNodeListAsTuple(List<Tuple<CbMethodHandle, Boolean>> dispatchMethods) {
+        dispatchMethods.sort((Tuple<CbMethodHandle, Boolean> tuple0, Tuple<CbMethodHandle, Boolean> tuple1) -> {
+            CbMethodHandle handle0 = tuple0.getFirst();
+            CbMethodHandle handle1 = tuple1.getFirst();
             if (handle0.instance == handle1.instance) {
                 if (handle0.isEventHandler && !handle1.isEventHandler) {
                     return -1;

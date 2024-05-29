@@ -17,6 +17,7 @@ import com.fluxtion.runtime.callback.CallbackDispatcher;
 import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
 import com.fluxtion.runtime.callback.ExportFunctionAuditEvent;
 import com.fluxtion.runtime.callback.InternalEventProcessor;
+import com.fluxtion.runtime.dataflow.Tuple;
 import com.fluxtion.runtime.dataflow.groupby.MutableTuple;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
@@ -560,7 +561,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
 
         Map<Method, ExportFunctionData> exportedFunctionMap = simpleEventProcessorModel.getExportedFunctionMap();
         Set<CallbackInstance> exportCbSet = exportedFunctionMap.values().stream()
-                .map(ExportFunctionData::getFunctionCallBackList).flatMap(List::stream)
+                .map(ExportFunctionData::getFunctionCallBackList)
+                .flatMap(List::stream)
+                .map(Tuple::getFirst)
                 .map(CallbackInstance::new)
                 .collect(Collectors.toSet());
 

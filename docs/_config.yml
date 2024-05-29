@@ -25,8 +25,8 @@ title: Fluxtion streaming
 description: Documentation for Fluxtion event processor
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 9.3.12":
-    - "//github.com/v12technology/fluxtion/tree/9.3.12"
+  "release 9.3.14":
+    - "//github.com/v12technology/fluxtion/tree/9.3.14"
 heading_anchors: true
 
 # Color scheme supports "light" (default) and "dark"
@@ -59,14 +59,14 @@ mermaid_white: classDef color:#022e1f,fill:#fff;
 mermaid_black: classDef black color:#fff,fill:#000;
 
 #source directories
-fluxtion_version: 9.3.12
-fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.3.12
-fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.3.12/runtime/src/main/java/com/fluxtion/runtime
-fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.3.12/compiler/src/main/java/com/fluxtion/compiler
-EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.3.12/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
-Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.3.12/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
-EventProcessorConfig_link: https://github.com/v12technology/fluxtion/blob/9.3.12/compiler/src/main/java/com/fluxtion/compiler/EventProcessorConfig.java
-FluxtionCompilerConfig_link: https://github.com/v12technology/fluxtion/blob/9.3.12/compiler/src/main/java/com/fluxtion/compiler/FluxtionCompilerConfig.java
+fluxtion_version: 9.3.14
+fluxtion_src: https://github.com/v12technology/fluxtion/blob/9.3.14
+fluxtion_src_runtime:  https://github.com/v12technology/fluxtion/blob/9.3.14/runtime/src/main/java/com/fluxtion/runtime
+fluxtion_src_compiler: https://github.com/v12technology/fluxtion/blob/9.3.14/compiler/src/main/java/com/fluxtion/compiler
+EventProcessor_link: https://github.com/v12technology/fluxtion/blob/9.3.14/runtime/src/main/java/com/fluxtion/runtime/EventProcessor.java
+Fluxtion_link: https://github.com/v12technology/fluxtion/blob/9.3.14/compiler/src/main/java/com/fluxtion/compiler/Fluxtion.java
+EventProcessorConfig_link: https://github.com/v12technology/fluxtion/blob/9.3.14/compiler/src/main/java/com/fluxtion/compiler/EventProcessorConfig.java
+FluxtionCompilerConfig_link: https://github.com/v12technology/fluxtion/blob/9.3.14/compiler/src/main/java/com/fluxtion/compiler/FluxtionCompilerConfig.java
 cookbook_src: https://github.com/v12technology/fluxtion-examples/tree/main/cookbook/src/main/java/com/fluxtion/example/cookbook
 reference_examples: https://github.com/v12technology/fluxtion-examples/tree/main/reference-examples/
 examples_project: https://github.com/v12technology/fluxtion-examples/tree/main/

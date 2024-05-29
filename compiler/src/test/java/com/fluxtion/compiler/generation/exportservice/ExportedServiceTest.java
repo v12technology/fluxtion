@@ -165,11 +165,14 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
     public void noPropagateFunctionTest() {
         sep(c -> DataFlow.subscribeToNode(new NoPropagateSomeMethodsMySvc())
                 .mapToInt(Mappers.count()).id("count"));
+
         MyTriggeringService triggeringService = sep.getExportedService();
         triggeringService.triggerPositive(10);
         assertThat(getStreamed("count"), is(1));
+
         triggeringService.testAdd(10, 10);
         assertThat(getStreamed("count"), is(1));
+
         triggeringService.testSubtract(10, 10);
         assertThat(getStreamed("count"), is(2));
     }
