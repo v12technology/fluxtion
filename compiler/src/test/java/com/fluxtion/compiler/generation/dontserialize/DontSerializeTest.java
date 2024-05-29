@@ -2,8 +2,8 @@ package com.fluxtion.compiler.generation.dontserialize;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.CompiledOnlySepTest;
-import com.fluxtion.runtime.annotations.FluxtionDontSerialize;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import lombok.Data;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,9 +25,9 @@ public class DontSerializeTest extends CompiledOnlySepTest {
 
     @Data
     public static class MyNode {
-        @FluxtionDontSerialize
+        @FluxtionIgnore
         private final String in;
-        @FluxtionDontSerialize
+        @FluxtionIgnore
         private String out;
 
         public MyNode() {

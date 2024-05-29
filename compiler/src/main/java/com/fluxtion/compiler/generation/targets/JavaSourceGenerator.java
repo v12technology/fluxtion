@@ -26,9 +26,9 @@ import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
-import com.fluxtion.runtime.annotations.FluxtionDontSerialize;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.callback.ExportFunctionAuditEvent;
@@ -1222,7 +1222,7 @@ public class JavaSourceGenerator {
                 if ((instanceField.getModifiers() & (Modifier.STATIC | Modifier.TRANSIENT)) != 0) {
                     continue;
                 }
-                if (instanceField.getAnnotation(FluxtionDontSerialize.class) != null) {
+                if (instanceField.getAnnotation(FluxtionIgnore.class) != null) {
                     continue;
                 }
                 if (!assignPrivateMembers && (instanceField.getModifiers() & (Modifier.PRIVATE | Modifier.PROTECTED | Modifier.FINAL)) != 0) {

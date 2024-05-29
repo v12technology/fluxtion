@@ -28,6 +28,7 @@ import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.time.Clock;
@@ -388,7 +389,7 @@ public class SimpleEventProcessorModel {
                     hasCstrAnnotations[0] = true;
                     LOGGER.debug("field marked as constructor arg: {}", fieldName);
                     LOGGER.debug("hasCstrAnnotations:" + hasCstrAnnotations[0]);
-                } else if (input.getAnnotation(FluxtionDontSerialize.class) != null) {
+                } else if (input.getAnnotation(FluxtionIgnore.class) != null) {
                     return false;
                 } else if (Modifier.isStatic(input.getModifiers()) || !Modifier.isFinal(input.getModifiers()) || Modifier.isTransient(input.getModifiers())) {
 //                if (Modifier.isStatic(input.getModifiers()) || (Modifier.isPublic(input.getModifiers()) && !Modifier.isFinal(input.getModifiers()))) {
