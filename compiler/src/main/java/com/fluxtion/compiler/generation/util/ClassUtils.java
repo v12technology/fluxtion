@@ -24,6 +24,7 @@ import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
+import com.fluxtion.runtime.dataflow.Tuple;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -210,8 +211,8 @@ public interface ClassUtils {
     static String wrapExportedFunctionCall(Method exportedMethod, ExportFunctionData exportFunctionData, boolean onEventDispatch) {
         String exportedMethodName = exportedMethod.getName();
         LongAdder argNumber = new LongAdder();
-        List<CbMethodHandle> callBackList = exportFunctionData.getFunctionCallBackList();
-        Method delegateMethod = callBackList.get(0).getMethod();
+        List<Tuple<CbMethodHandle, Boolean>> callBackList = exportFunctionData.getFunctionCallBackList();
+        Method delegateMethod = callBackList.get(0).getFirst().getMethod();
         boolean booleanReturn = exportFunctionData.isBooleanReturn();
         StringBuilder signature = booleanReturn ? new StringBuilder("public boolean " + exportedMethodName) : new StringBuilder("public void " + exportedMethodName);
         signature.append('(');
@@ -240,11 +241,13 @@ public interface ClassUtils {
         for (int i = 0; i < argNumber.intValue(); i++) {
             sjInvoker.add("arg" + i);
         }
-        callBackList.forEach(cb -> {
+        callBackList.forEach(tuple -> {
+            CbMethodHandle cb = tuple.getFirst();
+            boolean isPropagateMethod = tuple.getSecond();
             String variableName = cb.getVariableName();
             String methodName = cb.getMethod().getName();
             signature.append("processor.nodeInvoked(" + variableName + ", \"" + variableName + "\", \"" + methodName + "\", functionAudit);\n");
-            if (!exportFunctionData.isPropagateMethod()) {
+            if (!isPropagateMethod) {
                 signature.append(variableName).append(".").append(methodName).append(sjInvoker.toString().replace("));", ");"));
             } else if (cb.getMethod().getReturnType() == void.class) {
                 signature.append(variableName).append(".").append(methodName).append(sjInvoker.toString().replace("));", ");"));
