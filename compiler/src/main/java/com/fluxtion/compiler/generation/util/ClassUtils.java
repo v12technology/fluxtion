@@ -22,8 +22,8 @@ import com.fluxtion.compiler.generation.model.ExportFunctionData;
 import com.fluxtion.compiler.generation.model.Field;
 import com.fluxtion.compiler.generation.model.SimpleEventProcessorModel;
 import com.fluxtion.runtime.annotations.ExportService;
-import com.fluxtion.runtime.annotations.FluxtionDontSerialize;
 import com.fluxtion.runtime.annotations.NoPropagateFunction;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import lombok.SneakyThrows;
 import net.vidageek.mirror.dsl.Mirror;
 import org.reflections.ReflectionUtils;
@@ -94,7 +94,7 @@ public interface ClassUtils {
         } else {
             fieldOfProperty = allFields.iterator().next();
             fieldOfProperty.setAccessible(true);
-            isTransient = Modifier.isTransient(fieldOfProperty.getModifiers()) || fieldOfProperty.getAnnotation(FluxtionDontSerialize.class) != null;
+            isTransient = Modifier.isTransient(fieldOfProperty.getModifiers()) || fieldOfProperty.getAnnotation(FluxtionIgnore.class) != null;
         }
         return isTransient;
     }
