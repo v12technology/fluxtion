@@ -1659,6 +1659,18 @@ Pupil count by year/sex
 ----
 {% endhighlight %}
 
+## Dataflow shortcut groupBy methods
+
+The DataFlow class offers a set of shortcut methods for groupBy functions that do not require the 
+subscription method to be declared as it is called implicitly. Some examples below
+
+| shortcut method                                       | Full method                                                                     |
+|-------------------------------------------------------|---------------------------------------------------------------------------------|
+| `DataFlow.groupByFields(Function<T, ?>... accessors)` | `DataFlow.subscribe(Class<T> clazz).groupByFields(Function<T, ?>... accessors)` |
+| `DataFlow.groupByToList(Function<T, ?>... accessors)` | `DataFlow.subscribe(Class<T> clazz).groupByToList(Function<T, ?>... accessors)` |
+| `DataFlow.groupByToSet(Function<T, ?>... accessors)`  | `DataFlow.subscribe(Class<T> clazz).groupByToSet(Function<T, ?>... accessors)`  |
+
+
 # Windowed GroupBy
 
 ## Tumbling GroupBy
