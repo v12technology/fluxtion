@@ -63,6 +63,40 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(actual, is(expected));
     }
 
+    @Test
+    public void groupByCompoundKeyIdentityTest() {
+        Map<GroupByKey<Data>, Data> expected = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupByFields(Data::getName, Data::getValue)
+                    .map(GroupBy::toMap).id("results")
+                    .console("results:{}\n");
+        });
+
+        Data data_A_25 = new Data("A", 25);
+        Data data_A_50 = new Data("A", 50);
+        onEvent(data_A_25);
+        onEvent(data_A_50);
+
+        GroupByKey<Data> key = new GroupByKey<>(Data::getName, Data::getValue);
+
+        expected.put(key.toKey(data_A_25), new Data("A", 25));
+        expected.put(key.toKey(data_A_50), new Data("A", 50));
+        Map<GroupByKey<Data>, Data> actual = getStreamed("results");
+        MatcherAssert.assertThat(actual, is(expected));
+
+        Data data_A_10 = new Data("A", 10);
+        Data data_B_11 = new Data("B", 11);
+        onEvent(data_A_10);
+        onEvent(data_B_11);
+
+        expected.put(key.toKey(data_A_10), new Data("A", 10));
+        expected.put(key.toKey(data_B_11), new Data("B", 11));
+        expected.put(key.toKey(data_A_25), new Data("A", 25));
+        expected.put(key.toKey(data_A_50), new Data("A", 50));
+
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
 
     @Test
     public void groupByAsListIdentityTest() {
@@ -117,6 +151,34 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(actual, is(expected));
     }
 
+
+    @Test
+    public void dataFlowGroupByAsListMultiFieldKeyIdentityTest() {
+        Map<GroupByKey<Data>, List<Data>> expected = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupByToList(Data::getName, Data::getValue)
+                    .map(GroupBy::toMap).id("results");
+        });
+
+        Data data_A_25 = new Data("A", 25);
+        Data data_A_50 = new Data("A", 50);
+        onEvent(data_A_25);
+        onEvent(data_A_50);
+        onEvent(data_A_50);
+
+        GroupByKey<Data> key = new GroupByKey<>(Data::getName, Data::getValue);
+        expected.put(key.toKey(data_A_25), Stream.of(
+                new Data("A", 25)
+        ).collect(Collectors.toList()));
+        expected.put(key.toKey(data_A_50), Stream.of(
+                new Data("A", 50),
+                new Data("A", 50)
+        ).collect(Collectors.toList()));
+
+        Map<String, Data> actual = getStreamed("results");
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
     @Test
     public void dataFlowGroupBySet() {
         Map<String, Set<Data>> expected = new HashMap<>();
@@ -143,6 +205,33 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         expected.put("B", Stream.of(
                 new Data("B", 15)
         ).collect(Collectors.toSet()));
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void dataFlowGroupByAsASetMultiFieldKeyIdentityTest() {
+        Map<GroupByKey<Data>, Set<Data>> expected = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupByToSet(Data::getName, Data::getValue)
+                    .map(GroupBy::toMap).id("results");
+        });
+
+        Data data_A_25 = new Data("A", 25);
+        Data data_A_50 = new Data("A", 50);
+        onEvent(data_A_25);
+        onEvent(data_A_25);
+        onEvent(data_A_25);
+        onEvent(data_A_50);
+
+        GroupByKey<Data> key = new GroupByKey<>(Data::getName, Data::getValue);
+        expected.put(key.toKey(data_A_25), Stream.of(
+                new Data("A", 25)
+        ).collect(Collectors.toSet()));
+        expected.put(key.toKey(data_A_50), Stream.of(
+                new Data("A", 50)
+        ).collect(Collectors.toSet()));
+
+        Map<String, Data> actual = getStreamed("results");
         MatcherAssert.assertThat(actual, is(expected));
     }
 

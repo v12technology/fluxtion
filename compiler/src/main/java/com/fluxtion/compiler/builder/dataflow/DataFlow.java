@@ -6,9 +6,11 @@ import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
+import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.DefaultEventHandlerNode;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -301,6 +303,13 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction);
     }
 
+    @SafeVarargs
+    static <T> GroupByFlowBuilder<GroupByKey<T>, T> groupByFields(SerializableFunction<T, ?>... keyFunction) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunction[0].method().getDeclaringClass();
+        return subscribe(classSubscription).groupByFields(keyFunction);
+    }
+
     static <T, K, O, F extends AggregateFlowFunction<T, O, F>> GroupByFlowBuilder<K, O> groupBy(
             SerializableFunction<T, K> keyFunction, SerializableSupplier<F> aggregateFunctionSupplier) {
         @SuppressWarnings("unchecked")
@@ -308,17 +317,54 @@ public interface DataFlow {
         return subscribe(classSubscription).groupBy(keyFunction, aggregateFunctionSupplier);
     }
 
-    //SerializableSupplier<F> aggregateFunctionSupplier
+    /**
+     * Aggregates a set of instances into a multimap style structure. The key is a compound key made up from an accessor
+     * of the input data
+     *
+     * @param keyFunction The accessor that makes up the key
+     * @param <T>         The item to aggregate
+     * @return The GroupByFlowBuilder that represents the multimap
+     */
     static <T, K> GroupByFlowBuilder<K, List<T>> groupByToList(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupByToList(keyFunction);
     }
 
+    /**
+     * Aggregates a set of instances into a multimap style structure. The key is a compound key made up from the accessors
+     * of the input data
+     *
+     * @param keyFunctions The accessors that make up the compound key
+     * @param <T>          The item to aggregate
+     * @return The GroupByFlowBuilder that represents the multimap
+     */
+    @SafeVarargs
+    static <T> GroupByFlowBuilder<GroupByKey<T>, List<T>> groupByToList(LambdaReflection.SerializableFunction<T, ?>... keyFunctions) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunctions[0].method().getDeclaringClass();
+        return subscribe(classSubscription).groupByToList(keyFunctions);
+    }
+
     static <T, K> GroupByFlowBuilder<K, Set<T>> groupByToSet(SerializableFunction<T, K> keyFunction) {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupByToSet(keyFunction);
+    }
+
+    /**
+     * Aggregates a set of instances into a multiset style structure. The key is a compound key made up from the accessors
+     * of the input data
+     *
+     * @param keyFunctions The accessors that make up the compound key
+     * @param <T>          The item to aggregate
+     * @return The GroupByFlowBuilder that represents the multimap
+     */
+    @SafeVarargs
+    static <T> GroupByFlowBuilder<GroupByKey<T>, Set<T>> groupByToSet(LambdaReflection.SerializableFunction<T, ?>... keyFunctions) {
+        @SuppressWarnings("unchecked")
+        Class<T> classSubscription = (Class<T>) keyFunctions[0].method().getDeclaringClass();
+        return subscribe(classSubscription).groupByToSet(keyFunctions);
     }
 
     static <T, K, V> GroupByFlowBuilder<K, V> groupBy(

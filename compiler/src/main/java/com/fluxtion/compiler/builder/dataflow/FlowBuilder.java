@@ -285,6 +285,19 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return groupBy(keyFunction, Mappers::identity, Collectors.listFactory());
     }
 
+    /**
+     * Aggregates a set of instances into a multimap style structure. The key is a compound key made up from the accessors
+     * of the input data
+     *
+     * @param keyFunctions The accessors that make up the compound key
+     * @return The GroupByFlowBuilder that represents the multimap
+     */
+    @SafeVarargs
+    public final GroupByFlowBuilder<GroupByKey<T>, List<T>> groupByToList(SerializableFunction<T, ?>... keyFunctions) {
+        return groupByFieldsAggregate(Collectors.listFactory(), keyFunctions);
+    }
+
+
     public <K, V> GroupByFlowBuilder<K, List<V>> groupByToList(
             SerializableFunction<T, K> keyFunction, SerializableFunction<T, V> valueFunction) {
         return groupBy(keyFunction, valueFunction, Collectors.listFactory());
@@ -292,6 +305,18 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public <K> GroupByFlowBuilder<K, Set<T>> groupByToSet(SerializableFunction<T, K> keyFunction) {
         return groupBy(keyFunction, Mappers::identity, Collectors.setFactory());
+    }
+
+    /**
+     * Aggregates a set of instances into a multiset style structure. The key is a compound key made up from the accessors
+     * of the input data
+     *
+     * @param keyFunctions The accessors that make up the compound key
+     * @return The GroupByFlowBuilder that represents the multimap
+     */
+    @SafeVarargs
+    public final GroupByFlowBuilder<GroupByKey<T>, Set<T>> groupByToSet(SerializableFunction<T, ?>... keyFunctions) {
+        return groupByFieldsAggregate(Collectors.setFactory(), keyFunctions);
     }
 
     public <K, V> GroupByFlowBuilder<K, Set<V>> groupByToSet(SerializableFunction<T, K> keyFunction, SerializableFunction<T, V> valueFunction) {
