@@ -15,6 +15,8 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, GroupBy<K, V>> {
@@ -87,7 +89,17 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new GroupByMapFlowFunction(mappingFunction)::mapEntry));
     }
 
-    public <O> GroupByFlowBuilder<K, V> filterValues(SerializableFunction<V, Boolean> mappingFunction) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public GroupByFlowBuilder<K, V> deleteByKey(SerializableSupplier<Collection<K>> mappingFunction) {
+        FlowBuilder<Collection<K>> mappingFunctionFlow = DataFlow.subscribeToNodeProperty(mappingFunction);
+        return new GroupByFlowBuilder<>(
+                new BinaryMapToRefFlowFunction<>(
+                        eventStream,
+                        mappingFunctionFlow.defaultValue(Collections::emptyList).eventStream,
+                        new DeleteByKeyInstance(mappingFunctionFlow.flowSupplier())::deleteByKey));
+    }
+
+    public GroupByFlowBuilder<K, V> filterValues(SerializableFunction<V, Boolean> mappingFunction) {
         return new GroupByFlowBuilder<>(new MapRef2RefFlowFunction<>(eventStream,
                 new GroupByFilterFlowFunctionWrapper(mappingFunction)::filterValues));
     }

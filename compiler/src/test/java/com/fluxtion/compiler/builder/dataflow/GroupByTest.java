@@ -5,6 +5,8 @@ import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.MergedType;
 import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.MyIntFilter;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.DoubleSumFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.IntSumFlowFunction;
@@ -432,6 +434,64 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         expected.put("A", 1400);
         expected.put("C", 1000);
         assertThat(results, CoreMatchers.is(expected));
+    }
+
+    @Test
+    public void deleteByKeyTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBy(KeyedData::getId, KeyedData::getAmount)
+                .deleteByKey(new DeleteSupplier()::getKeys)
+                .map(GroupBy::toMap)
+                .sink("keyValue"));
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent(new KeyedData("B", 1000));
+
+        expected.put("A", 400);
+        expected.put("B", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent("A");
+        expected.put("B", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent("B");
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(new KeyedData("B", 2000));
+        onEvent(new KeyedData("C", 1000));
+        onEvent(new KeyedData("B", 50));
+        onEvent(new KeyedData("A", 1400));
+        onEvent("A");
+
+        expected.put("B", 50);
+        expected.put("C", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+    public static class DeleteSupplier {
+        @FluxtionIgnore
+        private String[] deleteKeys = new String[]{};
+
+        @OnEventHandler
+        public boolean deleteKeys(String s) {
+            deleteKeys = s.split(",");
+            return true;
+        }
+
+        public Collection<String> getKeys() {
+            return Arrays.asList(deleteKeys);
+        }
     }
 
     @Test
