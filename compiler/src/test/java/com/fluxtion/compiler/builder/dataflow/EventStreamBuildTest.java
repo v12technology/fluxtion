@@ -683,6 +683,25 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    public static class MyDynamicIntFilter {
+        private final int limit;
+        private int dynamicLimit = Integer.MAX_VALUE;
+
+        @OnEventHandler
+        public boolean setDynamicLimit(Integer dynamicLimit) {
+            this.dynamicLimit = dynamicLimit;
+            return true;
+        }
+
+        public MyDynamicIntFilter(int limit) {
+            this.limit = limit;
+        }
+
+        public boolean gt(Integer testValue) {
+            return testValue > limit || testValue > dynamicLimit;
+        }
+    }
+
     public static String toUpperCase(String s) {
         return s.toUpperCase();
     }

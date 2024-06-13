@@ -16,6 +16,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -329,6 +330,18 @@ public interface DataFlow {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupByToList(keyFunction);
+    }
+
+    static <T> FlowBuilder<Collection<T>> collectionFromSubscribe(Class<T> classSubscription) {
+        return subscribe(classSubscription).mapToCollection();
+    }
+
+    static <T> FlowBuilder<List<T>> listFromSubscribe(Class<T> classSubscription) {
+        return subscribe(classSubscription).mapToList();
+    }
+
+    static <T> FlowBuilder<Set<T>> setFromSubscribe(Class<T> classSubscription) {
+        return subscribe(classSubscription).mapToSet();
     }
 
     /**

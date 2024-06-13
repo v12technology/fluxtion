@@ -89,14 +89,66 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new GroupByMapFlowFunction(mappingFunction)::mapEntry));
     }
 
+    /**
+     * @param supplierOfIdsToDelete a data flow of id's to delete
+     * @return The GroupByFlowBuilder with delete function applied
+     * @see #deleteByKey(FlowBuilder, boolean)
+     */
+    public GroupByFlowBuilder<K, V> deleteByKey(SerializableSupplier<Collection<K>> supplierOfIdsToDelete) {
+        return deleteByKey(DataFlow.subscribeToNodeProperty(supplierOfIdsToDelete), false);
+    }
+
+    /**
+     * @param supplierOfIdsToDelete       a data flow of id's to delete
+     * @param clearDeleteIdsAfterApplying flag to clear the delete id's after applying
+     * @return The GroupByFlowBuilder with delete function applied
+     * @see #deleteByKey(FlowBuilder, boolean)
+     */
+    public GroupByFlowBuilder<K, V> deleteByKey(SerializableSupplier<Collection<K>> supplierOfIdsToDelete, boolean clearDeleteIdsAfterApplying) {
+        return deleteByKey(DataFlow.subscribeToNodeProperty(supplierOfIdsToDelete), clearDeleteIdsAfterApplying);
+    }
+
+    /**
+     * @param supplierOfIdsToDelete a data flow of id's to delete
+     * @return The GroupByFlowBuilder with delete function applied
+     * @see #deleteByKey(FlowBuilder, boolean)
+     */
+    public GroupByFlowBuilder<K, V> deleteByKey(FlowBuilder<Collection<K>> supplierOfIdsToDelete) {
+        return deleteByKey(supplierOfIdsToDelete, false);
+    }
+
+    /**
+     * Deletes items from a {@link GroupBy} collection by their id's. A supplier of keys to delete is applied to the
+     * GroupBy. The collection of id's can be cleared after applying or remain in place with the clearDeleteIdsAfterApplying
+     *
+     * @param supplierOfIdsToDelete       a data flow of id's to delete
+     * @param clearDeleteIdsAfterApplying flag to clear the delete id's after applying
+     * @return The GroupByFlowBuilder with delete function applied
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public GroupByFlowBuilder<K, V> deleteByKey(SerializableSupplier<Collection<K>> mappingFunction) {
-        FlowBuilder<Collection<K>> mappingFunctionFlow = DataFlow.subscribeToNodeProperty(mappingFunction);
+    public GroupByFlowBuilder<K, V> deleteByKey(FlowBuilder<Collection<K>> supplierOfIdsToDelete, boolean clearDeleteIdsAfterApplying) {
         return new GroupByFlowBuilder<>(
                 new BinaryMapToRefFlowFunction<>(
                         eventStream,
-                        mappingFunctionFlow.defaultValue(Collections::emptyList).eventStream,
-                        new DeleteByKeyInstance(mappingFunctionFlow.flowSupplier())::deleteByKey));
+                        supplierOfIdsToDelete.defaultValue(Collections::emptyList).eventStream,
+                        new GroupByDeleteByKeyFlowFunction(supplierOfIdsToDelete.flowSupplier(), clearDeleteIdsAfterApplying)::deleteByKey));
+    }
+
+    /**
+     * Deletes items from a {@link GroupBy} collection using a predicate function applied to an elements value.
+     *
+     * @param deletePredicateFunction the predicate function that determines if an element should  be deleted. Deletes if returns true
+     * @return The GroupByFlowBuilder with delete function applied
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public GroupByFlowBuilder<K, V> deleteByValue(SerializableFunction<V, Boolean> deletePredicateFunction) {
+        Object functionInstance = deletePredicateFunction.captured()[0];
+        FlowBuilder<Object> deleteTestFlow = DataFlow.subscribeToNode(functionInstance);
+        return new GroupByFlowBuilder<>(
+                new BinaryMapToRefFlowFunction<>(
+                        eventStream,
+                        deleteTestFlow.defaultValue(functionInstance).eventStream,
+                        new GroupByDeleteByNameFlowFunctionWrapper(deletePredicateFunction, functionInstance)::deleteByKey));
     }
 
     public GroupByFlowBuilder<K, V> filterValues(SerializableFunction<V, Boolean> mappingFunction) {
@@ -130,6 +182,15 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
         );
     }
 
+    public <V2, KOUT, VOUT>
+    GroupByFlowBuilder<KOUT, VOUT> mapBiFlowFunction(
+            SerializableBiFunction<GroupBy<K, V>, V2, GroupBy<KOUT, VOUT>> int2IntFunction,
+            FlowBuilder<V2> stream2Builder) {
+        return new GroupByFlowBuilder<>(
+                new BinaryMapToRefFlowFunction<>(
+                        eventStream, stream2Builder.eventStream, int2IntFunction)
+        );
+    }
 
     public GroupByFlowBuilder<K, V> console(String in) {
         peek(Peekers.console(in, null));
@@ -139,7 +200,6 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
     public GroupByFlowBuilder<K, V> console() {
         return console("{}");
     }
-
 
     //META-DATA
     public GroupByFlowBuilder<K, V> id(String nodeId) {

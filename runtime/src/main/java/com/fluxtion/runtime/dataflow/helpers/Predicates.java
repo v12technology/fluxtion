@@ -29,6 +29,14 @@ public interface Predicates {
         return a > b;
     }
 
+    static boolean alwaysTrue() {
+        return true;
+    }
+
+    static boolean alwaysFalse() {
+        return true;
+    }
+
     static boolean isInteger(String in) {
         try {
             Integer.parseInt(in);
