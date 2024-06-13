@@ -6,6 +6,7 @@ import com.fluxtion.runtime.dataflow.aggregate.function.AggregateToSetFlowFuncti
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,10 @@ public interface Collectors {
     }
 
     static <T> SerializableFunction<T, List<T>> toList() {
+        return new AggregateToListFlowFunction<T>()::aggregate;
+    }
+
+    static <T> SerializableFunction<T, Collection<T>> toCollection() {
         return new AggregateToListFlowFunction<T>()::aggregate;
     }
 

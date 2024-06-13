@@ -22,6 +22,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -83,6 +84,10 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public FlowBuilder<List<T>> mapToList() {
         return map(Collectors.toList());
+    }
+
+    public FlowBuilder<Collection<T>> mapToCollection() {
+        return map(Collectors.toCollection());
     }
 
     public <R> FlowBuilder<List<R>> mapToList(SerializableFunction<T, R> mapFunction) {

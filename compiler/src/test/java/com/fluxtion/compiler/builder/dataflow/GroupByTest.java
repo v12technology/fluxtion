@@ -28,8 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.fluxtion.compiler.builder.dataflow.DataFlow.groupBy;
-import static com.fluxtion.compiler.builder.dataflow.DataFlow.subscribe;
+import static com.fluxtion.compiler.builder.dataflow.DataFlow.*;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
@@ -68,11 +67,10 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     @Test
     public void groupByCompoundKeyIdentityTest() {
         Map<GroupByKey<Data>, Data> expected = new HashMap<>();
-        sep(c -> {
-            DataFlow.groupByFields(Data::getName, Data::getValue)
-                    .map(GroupBy::toMap).id("results")
-                    .console("results:{}\n");
-        });
+        sep(c -> DataFlow
+                .groupByFields(Data::getName, Data::getValue)
+                .map(GroupBy::toMap)
+                .id("results"));
 
         Data data_A_25 = new Data("A", 25);
         Data data_A_50 = new Data("A", 50);
@@ -437,6 +435,48 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void deleteByValueGroupByTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBy(KeyedData::getId, KeyedData::getAmount)
+                .deleteByValue(new EventStreamBuildTest.MyDynamicIntFilter(500)::gt)
+                .map(GroupBy::toMap)
+                .sink("keyValue"));
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(500);
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent(new KeyedData("B", 1000));
+        onEvent(new KeyedData("B", 2000));
+        onEvent(new KeyedData("C", 1000));
+        onEvent(new KeyedData("B", 50));
+        onEvent(new KeyedData("A", 1400));
+
+
+        expected.put("A", 1400);
+        expected.put("B", 50);
+        expected.put("C", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+
+        //cause a delete
+        onEvent(500);
+        expected.put("B", 50);
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(10);
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+
+    @Test
     public void deleteByKeyTest() {
         Map<String, Integer> results = new HashMap<>();
         Map<String, Integer> expected = new HashMap<>();
@@ -444,6 +484,49 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         sep(c -> subscribe(KeyedData.class)
                 .groupBy(KeyedData::getId, KeyedData::getAmount)
                 .deleteByKey(new DeleteSupplier()::getKeys)
+                .map(GroupBy::toMap)
+                .sink("keyValue"));
+
+        addSink("keyValue", (Map<String, Integer> in) -> {
+            results.clear();
+            expected.clear();
+            results.putAll(in);
+        });
+
+        onEvent(new KeyedData("A", 400));
+        onEvent(new KeyedData("B", 233));
+        onEvent(new KeyedData("B", 1000));
+
+        expected.put("A", 400);
+        expected.put("B", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent("A");
+        expected.put("B", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent("B");
+        assertThat(results, CoreMatchers.is(expected));
+
+        onEvent(new KeyedData("B", 2000));
+        onEvent(new KeyedData("C", 1000));
+        onEvent(new KeyedData("B", 50));
+        onEvent(new KeyedData("A", 1400));
+        onEvent("A");
+
+        expected.put("B", 50);
+        expected.put("C", 1000);
+        assertThat(results, CoreMatchers.is(expected));
+    }
+
+    @Test
+    public void deleteByKeyWithDeleteFlowTest() {
+        Map<String, Integer> results = new HashMap<>();
+        Map<String, Integer> expected = new HashMap<>();
+
+        sep(c -> subscribe(KeyedData.class)
+                .groupBy(KeyedData::getId, KeyedData::getAmount)
+                .deleteByKey(collectionFromSubscribe(String.class), true)
                 .map(GroupBy::toMap)
                 .sink("keyValue"));
 
@@ -489,7 +572,7 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
             return true;
         }
 
-        public Collection<String> getKeys() {
+        public List<String> getKeys() {
             return Arrays.asList(deleteKeys);
         }
     }

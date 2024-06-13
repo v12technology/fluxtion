@@ -1659,6 +1659,82 @@ Pupil count by year/sex
 ----
 {% endhighlight %}
 
+## Delete elements
+Elements can be deleted from a groupBy data structure either by key or by value. When deleting bt value a stateful predicate
+function is used that can be dynamically updated by the client code. Unlike filtering the groupBy data structure is 
+mutated and elements are removed. 
+
+In this example we are grouping pupils by graduation year, a delete by value predicate function removes students if 
+there gradutaion year is too old. The predicate is subscribing to live data, so when it updates the elements in the 
+collection are removed.
+
+{% highlight java %}
+public class GroupByDeleteSample {
+
+    public record Pupil(long pupilId, int year, String name){}
+
+    public static void main(String[] args) {
+        EventProcessor processor = Fluxtion.interpret(c -> {
+            DataFlow.groupByToList(Pupil::year)
+                    .deleteByValue(new DeleteFilter()::leftSchool)
+                    .map(GroupBy::toMap)
+                    .console();
+        });
+
+        processor.init();
+
+        processor.onEvent(new Pupil(1, 2025, "A"));
+        processor.onEvent(new Pupil(2, 2025, "B"));
+        processor.onEvent(new Pupil(3, 2022, "A_2022"));
+        processor.onEvent(new Pupil(1, 2021, "A_2021"));
+
+        //graduate
+        System.out.println("\ngraduate 2021");
+        processor.onEvent(2022);
+
+        System.out.println("\ngraduate 2022");
+        processor.onEvent(2022);
+
+        System.out.println("\ngraduate 2023");
+        processor.onEvent(2023);
+    }
+
+    public static class DeleteFilter{
+
+        private int currentGraduationYear = Integer.MIN_VALUE;
+
+        @OnEventHandler
+        public boolean currentGraduationYear(int currentGraduationYear){
+            this.currentGraduationYear = currentGraduationYear;
+            return true;
+        }
+
+        public boolean leftSchool(List<Pupil> pupil){
+            return !pupil.isEmpty() && pupil.getFirst().year() < this.currentGraduationYear;
+        }
+    }
+}
+{% endhighlight %}
+
+Running the example code above logs to console
+
+{% highlight console %}
+
+{2025=[Pupil[pupilId=1, year=2025, name=A]]}
+{2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+{2022=[Pupil[pupilId=3, year=2022, name=A_2022]], 2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+{2021=[Pupil[pupilId=1, year=2021, name=A_2021]], 2022=[Pupil[pupilId=3, year=2022, name=A_2022]], 2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+
+graduate 2021
+{2022=[Pupil[pupilId=3, year=2022, name=A_2022]], 2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+
+graduate 2022
+{2022=[Pupil[pupilId=3, year=2022, name=A_2022]], 2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+
+graduate 2023
+{2025=[Pupil[pupilId=1, year=2025, name=A], Pupil[pupilId=2, year=2025, name=B]]}
+{% endhighlight %}
+
 ## Dataflow shortcut groupBy methods
 
 The DataFlow class offers a set of shortcut methods for groupBy functions that do not require the 
