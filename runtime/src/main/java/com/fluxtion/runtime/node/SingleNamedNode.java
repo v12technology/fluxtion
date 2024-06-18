@@ -1,7 +1,6 @@
 package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.EventProcessorContext;
-import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
 import lombok.Getter;
@@ -14,7 +13,6 @@ import java.util.Objects;
  */
 public abstract class SingleNamedNode extends EventLogNode implements NamedNode {
 
-    @FluxtionIgnore
     private final String name;
     @Getter
     @Setter
