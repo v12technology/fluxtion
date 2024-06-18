@@ -7,11 +7,6 @@ import com.fluxtion.runtime.audit.EventLogNode;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-
 public class EventAuditTimeFormatTest extends MultipleSepTargetInProcessTest {
     public EventAuditTimeFormatTest(CompiledAndInterpretedSepTest.SepTestConfig testConfig) {
         super(testConfig);
@@ -22,10 +17,9 @@ public class EventAuditTimeFormatTest extends MultipleSepTargetInProcessTest {
         addAuditor();
         sep(new MyHandler());
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS");
         setTime(0);
         eventProcessor().setAuditTimeFormatter((a, l) -> {
-            dtf.formatTo(LocalDateTime.ofInstant(Instant.ofEpochMilli(l), ZoneId.systemDefault()), a);
+            a.append("XXX000XXX");
         });
 
         StringBuilder sb = new StringBuilder();
@@ -36,7 +30,7 @@ public class EventAuditTimeFormatTest extends MultipleSepTargetInProcessTest {
 
         onEvent("TEST");
 
-        Assert.assertTrue(sb.toString().contains("01-01-1970 01:00:00.000"));
+        Assert.assertTrue(sb.toString().contains("XXX000XXX"));
     }
 
     public static class MyHandler extends EventLogNode {
