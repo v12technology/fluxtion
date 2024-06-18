@@ -25,6 +25,7 @@ import com.fluxtion.runtime.time.Clock;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.ObjLongConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -148,6 +149,7 @@ public class EventLogManager implements Auditor {
         if (newConfig.getLogRecordProcessor() != null) {
             this.sink = newConfig.getLogRecordProcessor();
         }
+
         LogRecord newLogRecord = newConfig.getLogRecord();
         if (newLogRecord != null) {
             newLogRecord.updateLogLevel(logRecord.getLogLevel());
@@ -156,6 +158,7 @@ public class EventLogManager implements Auditor {
             this.logRecord.setClock(clock);
             updateLogRecord();
         }
+
         final EventLogControlEvent.LogLevel level = newConfig.getLevel();
         if (level != null
                 && (logRecord.groupingId == null || logRecord.groupingId.equals(newConfig.getGroupId()))) {
@@ -168,6 +171,12 @@ public class EventLogManager implements Auditor {
                 node2Logger.values().forEach((t) -> t.setLevel(newConfig.getLevel()));
             }
         }
+
+        final ObjLongConsumer<StringBuilder> timeFormatter = newConfig.getTimeFormatter();
+        if (timeFormatter != null) {
+            logRecord.setTimeFormatter(timeFormatter);
+        }
+
         canTrace = trace && node2Logger.values().stream().filter(e -> e.canLog(traceLevel)).findAny().isPresent();
     }
 

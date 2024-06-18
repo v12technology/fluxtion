@@ -17,6 +17,9 @@
 package com.fluxtion.runtime.audit;
 
 import com.fluxtion.runtime.event.Event;
+import lombok.Getter;
+
+import java.util.function.ObjLongConsumer;
 
 /**
  * Control message to manage the audit logging of events by the
@@ -32,25 +35,35 @@ import com.fluxtion.runtime.event.Event;
  */
 public class EventLogControlEvent implements Event {
 
+    @Getter
     private LogLevel level;
     /**
      * The name of the node to apply the configuration to. A null value, the
      * default, is no filtering and configuration will be applied to all nodes.
      */
+    @Getter
     private String sourceId;
     /**
      * The group Id of a SEP to apply the configuration to. A null value, the
      * default, is no filtering and configuration will be applied to all SEP's.
      */
+    @Getter
     private String groupId;
     /**
      * user configured {@link LogRecordListener}
      */
+    @Getter
     private LogRecordListener logRecordProcessor;
     /**
      * User configured {@link LogRecord}
      */
+    @Getter
     private LogRecord logRecord;
+    /**
+     * Custom time formatter
+     */
+    @Getter
+    private ObjLongConsumer<StringBuilder> timeFormatter;
 
     public EventLogControlEvent() {
         this(LogLevel.INFO);
@@ -70,6 +83,11 @@ public class EventLogControlEvent implements Event {
         this.logRecord = logRecord;
     }
 
+    public EventLogControlEvent(ObjLongConsumer<StringBuilder> timeFormatter) {
+        this(null, null, null);
+        this.timeFormatter = timeFormatter;
+    }
+
     public EventLogControlEvent(String sourceId, String groupId, LogLevel level) {
         this.sourceId = sourceId;
         this.groupId = groupId;
@@ -81,26 +99,6 @@ public class EventLogControlEvent implements Event {
         this.groupId = groupId;
         this.logRecordProcessor = logRecordProcessor;
         this.level = level;
-    }
-
-    public LogLevel getLevel() {
-        return level;
-    }
-
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    public String getGroupId() {
-        return groupId;
-    }
-
-    public LogRecordListener getLogRecordProcessor() {
-        return logRecordProcessor;
-    }
-
-    public LogRecord getLogRecord() {
-        return logRecord;
     }
 
     public enum LogLevel {
