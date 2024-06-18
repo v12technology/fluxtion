@@ -346,6 +346,10 @@ public interface StaticEventProcessor extends NodeDiscovery {
         onEvent(new EventLogControlEvent(logRecord));
     }
 
+    default void setAuditTimeFormatter(ObjLongConsumer<StringBuilder> timeFormatter) {
+        onEvent(new EventLogControlEvent(timeFormatter));
+    }
+
     /**
      * Attempts to get the last {@link com.fluxtion.runtime.audit.LogRecord} as a String if one is available. Useful
      * for error handling if there is a filure in the graph;
