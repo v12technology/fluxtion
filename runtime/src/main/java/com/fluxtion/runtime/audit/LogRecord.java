@@ -21,6 +21,8 @@ import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.function.ObjLongConsumer;
+
 /**
  * A structured log record that can be easily converted to a long term store,
  * such as a rdbms for later analysis. The LogRecord creates a yaml
@@ -71,6 +73,8 @@ public class LogRecord {
     protected boolean printEventToString = false;
     @Setter
     protected boolean printThreadName = false;
+    @Setter
+    protected ObjLongConsumer<StringBuilder> timeFormatter = StringBuilder::append;
 
     public LogRecord(Clock clock) {
         this(clock, EventLogControlEvent.LogLevel.INFO);
@@ -177,8 +181,12 @@ public class LogRecord {
         if (loggingEnabled()) {
             Class<? extends Event> aClass = event.getClass();
             sb.append("eventLogRecord: ");
-            sb.append("\n    eventTime: ").append(clock.getEventTime());
-            sb.append("\n    logTime: ").append(clock.getWallClockTime());
+            sb.append("\n    eventTime: ");
+            timeFormatter.accept(sb, clock.getEventTime());
+
+            sb.append("\n    logTime: ");
+            timeFormatter.accept(sb, clock.getWallClockTime());
+
             sb.append("\n    groupingId: ").append(groupingId);
             sb.append("\n    event: ").append(aClass.getSimpleName());
             if (printEventToString) {
@@ -201,9 +209,14 @@ public class LogRecord {
             } else {
                 Class<?> aClass = event.getClass();
                 sb.append("eventLogRecord: ");
-                sb.append("\n    eventTime: ").append(clock.getEventTime());
-                sb.append("\n    logTime: ").append(clock.getWallClockTime());
+                sb.append("\n    eventTime: ");
+                timeFormatter.accept(sb, clock.getEventTime());
+
+                sb.append("\n    logTime: ");
+                timeFormatter.accept(sb, clock.getWallClockTime());
+
                 sb.append("\n    groupingId: ").append(groupingId);
+
                 sb.append("\n    event: ").append(aClass.getSimpleName());
                 if (printEventToString) {
                     sb.append("\n    eventToString: ").append(event.toString());
