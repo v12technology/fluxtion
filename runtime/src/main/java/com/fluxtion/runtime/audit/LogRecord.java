@@ -238,7 +238,8 @@ public class LogRecord {
             if (this.sourceId != null) {
                 sb.append("}");
             }
-            sb.append("\n    endTime: ").append(clock.getWallClockTime());
+            sb.append("\n    endTime: ");
+            timeFormatter.accept(sb, clock.getWallClockTime());
         }
         firstProp = true;
         sourceId = null;
