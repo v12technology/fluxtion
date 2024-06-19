@@ -2,6 +2,7 @@ package com.fluxtion.compiler.generation.fieldserializer;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.callback.InstanceCallbackEvent;
 import com.fluxtion.runtime.node.SingleNamedNode;
 import lombok.AllArgsConstructor;
@@ -55,7 +56,7 @@ public class MetaSerializerTest extends MultipleSepTargetInProcessTest {
 
         private Class<?> cbClass;
 
-        public CbSample(String name) {
+        public CbSample(@AssignToField("name") String name) {
             super(name);
             cbClass = InstanceCallbackEvent.cbClassList.remove(0);
         }

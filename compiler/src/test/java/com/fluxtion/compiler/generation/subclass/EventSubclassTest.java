@@ -20,6 +20,7 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.SingleNamedNode;
 import lombok.EqualsAndHashCode;
@@ -51,7 +52,7 @@ public class EventSubclassTest extends MultipleSepTargetInProcessTest {
     public static class AnyTimeHandler extends SingleNamedNode {
         private int timeEvent;
 
-        public AnyTimeHandler(String name) {
+        public AnyTimeHandler(@AssignToField("name") String name) {
             super(name);
         }
 
