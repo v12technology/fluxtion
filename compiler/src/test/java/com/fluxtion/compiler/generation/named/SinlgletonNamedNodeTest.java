@@ -3,6 +3,7 @@ package com.fluxtion.compiler.generation.named;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.node.SingleNamedNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class SinlgletonNamedNodeTest extends MultipleSepTargetInProcessTest {
             return true;
         }
 
-        public MyNamedStringHandler(String name) {
+        public MyNamedStringHandler(@AssignToField("name") String name) {
             super(name);
         }
     }

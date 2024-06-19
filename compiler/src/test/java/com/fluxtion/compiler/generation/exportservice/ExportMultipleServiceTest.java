@@ -6,6 +6,7 @@ import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.AfterTrigger;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.node.SingleNamedNode;
 import org.hamcrest.MatcherAssert;
@@ -103,7 +104,7 @@ public class ExportMultipleServiceTest extends MultipleSepTargetInProcessTest {
 
         public Object parent;
 
-        public OrderedCallBack(String name, Object parent) {
+        public OrderedCallBack(@AssignToField("name") String name, Object parent) {
             super(name);
             this.parent = parent;
         }

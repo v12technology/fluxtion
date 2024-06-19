@@ -21,10 +21,12 @@ public abstract class CallBackNode extends SingleNamedNode implements EventHandl
     private EventDispatcher dispatcher;
     @Inject
     private DirtyStateMonitor dirtyStateMonitor;
+    private final String name;
 
     @SneakyThrows
     public CallBackNode(String name) {
         super(name);
+        this.name = name;
         if (EventProcessorBuilderService.service().buildTime()) {
             Class<?> cbClass = InstanceCallbackEvent.cbClassList.remove(0);
             event = cbClass.getDeclaredConstructor().newInstance();

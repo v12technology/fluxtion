@@ -6,6 +6,7 @@ import com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPush
 import com.fluxtion.compiler.generation.time.MutableNumber;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.dataflow.helpers.Predicates;
 import com.fluxtion.runtime.node.SingleNamedNode;
@@ -226,7 +227,7 @@ public class FilterTest extends MultipleSepTargetInProcessTest {
     public static class FilterNoArgs extends SingleNamedNode {
         private boolean valid = false;
 
-        public FilterNoArgs(String name) {
+        public FilterNoArgs(@AssignToField("name") String name) {
             super(name);
         }
 

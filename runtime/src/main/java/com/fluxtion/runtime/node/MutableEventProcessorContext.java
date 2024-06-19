@@ -3,12 +3,11 @@ package com.fluxtion.runtime.node;
 import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.callback.CallbackDispatcher;
-import com.fluxtion.runtime.callback.DirtyStateMonitor;
-import com.fluxtion.runtime.callback.EventDispatcher;
-import com.fluxtion.runtime.callback.EventProcessorCallbackInternal;
-import com.fluxtion.runtime.callback.InternalEventProcessor;
+import com.fluxtion.runtime.callback.*;
 import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.time.Clock;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +24,9 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     private final SubscriptionManager subscriptionManager;
     @Inject
     private final DirtyStateMonitor dirtyStateMonitor;
+    @Getter
+    @Setter
+    private Clock clock = Clock.DEFAULT_CLOCK;
 
     public MutableEventProcessorContext(
             @AssignToField("nodeNameLookup") NodeNameLookup nodeNameLookup,

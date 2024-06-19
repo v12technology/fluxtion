@@ -4,6 +4,7 @@ import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.callback.EventDispatcher;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.node.NodeNameLookup;
+import com.fluxtion.runtime.time.Clock;
 
 /**
  * Runtime access to various services in the running EventProcessor instance.
@@ -18,6 +19,8 @@ public interface EventProcessorContext {
     DirtyStateMonitor getDirtyStateMonitor();
 
     SubscriptionManager getSubscriptionManager();
+
+    Clock getClock();
 
     /**
      * Retrieves an injected instance at runtime. Fails with {@link RuntimeException} if no instance is found
