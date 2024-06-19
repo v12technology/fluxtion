@@ -1,34 +1,21 @@
 package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.EventProcessorContext;
-import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
+public abstract class AbstractNode extends EventLogNode
+        implements
+        LifecycleNode,
+        TriggeredNode {
 
-/**
- * Implements {@link NamedNode} overriding hashcode and equals using the name as the equality test and hash code seed
- */
-public abstract class SingleNamedNode extends EventLogNode implements NamedNode {
-
-    @FluxtionIgnore
-    private final String name;
     @Getter
     @Setter
     @Inject
     private EventProcessorContext eventProcessorContext;
-
-    public SingleNamedNode(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     protected void processReentrantEvent(Object event) {
         getEventProcessorContext().getEventDispatcher().processReentrantEvent(event);
@@ -78,16 +65,7 @@ public abstract class SingleNamedNode extends EventLogNode implements NamedNode 
         return getEventProcessorContext().getNodeNameLookup().getInstanceById(instanceId);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SingleNamedNode that = (SingleNamedNode) o;
-        return Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+    protected Clock getClock() {
+        return getEventProcessorContext().getClock();
     }
 }
