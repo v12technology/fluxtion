@@ -20,13 +20,18 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.3.21</version>
+        <version>9.3.22</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
     <artifactId>runtime</artifactId>
     <packaging>jar</packaging>
     <name>fluxtion :: runtime</name>
+
+    <properties>
+        <agrona.version>1.21.2</agrona.version>
+        <netbeans.hint.license>ssl1</netbeans.hint.license>
+    </properties>
     
     <build>
         <plugins>
@@ -45,10 +50,40 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!--<version>2.15</version>-->
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createSourcesJar>true</createSourcesJar>
+                            <shadeSourcesContent>true</shadeSourcesContent>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.agrona</pattern>
+                                    <shadedPattern>com.fluxtion.agrona</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
-    <properties>
-        <netbeans.hint.license>ssl1</netbeans.hint.license>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.agrona</groupId>
+            <artifactId>agrona</artifactId>
+            <version>${agrona.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
