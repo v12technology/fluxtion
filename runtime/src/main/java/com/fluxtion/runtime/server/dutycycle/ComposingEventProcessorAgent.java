@@ -56,7 +56,8 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
 
     @Override
     public void subscribe(StaticEventProcessor subscriber, EventSubscriptionKey<?> subscriptionId) {
-        if (subscriptionId instanceof EventSubscriptionKey<?> subscriptionKey) {
+        if (subscriptionId instanceof EventSubscriptionKey<?>) {
+            EventSubscriptionKey<?> subscriptionKey = (EventSubscriptionKey<?>) subscriptionId;
             log.info("subscribe subscriptionKey:{} subscriber:{}", subscriptionKey, subscriber);
             EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
             if (eventQueueToEventProcessor == null) {
