@@ -95,6 +95,22 @@ public class EventFlowManager {
         return getMappingAgent(subscriptionKey.getEventSourceKey(), subscriptionKey.getCallBackType(), subscriber);
     }
 
+    public void init() {
+        eventSourceToQueueMap.values().stream()
+                .map(EventSource_QueuePublisher::getEventSource)
+                .filter(LifeCycleEventSource.class::isInstance)
+                .map(LifeCycleEventSource.class::cast)
+                .forEach(LifeCycleEventSource::init);
+    }
+
+    public void start() {
+        eventSourceToQueueMap.values().stream()
+                .map(EventSource_QueuePublisher::getEventSource)
+                .filter(LifeCycleEventSource.class::isInstance)
+                .map(LifeCycleEventSource.class::cast)
+                .forEach(LifeCycleEventSource::start);
+    }
+
 
     @Value
     private static class EventSource_QueuePublisher<T> {
