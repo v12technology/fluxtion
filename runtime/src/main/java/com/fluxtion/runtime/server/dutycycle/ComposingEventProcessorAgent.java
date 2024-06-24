@@ -10,6 +10,7 @@ import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -55,23 +56,22 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
     }
 
     @Override
-    public void subscribe(StaticEventProcessor subscriber, EventSubscriptionKey<?> subscriptionId) {
-        if (subscriptionId instanceof EventSubscriptionKey<?>) {
-            EventSubscriptionKey<?> subscriptionKey = (EventSubscriptionKey<?>) subscriptionId;
-            log.info("subscribe subscriptionKey:{} subscriber:{}", subscriptionKey, subscriber);
-            EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
-            if (eventQueueToEventProcessor == null) {
-                eventQueueToEventProcessor = eventFlowManager.getMappingAgent(subscriptionKey, this);
-                queueProcessorMap.put(subscriptionKey, eventQueueToEventProcessor);
-                tryAdd(eventQueueToEventProcessor);
-            }
-            eventQueueToEventProcessor.registerProcessor(subscriber);
-            eventFlowManager.subscribe(subscriptionId);
+    public void subscribe(StaticEventProcessor subscriber, EventSubscriptionKey<?> subscriptionKey) {
+        Objects.requireNonNull(subscriber, "subscriber is null");
+        Objects.requireNonNull(subscriptionKey, "subscriptionKey is null");
+        log.info("subscribe subscriptionKey:{} subscriber:{}", subscriptionKey, subscriber);
+        EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
+        if (eventQueueToEventProcessor == null) {
+            eventQueueToEventProcessor = eventFlowManager.getMappingAgent(subscriptionKey, this);
+            queueProcessorMap.put(subscriptionKey, eventQueueToEventProcessor);
+            tryAdd(eventQueueToEventProcessor);
         }
+        eventQueueToEventProcessor.registerProcessor(subscriber);
+        eventFlowManager.subscribe(subscriptionKey);
     }
 
     @Override
-    public void unSubscribe(StaticEventProcessor subscriber, EventSubscriptionKey subscriptionKey) {
+    public void unSubscribe(StaticEventProcessor subscriber, EventSubscriptionKey<?> subscriptionKey) {
         if (queueProcessorMap.containsKey(subscriptionKey)) {
             EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
             if (eventQueueToEventProcessor.deregisterProcessor(subscriber) == 0) {
