@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.server.subscription;
 
 import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.annotations.feature.Experimental;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *     <li>dispatchEvent - process the event and dispatch to target eventProcessor's</li>
  * </ul>
  */
+@Experimental
 public abstract class AbstractEventToInvocationStrategy implements EventToInvokeStrategy {
 
     protected final List<StaticEventProcessor> eventProcessorSinks = new CopyOnWriteArrayList<>();

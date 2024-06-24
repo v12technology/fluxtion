@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.server.subscription;
 
+import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessor;
 import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessorAgent;
 import lombok.Value;
@@ -19,6 +20,7 @@ import java.util.function.Supplier;
  *     <li>{@link EventToInvokeStrategy} - processed an event and map events to callbacks on the {@link com.fluxtion.runtime.StaticEventProcessor}</li>
  * </ul>
  */
+@Experimental
 public class EventFlowManager {
 
     private final ConcurrentHashMap<EventSourceKey<?>, EventSource_QueuePublisher<?>> eventSourceToQueueMap = new ConcurrentHashMap<>();

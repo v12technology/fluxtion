@@ -1,11 +1,13 @@
 package com.fluxtion.runtime.server.dutycycle;
 
 import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.subscription.EventToInvokeStrategy;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Experimental
 public class EventQueueToEventProcessorAgent implements EventQueueToEventProcessor {
 
     private final OneToOneConcurrentArrayQueue<?> inputQueue;

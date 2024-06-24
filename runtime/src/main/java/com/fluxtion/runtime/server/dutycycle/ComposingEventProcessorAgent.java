@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.server.dutycycle;
 
 import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.server.subscription.EventSubscriptionKey;
@@ -16,6 +17,7 @@ import java.util.function.Consumer;
 /**
  *
  */
+@Experimental
 @Log4j2
 public class ComposingEventProcessorAgent extends DynamicCompositeAgent implements EventFeed<EventSubscriptionKey<?>> {
 

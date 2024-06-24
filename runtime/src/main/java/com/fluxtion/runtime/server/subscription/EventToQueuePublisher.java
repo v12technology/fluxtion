@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.server.subscription;
 
+import com.fluxtion.runtime.annotations.feature.Experimental;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
@@ -18,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @param <T>
  */
+@Experimental
 @RequiredArgsConstructor
 @ToString
 @Log4j2
