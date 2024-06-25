@@ -42,5 +42,4 @@ public class SubscriptionManagerFactory implements NodeFactory<SubscriptionManag
         SINGLETON = new SubscriptionManagerNode();
         context.addOrUseExistingNode(SINGLETON);
     }
-
 }
