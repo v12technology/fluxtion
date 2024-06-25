@@ -27,6 +27,8 @@ import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
+import com.fluxtion.runtime.service.Service;
+import com.fluxtion.runtime.service.ServiceListener;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -846,5 +848,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     @Override
     public <T> void setUnKnownEventHandler(Consumer<T> consumer) {
         this.unKnownEventHandler = consumer;
+    }
+
+    @Override
+    public void registerService(Service<?> service) {
+        consumeServiceIfExported(ServiceListener.class, s -> s.registerService(service));
+    }
+
+    @Override
+    public void deRegisterService(Service<?> service) {
+        consumeServiceIfExported(ServiceListener.class, s -> s.deRegisterService(service));
     }
 }
