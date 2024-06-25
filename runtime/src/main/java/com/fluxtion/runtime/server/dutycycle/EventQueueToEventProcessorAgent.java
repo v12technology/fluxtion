@@ -3,11 +3,14 @@ package com.fluxtion.runtime.server.dutycycle;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.subscription.EventToInvokeStrategy;
+import lombok.extern.java.Log;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import java.util.logging.Logger;
+
 
 @Experimental
+@Log
 public class EventQueueToEventProcessorAgent implements EventQueueToEventProcessor {
 
     private final OneToOneConcurrentArrayQueue<?> inputQueue;
@@ -23,7 +26,8 @@ public class EventQueueToEventProcessorAgent implements EventQueueToEventProcess
         this.inputQueue = inputQueue;
         this.eventToInvokeStrategy = eventToInvokeStrategy;
         this.name = name;
-        logger = LogManager.getLogger("EventQueueToEventProcessorAgent." + name);
+
+        logger = java.util.logging.LogManager.getLogManager().getLogger("EventQueueToEventProcessorAgent." + name);
     }
 
     @Override
@@ -53,14 +57,14 @@ public class EventQueueToEventProcessorAgent implements EventQueueToEventProcess
 
     @Override
     public int registerProcessor(StaticEventProcessor eventProcessor) {
-        logger.info("registerProcessor:{}", eventProcessor);
+        logger.info("registerProcessor" + eventProcessor);
         eventToInvokeStrategy.registerProcessor(eventProcessor);
         return listenerCount();
     }
 
     @Override
     public int deregisterProcessor(StaticEventProcessor eventProcessor) {
-        logger.info("deregisterProcessor:{}", eventProcessor);
+        logger.info("deregisterProcessor" + eventProcessor);
         eventToInvokeStrategy.deregisterProcessor(eventProcessor);
         return listenerCount();
     }

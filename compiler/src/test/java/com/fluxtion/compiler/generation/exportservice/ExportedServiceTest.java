@@ -9,8 +9,10 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.Callback;
+import com.fluxtion.runtime.dataflow.aggregate.function.primitive.IntSumFlowFunction;
 import com.fluxtion.runtime.dataflow.helpers.Mappers;
 import com.fluxtion.runtime.node.NamedNode;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -235,6 +237,37 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("count"), is(2));
     }
 
+    @Test
+    public void dataFlowAndExportServiceSameProcessorTest() {
+        sep(c -> {
+            DataFlow.subscribeToIntSignal("in")
+                    .tumblingAggregate(IntSumFlowFunction::new, 100).id("sum")
+                    .publishTrigger(DataFlow.subscribeToSignal("publish"))
+                    .sink("out");
+            c.addNode(new MyThing());
+        });
+
+        MutableInt result = new MutableInt();
+        addIntSink("out", result::setValue);
+
+        setTime(0);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
+        publishIntSignal("in", 20);
+        tickDelta(100);
+        Assert.assertEquals(60, result.intValue());
+
+        result.setValue(0);
+        publishIntSignal("in", 20);
+        tickDelta(20);
+        Assert.assertEquals(0, result.intValue());
+        publishSignal("publish");
+        Assert.assertEquals(60, result.intValue());
+
+        tickDelta(120);
+        Assert.assertEquals(20, result.intValue());
+    }
+
     public interface MyTriggeringService extends MyService {
         boolean triggerPositive(int x);
 
@@ -245,6 +278,18 @@ public class ExportedServiceTest extends MultipleSepTargetInProcessTest {
         void testAdd(int a, int b);
 
         void testSubtract(int a, int b);
+    }
+
+    public interface Thing {
+        boolean test();
+    }
+
+    public static class MyThing implements @ExportService Thing {
+
+        @Override
+        public boolean test() {
+            return false;
+        }
     }
 
     public interface MyMissingService {

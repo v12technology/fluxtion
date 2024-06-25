@@ -8,7 +8,7 @@ import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.server.subscription.EventSource;
 import com.fluxtion.runtime.server.subscription.EventToInvokeStrategy;
 import lombok.Value;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.java.Log;
 import org.agrona.ErrorHandler;
 import org.agrona.concurrent.AgentRunner;
 import org.agrona.concurrent.IdleStrategy;
@@ -21,21 +21,25 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Experimental
-@Log4j2
+@Log
 public class FluxtionServer {
 
     private final EventFlowManager flowManager = new EventFlowManager();
     private final ConcurrentHashMap<String, ComposingAgentRunner> composingAgents = new ConcurrentHashMap<>();
 
     public void registerEventMapperFactory(Supplier<EventToInvokeStrategy> eventMapper, CallBackType type) {
-        log.info("registerEventMapperFactory:{}", eventMapper);
+        log.info("registerEventMapperFactory:" + eventMapper);
         flowManager.registerEventMapperFactory(eventMapper, type);
     }
 
     public <T> void registerEventSource(String sourceName, EventSource<T> eventSource) {
-        log.info("registerEventSource name:{} eventSource:{}", sourceName, eventSource);
+        log.info("registerEventSource name:" + sourceName + " eventSource:" + eventSource);
         flowManager.registerEventSource(sourceName, eventSource);
     }
+
+//    public void registerService() {
+//        log.info("registerService");
+//    }
 
     public void init() {
         log.info("init");
@@ -46,7 +50,7 @@ public class FluxtionServer {
         log.info("start");
         flowManager.start();
         composingAgents.forEach((k, v) -> {
-            log.info("starting composing agent {}", k);
+            log.info("starting composing agent " + k);
             AgentRunner.startOnThread(v.getGroupRunner());
         });
     }
@@ -59,7 +63,7 @@ public class FluxtionServer {
                     ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager);
                     //threading to be configured by file
                     IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
-                    ErrorHandler errorHandler = log::error;
+                    ErrorHandler errorHandler = m -> log.severe(m.getMessage());
                     AtomicCounter errorCounter = new AtomicCounter(new UnsafeBuffer(new byte[4096]), 0);
                     //run subscriber group
                     AgentRunner groupRunner = new AgentRunner(
@@ -70,7 +74,7 @@ public class FluxtionServer {
                     return new ComposingAgentRunner(group, groupRunner);
                 });
 
-        composingAgentRunner.getGroup().addEventConsumer(feedConsumer);
+        composingAgentRunner.getGroup().addEventFeedConsumer(feedConsumer);
     }
 
     @Value

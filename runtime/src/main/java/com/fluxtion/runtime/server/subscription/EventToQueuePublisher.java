@@ -4,7 +4,7 @@ import com.fluxtion.runtime.annotations.feature.Experimental;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.java.Log;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Experimental
 @RequiredArgsConstructor
 @ToString
-@Log4j2
+@Log
 public class EventToQueuePublisher<T> {
 
     private final List<NamedQueue<T>> targetQueues = new CopyOnWriteArrayList<>();
@@ -36,12 +36,12 @@ public class EventToQueuePublisher<T> {
     }
 
     public void publish(T itemToPublish) {
-        log.info("listenerCount:{} publish:{}", targetQueues.size(), itemToPublish);
+        log.info("listenerCount:" + targetQueues.size() + " publish:" + itemToPublish);
         for (int i = 0, targetQueuesSize = targetQueues.size(); i < targetQueuesSize; i++) {
             NamedQueue<T> namedQueue = targetQueues.get(i);
             OneToOneConcurrentArrayQueue<T> targetQueue = namedQueue.getTargetQueue();
             targetQueue.offer(itemToPublish);
-            log.info("queue:{} size:{}", namedQueue.getName(), targetQueue.size());
+            log.info("queue:" + namedQueue.getName() + " size:" + targetQueue.size());
         }
     }
 

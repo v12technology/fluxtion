@@ -84,16 +84,6 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
             <artifactId>agrona</artifactId>
             <version>${agrona.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.19.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.19.0</version>
-        </dependency>
     </dependencies>
 
 </project>

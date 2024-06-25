@@ -389,8 +389,8 @@ public class JavaSourceGenerator {
             dispatchOnlyNodeMemberAssignments = "    @Override\n" +
                     "   public final void assignMembers(Map<String, Object> memberMap) {\n" +
                     "        memberMap.forEach((k, v) -> setField(k, v));\n" +
-                    "        " + memberAssignments +
                     "        " + forkedAssignments +
+                    "        " + memberAssignments +
                     "        if(subscriptionManager != null){\n" +
                     "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
                     "        }\n" +
@@ -405,8 +405,8 @@ public class JavaSourceGenerator {
                     "        if(context != null) {\n" +
                     "            context.replaceMappings(contextMap);\n" +
                     "        }\n" +
-                    "        " + memberAssignments +
                     "        " + forkedAssignments +
+                    "        " + memberAssignments +
                     "        if(subscriptionManager != null){\n" +
                     "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
                     "        }\n" +
@@ -445,7 +445,7 @@ public class JavaSourceGenerator {
                     .map(c -> c.forkVariableName()
                             + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
                             + ", \"" + c.variableName + "\" );")
-                    .collect(Collectors.joining(";\n", "\n//Forked assignment\n", "\n"));
+                    .collect(Collectors.joining("\n", "\n//Forked assignment\n", "\n"));
         } else {
             forkDeclarations = model.getTriggerOnlyCallBacks().stream()
                     .filter(CbMethodHandle::isForkExecution)
@@ -914,6 +914,8 @@ public class JavaSourceGenerator {
                 String exportAudit = "";
                 if (f.getExportFunction() != null) {
                     exportAudit = f.getExportFunction().toGenericString();
+                } else {
+                    return;
                 }
                 StringBuilder sb = new StringBuilder(f.getStringValue() + "{\n")
                         .append(audit.replace("&&FUNC&&", exportAudit));

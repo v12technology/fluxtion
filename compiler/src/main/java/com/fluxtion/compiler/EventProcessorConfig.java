@@ -30,6 +30,7 @@ import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.dataflow.function.MergeProperty;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.service.ServiceRegistryNode;
 import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
@@ -79,6 +80,9 @@ public class EventProcessorConfig {
 
     public EventProcessorConfig() {
         clock();
+        ServiceRegistryNode serviceRegistryNode = new ServiceRegistryNode();
+        addAuditor(serviceRegistryNode, ServiceRegistryNode.NODE_NAME);
+        addNode(serviceRegistryNode, ServiceRegistryNode.NODE_NAME);
         this.nodeFactoryRegistration = new NodeFactoryRegistration(NodeFactoryConfig.required.getFactoryClasses());
         classSerializerMap.put(String.class, BasicTypeSerializer::stringToSource);
         classSerializerMap.put(Character.class, BasicTypeSerializer::charToSource);

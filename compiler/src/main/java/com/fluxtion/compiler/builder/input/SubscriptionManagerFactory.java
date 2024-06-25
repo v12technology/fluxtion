@@ -30,14 +30,16 @@ import java.util.Map;
  */
 public class SubscriptionManagerFactory implements NodeFactory<SubscriptionManager> {
 
+    private static SubscriptionManagerNode SINGLETON;
+
     @Override
     public SubscriptionManager createNode(Map<String, ? super Object> config, NodeRegistry registry) {
-        return registry.registerNode(SubscriptionManagerNode.SINGLETON, SubscriptionManagerNode.DEFAULT_NODE_NAME);
+        return registry.registerNode(SINGLETON, SubscriptionManagerNode.DEFAULT_NODE_NAME);
     }
 
     @Override
     public void preSepGeneration(GenerationContext context, Map<String, Auditor> auditorMap) {
-        context.addOrUseExistingNode(SubscriptionManagerNode.SINGLETON);
+        SINGLETON = new SubscriptionManagerNode();
+        context.addOrUseExistingNode(SINGLETON);
     }
-
 }

@@ -27,6 +27,8 @@ import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.node.InstanceSupplier;
 import com.fluxtion.runtime.output.SinkDeregister;
 import com.fluxtion.runtime.output.SinkRegistration;
+import com.fluxtion.runtime.service.Service;
+import com.fluxtion.runtime.service.ServiceListener;
 import com.fluxtion.runtime.time.ClockStrategy;
 
 import java.util.Map;
@@ -57,7 +59,7 @@ import java.util.function.*;
  *
  * @author Greg Higgins
  */
-public interface StaticEventProcessor extends NodeDiscovery {
+public interface StaticEventProcessor extends ServiceListener, NodeDiscovery {
 
     StaticEventProcessor NULL_EVENTHANDLER = e -> {
     };
@@ -444,5 +446,15 @@ public interface StaticEventProcessor extends NodeDiscovery {
      * @param <T>      The type of the event
      */
     default <T> void setUnKnownEventHandler(Consumer<T> consumer) {
+    }
+
+    @Override
+    default void registerService(Service<?> service) {
+
+    }
+
+    @Override
+    default void deRegisterService(Service<?> service) {
+
     }
 }

@@ -5,7 +5,7 @@ import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.server.subscription.EventSubscriptionKey;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.java.Log;
 import org.agrona.concurrent.DynamicCompositeAgent;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  *
  */
 @Experimental
-@Log4j2
+@Log
 public class ComposingEventProcessorAgent extends DynamicCompositeAgent implements EventFeed<EventSubscriptionKey<?>> {
 
     private final EventFlowManager eventFlowManager;
@@ -30,7 +30,7 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
         this.eventFlowManager = eventFlowManager;
     }
 
-    public void addEventConsumer(Consumer<EventFeed<?>> initFunction) {
+    public void addEventFeedConsumer(Consumer<EventFeed<?>> initFunction) {
         toStartList.add(initFunction);
     }
 
@@ -54,14 +54,14 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
 
     @Override
     public void registerSubscriber(StaticEventProcessor subscriber) {
-        log.info("registerSubscriber:{}", subscriber);
+        log.info("registerSubscriber:" + subscriber);
     }
 
     @Override
     public void subscribe(StaticEventProcessor subscriber, EventSubscriptionKey<?> subscriptionKey) {
         Objects.requireNonNull(subscriber, "subscriber is null");
         Objects.requireNonNull(subscriptionKey, "subscriptionKey is null");
-        log.info("subscribe subscriptionKey:{} subscriber:{}", subscriptionKey, subscriber);
+        log.info("subscribe subscriptionKey:" + subscriptionKey + " subscriber:" + subscriber);
         EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
         if (eventQueueToEventProcessor == null) {
             eventQueueToEventProcessor = eventFlowManager.getMappingAgent(subscriptionKey, this);
@@ -77,7 +77,7 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
         if (queueProcessorMap.containsKey(subscriptionKey)) {
             EventQueueToEventProcessor eventQueueToEventProcessor = queueProcessorMap.get(subscriptionKey);
             if (eventQueueToEventProcessor.deregisterProcessor(subscriber) == 0) {
-                log.info("EventQueueToEventProcessor listener count = 0, removing subscription:{}", subscriptionKey);
+                log.info("EventQueueToEventProcessor listener count = 0, removing subscription:" + subscriptionKey);
                 queueProcessorMap.remove(subscriptionKey);
                 eventFlowManager.unSubscribe(subscriptionKey);
             }
