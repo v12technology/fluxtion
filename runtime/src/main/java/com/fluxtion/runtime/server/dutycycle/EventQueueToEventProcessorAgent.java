@@ -27,7 +27,7 @@ public class EventQueueToEventProcessorAgent implements EventQueueToEventProcess
         this.eventToInvokeStrategy = eventToInvokeStrategy;
         this.name = name;
 
-        logger = java.util.logging.LogManager.getLogManager().getLogger("EventQueueToEventProcessorAgent." + name);
+        logger = Logger.getLogger("EventQueueToEventProcessorAgent." + name);
     }
 
     @Override
