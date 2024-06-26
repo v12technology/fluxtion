@@ -19,7 +19,7 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.3.24-SNAPSHOT</version>
+        <version>9.3.24</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
     
