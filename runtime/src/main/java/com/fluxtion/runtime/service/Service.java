@@ -1,37 +1,74 @@
 package com.fluxtion.runtime.service;
 
 import com.fluxtion.runtime.annotations.feature.Preview;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.server.FluxtionServer;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Getter
 @Accessors(fluent = true)
 @Preview
-public class Service<T> {
+@ToString
+public class Service<T> implements Lifecycle {
 
     private final Class<T> serviceClass;
     private final String serviceName;
-    private final T service;
+    private final T instance;
 
-    public <S extends T> Service(S service, Class<T> serviceClass, String serviceName) {
+    public <S extends T> Service(S instance, Class<T> serviceClass, String serviceName) {
         this.serviceClass = serviceClass;
         this.serviceName = serviceName;
-        this.service = service;
+        this.instance = instance;
     }
 
     @SuppressWarnings("unchecked")
-    public <S extends T> Service(S service, String serviceName) {
-        this.serviceClass = (Class<T>) service.getClass();
+    public <S extends T> Service(S instance, String serviceName) {
+        this.serviceClass = (Class<T>) instance.getClass();
         this.serviceName = serviceName;
-        this.service = service;
+        this.instance = instance;
     }
 
-    public <S extends T> Service(S service, Class<T> serviceClass) {
-        this(service, serviceClass, null);
+    public <S extends T> Service(S instance, Class<T> serviceClass) {
+        this(instance, serviceClass, serviceClass.getCanonicalName());
     }
 
     @SuppressWarnings("unchecked")
-    public <S extends T> Service(S service) {
-        this(service, (Class<T>) service.getClass(), null);
+    public <S extends T> Service(S instance) {
+        this(instance, (Class<T>) instance.getClass());
+    }
+
+
+    @Override
+    public void init() {
+        if (instance instanceof Lifecycle) {
+            ((Lifecycle) instance).init();
+        }
+    }
+
+    public void setServer(FluxtionServer fluxtionServer) {
+
+    }
+
+    @Override
+    public void start() {
+        if (instance instanceof Lifecycle) {
+            ((Lifecycle) instance).start();
+        }
+    }
+
+    @Override
+    public void stop() {
+        if (instance instanceof Lifecycle) {
+            ((Lifecycle) instance).stop();
+        }
+    }
+
+    @Override
+    public void tearDown() {
+        if (instance instanceof Lifecycle) {
+            ((Lifecycle) instance).tearDown();
+        }
     }
 }

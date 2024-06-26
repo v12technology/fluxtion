@@ -57,14 +57,14 @@ public class EventQueueToEventProcessorAgent implements EventQueueToEventProcess
 
     @Override
     public int registerProcessor(StaticEventProcessor eventProcessor) {
-        logger.info("registerProcessor" + eventProcessor);
+        logger.info("registerProcessor: " + eventProcessor);
         eventToInvokeStrategy.registerProcessor(eventProcessor);
         return listenerCount();
     }
 
     @Override
     public int deregisterProcessor(StaticEventProcessor eventProcessor) {
-        logger.info("deregisterProcessor" + eventProcessor);
+        logger.info("deregisterProcessor: " + eventProcessor);
         eventToInvokeStrategy.deregisterProcessor(eventProcessor);
         return listenerCount();
     }

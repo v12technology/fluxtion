@@ -50,7 +50,7 @@ public class ServiceRegistryNode
                 .serviceName(service.serviceName());
         Callback callBackMethod = serviceCallbackMap.get(tempKey);
         if (callBackMethod != null) {
-            callBackMethod.invoke(service.service());
+            callBackMethod.invoke(service.instance());
         }
     }
 
@@ -61,7 +61,7 @@ public class ServiceRegistryNode
                 .serviceName(service.serviceName());
         Callback callBackMethod = serviceDeregisterCallbackMap.get(tempKey);
         if (callBackMethod != null) {
-            callBackMethod.invoke(service.service());
+            callBackMethod.invoke(service.instance());
         }
     }
 
@@ -81,8 +81,9 @@ public class ServiceRegistryNode
                     && Modifier.isPublic(method.getModifiers())
                     && method.getParameterCount() == 1) {
 
+                Class<?> parameterType = method.getParameterTypes()[0];
                 serviceCallbackMap.put(
-                        new RegistrationKey(method.getParameterTypes()[0], registerAnnotation.value().isEmpty() ? null : registerAnnotation.value()),
+                        new RegistrationKey(parameterType, registerAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : registerAnnotation.value()),
                         new Callback(method, node));
             }
 
@@ -91,8 +92,9 @@ public class ServiceRegistryNode
                     && Modifier.isPublic(method.getModifiers())
                     && method.getParameterCount() == 1) {
 
+                Class<?> parameterType = method.getParameterTypes()[0];
                 serviceDeregisterCallbackMap.put(
-                        new RegistrationKey(method.getParameterTypes()[0], deregisterAnnotation.value().isEmpty() ? null : deregisterAnnotation.value()),
+                        new RegistrationKey(parameterType, deregisterAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : deregisterAnnotation.value()),
                         new Callback(method, node));
             }
         }
