@@ -4,6 +4,10 @@ import com.fluxtion.runtime.EventProcessorContext;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.callback.DirtyStateMonitor;
+import com.fluxtion.runtime.callback.EventDispatcher;
+import com.fluxtion.runtime.input.SubscriptionManager;
+import com.fluxtion.runtime.time.Clock;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -76,6 +80,30 @@ public abstract class SingleNamedNode extends EventLogNode implements NamedNode 
 
     protected <V> V getInstanceById(String instanceId) throws NoSuchFieldException {
         return getEventProcessorContext().getNodeNameLookup().getInstanceById(instanceId);
+    }
+
+    public NodeNameLookup getNodeNameLookup() {
+        return getEventProcessorContext().getNodeNameLookup();
+    }
+
+    public EventDispatcher getEventDispatcher() {
+        return getEventProcessorContext().getEventDispatcher();
+    }
+
+    public DirtyStateMonitor getDirtyStateMonitor() {
+        return getEventProcessorContext().getDirtyStateMonitor();
+    }
+
+    public SubscriptionManager getSubscriptionManager() {
+        return getEventProcessorContext().getSubscriptionManager();
+    }
+
+    public Clock getClock() {
+        return getEventProcessorContext().getClock();
+    }
+
+    public <K, V> V getContextProperty(K key) {
+        return getEventProcessorContext().getContextProperty(key);
     }
 
     @Override
