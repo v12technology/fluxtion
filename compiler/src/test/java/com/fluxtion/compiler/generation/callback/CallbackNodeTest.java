@@ -4,6 +4,7 @@ import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTe
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.callback.CallBackNode;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.Data;
 import lombok.Value;
 import org.junit.Assert;
@@ -51,12 +52,13 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
     }
 
 
-    public static class ExternalCallback extends CallBackNode {
+    public static class ExternalCallback extends CallBackNode implements NamedNode {
 
+        private final String name;
         Object update;
 
         public ExternalCallback(String name) {
-            super(name);
+            this.name = name;
         }
 
         public void stringEvent(MyEvent<String> myEvent) {
@@ -69,6 +71,10 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
             triggerGraphCycle();
         }
 
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 
     @Data
