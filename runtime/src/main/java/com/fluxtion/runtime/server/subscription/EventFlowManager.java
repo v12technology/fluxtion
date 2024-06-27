@@ -67,6 +67,13 @@ public class EventFlowManager {
         eventToInvokerFactoryMap.put(type, eventMapper);
     }
 
+    public void registerEventMapperFactory(Supplier<EventToInvokeStrategy> eventMapper, Class<?> type) {
+        Objects.requireNonNull(eventMapper, "eventMapper must be non-null");
+        Objects.requireNonNull(type, "Callback class type must be non-null");
+
+        registerEventMapperFactory(eventMapper, CallBackType.forClass(type));
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public <T> EventQueueToEventProcessor getMappingAgent(EventSourceKey<T> eventSourceKey, CallBackType type, Agent subscriber) {
         Objects.requireNonNull(eventSourceKey, "eventSourceKey must be non-null");
