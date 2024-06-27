@@ -2,7 +2,6 @@ package com.fluxtion.runtime.service;
 
 import com.fluxtion.runtime.annotations.feature.Preview;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
-import com.fluxtion.runtime.server.FluxtionServer;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
@@ -45,10 +44,6 @@ public class Service<T> implements Lifecycle {
         if (instance instanceof Lifecycle) {
             ((Lifecycle) instance).init();
         }
-    }
-
-    public void setServer(FluxtionServer fluxtionServer) {
-
     }
 
     @Override

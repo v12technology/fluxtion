@@ -50,14 +50,16 @@ public class EventFlowManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void registerEventSource(String sourceName, EventSource<T> eventSource) {
+    public <T> EventToQueuePublisher<T> registerEventSource(String sourceName, EventSource<T> eventSource) {
         Objects.requireNonNull(eventSource, "eventSource must be non-null");
 
         EventSource_QueuePublisher<?> eventSourceQueuePublisher = eventSourceToQueueMap.computeIfAbsent(
                 new EventSourceKey<>(sourceName),
                 eventSourceKey -> new EventSource_QueuePublisher<>(new EventToQueuePublisher<>(sourceName), eventSource));
 
-        eventSource.setEventToQueuePublisher((EventToQueuePublisher<T>) eventSourceQueuePublisher.getQueuePublisher());
+        EventToQueuePublisher<T> queuePublisher = (EventToQueuePublisher<T>) eventSourceQueuePublisher.getQueuePublisher();
+        eventSource.setEventToQueuePublisher(queuePublisher);
+        return queuePublisher;
     }
 
     public void registerEventMapperFactory(Supplier<EventToInvokeStrategy> eventMapper, CallBackType type) {
@@ -94,7 +96,7 @@ public class EventFlowManager {
                 key -> new OneToOneConcurrentArrayQueue<>(500));
 
         //add as a target to the source
-        String name = subscriber.roleName() + "." + eventSourceKey.getSourceName() + "." + type.name();
+        String name = subscriber.roleName() + "/" + eventSourceKey.getSourceName() + "/" + type.name();
         eventSourceQueuePublisher.getQueuePublisher().addTargetQueue(eventQueue, name);
 
         return new EventQueueToEventProcessorAgent(eventQueue, eventMapperSupplier.get(), name);

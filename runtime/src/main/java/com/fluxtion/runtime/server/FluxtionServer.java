@@ -3,6 +3,7 @@ package com.fluxtion.runtime.server;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.dutycycle.ComposingEventProcessorAgent;
+import com.fluxtion.runtime.server.service.DeadWheelScheduler;
 import com.fluxtion.runtime.server.subscription.*;
 import com.fluxtion.runtime.service.Service;
 import lombok.Value;
@@ -45,7 +46,7 @@ public class FluxtionServer {
             registeredServices.put(serviceName, service);
             Object instance = service.instance();
             if (instance instanceof EventFlowService) {
-                ((EventFlowService) instance).setEventFlowManager(flowManager);
+                ((EventFlowService) instance).setEventFlowManager(flowManager, serviceName);
             }
         }
     }
@@ -79,7 +80,7 @@ public class FluxtionServer {
                 groupName,
                 ket -> {
                     //build a subscriber group
-                    ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager, registeredServices);
+                    ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager, new DeadWheelScheduler(), registeredServices);
                     //threading to be configured by file
                     IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
                     ErrorHandler errorHandler = m -> log.severe(m.getMessage());

@@ -4,6 +4,8 @@ import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.input.EventFeed;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.server.service.DeadWheelScheduler;
+import com.fluxtion.runtime.server.service.SchedulerService;
 import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.server.subscription.EventSubscriptionKey;
 import com.fluxtion.runtime.service.Service;
@@ -26,11 +28,18 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
     private final ConcurrentHashMap<String, Service<?>> registeredServices;
     private final ConcurrentHashMap<EventSubscriptionKey<?>, EventQueueToEventProcessor> queueProcessorMap = new ConcurrentHashMap<>();
     private final OneToOneConcurrentArrayQueue<Supplier<StaticEventProcessor>> toStartList = new OneToOneConcurrentArrayQueue<>(128);
+    private final DeadWheelScheduler scheduler;
+    private final Service<SchedulerService> schedulerService;
 
-    public ComposingEventProcessorAgent(String roleName, EventFlowManager eventFlowManager, ConcurrentHashMap<String, Service<?>> registeredServices) {
-        super(roleName);
+    public ComposingEventProcessorAgent(String roleName,
+                                        EventFlowManager eventFlowManager,
+                                        DeadWheelScheduler scheduler,
+                                        ConcurrentHashMap<String, Service<?>> registeredServices) {
+        super(roleName, scheduler);
         this.eventFlowManager = eventFlowManager;
+        this.scheduler = scheduler;
         this.registeredServices = registeredServices;
+        this.schedulerService = new Service<>(scheduler, SchedulerService.class);
     }
 
     public void addEventFeedConsumer(Supplier<StaticEventProcessor> initFunction) {
@@ -47,6 +56,7 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
     public int doWork() throws Exception {
         toStartList.drain(init -> {
             StaticEventProcessor eventProcessor = init.get();
+            eventProcessor.registerService(schedulerService);
             registeredServices.values().forEach(eventProcessor::registerService);
             eventProcessor.addEventFeed(this);
             if (eventProcessor instanceof Lifecycle) {
