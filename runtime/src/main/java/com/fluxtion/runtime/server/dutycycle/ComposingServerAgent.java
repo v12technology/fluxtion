@@ -6,8 +6,10 @@ import com.fluxtion.runtime.server.service.DeadWheelScheduler;
 import com.fluxtion.runtime.server.service.SchedulerService;
 import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.service.Service;
+import com.fluxtion.runtime.service.ServiceRegistryNode;
 import lombok.extern.java.Log;
 import org.agrona.concurrent.DynamicCompositeAgent;
+import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
 /**
  *
@@ -20,6 +22,8 @@ public class ComposingServerAgent extends DynamicCompositeAgent {
     private final FluxtionServer fluxtionServer;
     private final DeadWheelScheduler scheduler;
     private final Service<SchedulerService> schedulerService;
+    private final OneToOneConcurrentArrayQueue<ServerAgent<?>> toStartList = new OneToOneConcurrentArrayQueue<>(128);
+    private final ServiceRegistryNode serviceRegistry = new ServiceRegistryNode();
 
     public ComposingServerAgent(String roleName,
                                 EventFlowManager eventFlowManager,
@@ -35,9 +39,10 @@ public class ComposingServerAgent extends DynamicCompositeAgent {
 
     public <T> void registerServer(ServerAgent<T> server) {
         //register the work function
-        tryAdd(server.getDelegate());
-        //export the service
-        fluxtionServer.registerService(server.getExportedService());
+        toStartList.add(server);
+//        tryAdd(server.getDelegate());
+//        //export the service
+//        fluxtionServer.registerService(server.getExportedService());
     }
 
     @Override
@@ -48,15 +53,14 @@ public class ComposingServerAgent extends DynamicCompositeAgent {
 
     @Override
     public int doWork() throws Exception {
-//        toStartList.drain(init -> {
-//            StaticEventProcessor eventProcessor = init.get();
-//            eventProcessor.registerService(schedulerService);
-//            registeredServices.values().forEach(eventProcessor::registerService);
-//            eventProcessor.addEventFeed(this);
-//            if (eventProcessor instanceof Lifecycle) {
-//                ((Lifecycle) eventProcessor).start();
-//            }
-//        });
+        toStartList.drain(serverAgent -> {
+            tryAdd(serverAgent.getDelegate());
+            Service<?> exportedService = serverAgent.getExportedService();
+            fluxtionServer.registerService(exportedService);
+            serviceRegistry.init();
+            serviceRegistry.nodeRegistered(exportedService.instance(), exportedService.serviceName());
+            serviceRegistry.registerService(schedulerService);
+        });
         return super.doWork();
     }
 

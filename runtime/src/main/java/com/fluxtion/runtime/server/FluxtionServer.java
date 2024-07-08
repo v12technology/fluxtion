@@ -89,16 +89,29 @@ public class FluxtionServer {
 
     public void start() {
         log.info("start");
+
+        log.info("start registered services");
         registeredServices.values().forEach(svc -> {
             if (!(svc.instance() instanceof LifeCycleEventSource)) {
                 svc.start();
             }
         });
+
+        log.info("start flowManager");
         flowManager.start();
-        composingEventAgents.forEach((k, v) -> {
-            log.info("starting composing agent " + k);
+
+        log.info("start service agent workers");
+        composingServerAgents.forEach((k, v) -> {
+            log.info("starting composing service agent " + k);
             AgentRunner.startOnThread(v.getGroupRunner());
         });
+
+        log.info("start event processor agent workers");
+        composingEventAgents.forEach((k, v) -> {
+            log.info("starting composing event processor agent " + k);
+            AgentRunner.startOnThread(v.getGroupRunner());
+        });
+
     }
 
     public void addEventProcessor(String groupName, Supplier<StaticEventProcessor> feedConsumer) {
