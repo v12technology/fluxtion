@@ -5,6 +5,7 @@ import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessor;
 import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessorAgent;
 import lombok.Value;
 import org.agrona.concurrent.Agent;
+import org.agrona.concurrent.ManyToOneConcurrentArrayQueue;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
 import java.util.Objects;
@@ -24,11 +25,21 @@ import java.util.function.Supplier;
 public class EventFlowManager {
 
     private final ConcurrentHashMap<EventSourceKey<?>, EventSource_QueuePublisher<?>> eventSourceToQueueMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<EventSinkKey<?>, ManyToOneConcurrentArrayQueue<?>> eventSinkToQueueMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<CallBackType, Supplier<EventToInvokeStrategy>> eventToInvokerFactoryMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<EventSourceKey_Subscriber<?>, OneToOneConcurrentArrayQueue<?>> subscriberKeyToQueueMap = new ConcurrentHashMap<>();
 
     public EventFlowManager() {
         eventToInvokerFactoryMap.put(CallBackType.StandardCallbacks.ON_EVENT, EventToOnEventInvokeStrategy::new);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ManyToOneConcurrentArrayQueue<T> registerEventSink(EventSourceKey<T> sinkKey, Object sinkReader) {
+        Objects.requireNonNull(sinkKey, "sinkKey must be non-null");
+        EventSinkKey<T> eventSinkKey = new EventSinkKey<>(sinkKey, sinkReader);
+        return (ManyToOneConcurrentArrayQueue<T>) eventSinkToQueueMap.computeIfAbsent(
+                eventSinkKey,
+                key -> new ManyToOneConcurrentArrayQueue<T>(500));
     }
 
     @SuppressWarnings("unchecked")
@@ -131,6 +142,12 @@ public class EventFlowManager {
 
     @Value
     private static class EventSourceKey_Subscriber<T> {
+        EventSourceKey<T> eventSourceKey;
+        Object subscriber;
+    }
+
+    @Value
+    private static class EventSinkKey<T> {
         EventSourceKey<T> eventSourceKey;
         Object subscriber;
     }
