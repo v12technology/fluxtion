@@ -3,6 +3,8 @@ package com.fluxtion.runtime.server;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.dutycycle.ComposingEventProcessorAgent;
+import com.fluxtion.runtime.server.dutycycle.ComposingServerAgent;
+import com.fluxtion.runtime.server.dutycycle.ServerAgent;
 import com.fluxtion.runtime.server.service.DeadWheelScheduler;
 import com.fluxtion.runtime.server.subscription.*;
 import com.fluxtion.runtime.service.Service;
@@ -23,7 +25,8 @@ import java.util.function.Supplier;
 public class FluxtionServer {
 
     private final EventFlowManager flowManager = new EventFlowManager();
-    private final ConcurrentHashMap<String, ComposingAgentRunner> composingAgents = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ComposingAgentRunner> composingEventAgents = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ComposingWorkerServiceAgentRunner> composingServerAgents = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Service<?>> registeredServices = new ConcurrentHashMap<>();
 
     public void registerEventMapperFactory(Supplier<EventToInvokeStrategy> eventMapper, CallBackType type) {
@@ -51,6 +54,29 @@ public class FluxtionServer {
         }
     }
 
+    public void registerWorkerService(ServerAgent<?> service) {
+        String agentGroup = service.getAgentGroup();
+        ComposingWorkerServiceAgentRunner composingAgentRunner = composingServerAgents.computeIfAbsent(
+                agentGroup,
+                ket -> {
+                    //build a subscriber group
+                    ComposingServerAgent group = new ComposingServerAgent(agentGroup, flowManager, this, new DeadWheelScheduler());
+                    //threading to be configured by file
+                    IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
+                    ErrorHandler errorHandler = m -> log.severe(m.getMessage());
+                    AtomicCounter errorCounter = new AtomicCounter(new UnsafeBuffer(new byte[4096]), 0);
+                    //run subscriber group
+                    AgentRunner groupRunner = new AgentRunner(
+                            idleStrategy,
+                            errorHandler,
+                            errorCounter,
+                            group);
+                    return new ComposingWorkerServiceAgentRunner(group, groupRunner);
+                });
+
+        composingAgentRunner.getGroup().registerServer(service);
+    }
+
     public void init() {
         log.info("init");
         registeredServices.values().forEach(svc -> {
@@ -63,24 +89,37 @@ public class FluxtionServer {
 
     public void start() {
         log.info("start");
+
+        log.info("start registered services");
         registeredServices.values().forEach(svc -> {
             if (!(svc.instance() instanceof LifeCycleEventSource)) {
                 svc.start();
             }
         });
+
+        log.info("start flowManager");
         flowManager.start();
-        composingAgents.forEach((k, v) -> {
-            log.info("starting composing agent " + k);
+
+        log.info("start service agent workers");
+        composingServerAgents.forEach((k, v) -> {
+            log.info("starting composing service agent " + k);
             AgentRunner.startOnThread(v.getGroupRunner());
         });
+
+        log.info("start event processor agent workers");
+        composingEventAgents.forEach((k, v) -> {
+            log.info("starting composing event processor agent " + k);
+            AgentRunner.startOnThread(v.getGroupRunner());
+        });
+
     }
 
     public void addEventProcessor(String groupName, Supplier<StaticEventProcessor> feedConsumer) {
-        ComposingAgentRunner composingAgentRunner = composingAgents.computeIfAbsent(
+        ComposingAgentRunner composingAgentRunner = composingEventAgents.computeIfAbsent(
                 groupName,
                 ket -> {
                     //build a subscriber group
-                    ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager, new DeadWheelScheduler(), registeredServices);
+                    ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager, this, new DeadWheelScheduler(), registeredServices);
                     //threading to be configured by file
                     IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
                     ErrorHandler errorHandler = m -> log.severe(m.getMessage());
@@ -100,6 +139,12 @@ public class FluxtionServer {
     @Value
     private static class ComposingAgentRunner {
         ComposingEventProcessorAgent group;
+        AgentRunner groupRunner;
+    }
+
+    @Value
+    private static class ComposingWorkerServiceAgentRunner {
+        ComposingServerAgent group;
         AgentRunner groupRunner;
     }
 }
