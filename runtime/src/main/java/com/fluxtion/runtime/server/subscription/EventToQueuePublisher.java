@@ -1,6 +1,7 @@
 package com.fluxtion.runtime.server.subscription;
 
 import com.fluxtion.runtime.annotations.feature.Experimental;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
@@ -9,6 +10,7 @@ import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 
 /**
  * Handles publishing events to internal dispatch queues, provides the functionality:
@@ -23,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RequiredArgsConstructor
 @ToString
 @Log
+@Getter
 public class EventToQueuePublisher<T> {
 
     private final List<NamedQueue<T>> targetQueues = new CopyOnWriteArrayList<>();
@@ -30,23 +33,31 @@ public class EventToQueuePublisher<T> {
 
     public void addTargetQueue(OneToOneConcurrentArrayQueue<T> targetQueue, String name) {
         NamedQueue<T> namedQueue = new NamedQueue<>(name, targetQueue);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("adding a publisher queue:" + namedQueue);
+        }
         if (!targetQueues.contains(namedQueue)) {
             targetQueues.add(namedQueue);
         }
     }
 
     public void publish(T itemToPublish) {
-        log.info("listenerCount:" + targetQueues.size() + " publish:" + itemToPublish);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("listenerCount:" + targetQueues.size() + " publish:" + itemToPublish);
+        }
+
         for (int i = 0, targetQueuesSize = targetQueues.size(); i < targetQueuesSize; i++) {
             NamedQueue<T> namedQueue = targetQueues.get(i);
             OneToOneConcurrentArrayQueue<T> targetQueue = namedQueue.getTargetQueue();
             targetQueue.offer(itemToPublish);
-            log.info("queue:" + namedQueue.getName() + " size:" + targetQueue.size());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("queue:" + namedQueue.getName() + " size:" + targetQueue.size());
+            }
         }
     }
 
     @Value
-    private static class NamedQueue<T> {
+    public static class NamedQueue<T> {
         String name;
         OneToOneConcurrentArrayQueue<T> targetQueue;
     }

@@ -2,8 +2,8 @@ package com.fluxtion.runtime.server.dutycycle;
 
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.FluxtionServer;
-import com.fluxtion.runtime.server.service.DeadWheelScheduler;
-import com.fluxtion.runtime.server.service.SchedulerService;
+import com.fluxtion.runtime.server.service.scheduler.DeadWheelScheduler;
+import com.fluxtion.runtime.server.service.scheduler.SchedulerService;
 import com.fluxtion.runtime.server.subscription.EventFlowManager;
 import com.fluxtion.runtime.service.Service;
 import com.fluxtion.runtime.service.ServiceRegistryNode;
@@ -36,13 +36,8 @@ public class ComposingServerAgent extends DynamicCompositeAgent {
         this.schedulerService = new Service<>(scheduler, SchedulerService.class);
     }
 
-
     public <T> void registerServer(ServerAgent<T> server) {
-        //register the work function
         toStartList.add(server);
-//        tryAdd(server.getDelegate());
-//        //export the service
-//        fluxtionServer.registerService(server.getExportedService());
     }
 
     @Override
@@ -56,10 +51,14 @@ public class ComposingServerAgent extends DynamicCompositeAgent {
         toStartList.drain(serverAgent -> {
             tryAdd(serverAgent.getDelegate());
             Service<?> exportedService = serverAgent.getExportedService();
-            fluxtionServer.registerService(exportedService);
+            exportedService.init();
             serviceRegistry.init();
             serviceRegistry.nodeRegistered(exportedService.instance(), exportedService.serviceName());
             serviceRegistry.registerService(schedulerService);
+            fluxtionServer.servicesRegistered().forEach(serviceRegistry::registerService);
+            fluxtionServer.registerService(exportedService);
+            exportedService.start();
+            //
         });
         return super.doWork();
     }

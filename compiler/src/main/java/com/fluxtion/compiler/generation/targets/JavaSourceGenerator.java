@@ -34,6 +34,7 @@ import com.fluxtion.runtime.audit.EventLogManager;
 import com.fluxtion.runtime.callback.ExportFunctionAuditEvent;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.input.EventFeed;
+import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.node.ForkedTriggerTask;
 import com.fluxtion.runtime.node.MutableEventProcessorContext;
 import lombok.Getter;
@@ -1425,6 +1426,7 @@ public class JavaSourceGenerator {
         importList.add(EventFeed.class.getCanonicalName());
         importList.add(EventLogManager.class.getCanonicalName());
         importList.add(ExportFunctionAuditEvent.class.getCanonicalName());
+        importList.add(SubscriptionManager.class.getCanonicalName());
         auditMethodString = "";
         String auditObjet = "private void auditEvent(Object typedEvent){\n";
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);
