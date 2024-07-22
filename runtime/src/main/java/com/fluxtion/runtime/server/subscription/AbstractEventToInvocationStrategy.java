@@ -23,7 +23,9 @@ public abstract class AbstractEventToInvocationStrategy implements EventToInvoke
     public void processEvent(Object event) {
         for (int i = 0, targetQueuesSize = eventProcessorSinks.size(); i < targetQueuesSize; i++) {
             StaticEventProcessor eventProcessor = eventProcessorSinks.get(i);
+            EventFlowManager.setCurrentProcessor(eventProcessor);
             dispatchEvent(event, eventProcessor);
+            EventFlowManager.removeCurrentProcessor();
         }
     }
 

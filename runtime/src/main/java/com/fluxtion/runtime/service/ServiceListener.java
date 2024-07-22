@@ -3,7 +3,7 @@ package com.fluxtion.runtime.service;
 import com.fluxtion.runtime.annotations.feature.Preview;
 
 /**
- * Export this service to receive notification callbaxcks when any services are registered or de-registered in the
+ * Export this service to receive notification callbacks when any services are registered or de-registered in the
  * container
  */
 

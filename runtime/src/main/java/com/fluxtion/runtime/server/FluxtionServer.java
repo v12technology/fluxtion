@@ -5,7 +5,7 @@ import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.dutycycle.ComposingEventProcessorAgent;
 import com.fluxtion.runtime.server.dutycycle.ComposingServerAgent;
 import com.fluxtion.runtime.server.dutycycle.ServerAgent;
-import com.fluxtion.runtime.server.service.DeadWheelScheduler;
+import com.fluxtion.runtime.server.service.scheduler.DeadWheelScheduler;
 import com.fluxtion.runtime.server.subscription.*;
 import com.fluxtion.runtime.service.Service;
 import lombok.Value;
@@ -17,6 +17,8 @@ import org.agrona.concurrent.SleepingMillisIdleStrategy;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.status.AtomicCounter;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -28,6 +30,11 @@ public class FluxtionServer {
     private final ConcurrentHashMap<String, ComposingAgentRunner> composingEventAgents = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ComposingWorkerServiceAgentRunner> composingServerAgents = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Service<?>> registeredServices = new ConcurrentHashMap<>();
+    private ErrorHandler errorHandler = m -> log.severe(m.getMessage());
+
+    public void setDefaultErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
 
     public void registerEventMapperFactory(Supplier<EventToInvokeStrategy> eventMapper, CallBackType type) {
         log.info("registerEventMapperFactory:" + eventMapper);
@@ -63,7 +70,6 @@ public class FluxtionServer {
                     ComposingServerAgent group = new ComposingServerAgent(agentGroup, flowManager, this, new DeadWheelScheduler());
                     //threading to be configured by file
                     IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
-                    ErrorHandler errorHandler = m -> log.severe(m.getMessage());
                     AtomicCounter errorCounter = new AtomicCounter(new UnsafeBuffer(new byte[4096]), 0);
                     //run subscriber group
                     AgentRunner groupRunner = new AgentRunner(
@@ -122,7 +128,6 @@ public class FluxtionServer {
                     ComposingEventProcessorAgent group = new ComposingEventProcessorAgent(groupName, flowManager, this, new DeadWheelScheduler(), registeredServices);
                     //threading to be configured by file
                     IdleStrategy idleStrategy = new SleepingMillisIdleStrategy(100);
-                    ErrorHandler errorHandler = m -> log.severe(m.getMessage());
                     AtomicCounter errorCounter = new AtomicCounter(new UnsafeBuffer(new byte[4096]), 0);
                     //run subscriber group
                     AgentRunner groupRunner = new AgentRunner(
@@ -134,6 +139,10 @@ public class FluxtionServer {
                 });
 
         composingAgentRunner.getGroup().addEventFeedConsumer(feedConsumer);
+    }
+
+    public Collection<Service<?>> servicesRegistered() {
+        return Collections.unmodifiableCollection(registeredServices.values());
     }
 
     @Value
