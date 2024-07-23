@@ -155,15 +155,13 @@ public class CliAdmin implements EventFlowService, Admin, Lifecycle, EventSource
 
     private class CommandProcessor {
 
-        private static final String help = """
-                default commands:
-                ---------------------------
-                quit         - exit the console
-                help/?       - this message
-                name         - service name
-                commands     - registered service commands
-                eventSources - list event sources
-                """;
+        private static final String help = "default commands:\n" +
+                                           "---------------------------\n" +
+                                           "quit         - exit the console\n" +
+                                           "help/?       - this message\n" +
+                                           "name         - service name\n" +
+                                           "commands     - registered service commands\n" +
+                                           "eventSources - list event sources\n";
 
         public boolean controlMethod(Signal<List<String>> publishSignal) {
             System.out.println("service name: " + serviceName);
