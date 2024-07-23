@@ -62,7 +62,7 @@ public class CliAdmin implements EventFlowService, Admin, Lifecycle, EventSource
                 System.out.print("Command > ");
 
                 // Read user input as String
-                String[] commandArgs = scanner.nextLine().strip().split(" ");
+                String[] commandArgs = scanner.nextLine().trim().split(" ");
                 if (commandArgs.length > 0) {
                     switch (commandArgs[0]) {
                         case "eventSources": {
@@ -97,7 +97,7 @@ public class CliAdmin implements EventFlowService, Admin, Lifecycle, EventSource
     public void tearDown() {
         log.info("stop");
         runLoop.set(false);
-        executorService.close();
+        executorService.shutdown();
     }
 
     @Override
@@ -156,12 +156,12 @@ public class CliAdmin implements EventFlowService, Admin, Lifecycle, EventSource
     private class CommandProcessor {
 
         private static final String help = "default commands:\n" +
-                                           "---------------------------\n" +
-                                           "quit         - exit the console\n" +
-                                           "help/?       - this message\n" +
-                                           "name         - service name\n" +
-                                           "commands     - registered service commands\n" +
-                                           "eventSources - list event sources\n";
+                "---------------------------\n" +
+                "quit         - exit the console\n" +
+                "help/?       - this message\n" +
+                "name         - service name\n" +
+                "commands     - registered service commands\n" +
+                "eventSources - list event sources\n";
 
         public boolean controlMethod(Signal<List<String>> publishSignal) {
             System.out.println("service name: " + serviceName);
@@ -196,7 +196,7 @@ public class CliAdmin implements EventFlowService, Admin, Lifecycle, EventSource
         }
 
         public boolean anyControlMethod(List<String> publishSignal) {
-            String command = publishSignal.getFirst();
+            String command = publishSignal.get(0);
             if (registeredCommandMap.containsKey(command)) {
                 registeredCommandMap.get(command).publishCommand(publishSignal);
             } else {
