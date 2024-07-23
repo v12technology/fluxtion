@@ -1,7 +1,9 @@
 package com.fluxtion.runtime.server.subscription;
 
+import com.fluxtion.runtime.annotations.feature.Experimental;
 import lombok.Value;
 
+@Experimental
 public interface CallBackType {
 
     String name();

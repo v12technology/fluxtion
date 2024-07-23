@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.server.subscription;
 
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessor;
 import com.fluxtion.runtime.server.dutycycle.EventQueueToEventProcessorAgent;
@@ -8,6 +9,7 @@ import org.agrona.concurrent.Agent;
 import org.agrona.concurrent.ManyToOneConcurrentArrayQueue;
 import org.agrona.concurrent.OneToOneConcurrentArrayQueue;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -28,9 +30,38 @@ public class EventFlowManager {
     private final ConcurrentHashMap<EventSinkKey<?>, ManyToOneConcurrentArrayQueue<?>> eventSinkToQueueMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<CallBackType, Supplier<EventToInvokeStrategy>> eventToInvokerFactoryMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<EventSourceKey_Subscriber<?>, OneToOneConcurrentArrayQueue<?>> subscriberKeyToQueueMap = new ConcurrentHashMap<>();
+    private final static ThreadLocal<StaticEventProcessor> currentProcessor = new ThreadLocal<>();
+
+    public static void setCurrentProcessor(StaticEventProcessor eventProcessor) {
+        currentProcessor.set(eventProcessor);
+    }
+
+    public static void removeCurrentProcessor() {
+        currentProcessor.remove();
+    }
+
+    public static StaticEventProcessor currentProcessor() {
+        return currentProcessor.get();
+    }
 
     public EventFlowManager() {
         eventToInvokerFactoryMap.put(CallBackType.StandardCallbacks.ON_EVENT, EventToOnEventInvokeStrategy::new);
+    }
+
+    public void init() {
+        eventSourceToQueueMap.values().stream()
+                .map(EventSource_QueuePublisher::getEventSource)
+                .filter(LifeCycleEventSource.class::isInstance)
+                .map(LifeCycleEventSource.class::cast)
+                .forEach(LifeCycleEventSource::init);
+    }
+
+    public void start() {
+        eventSourceToQueueMap.values().stream()
+                .map(EventSource_QueuePublisher::getEventSource)
+                .filter(LifeCycleEventSource.class::isInstance)
+                .map(LifeCycleEventSource.class::cast)
+                .forEach(LifeCycleEventSource::start);
     }
 
     @SuppressWarnings("unchecked")
@@ -117,20 +148,20 @@ public class EventFlowManager {
         return getMappingAgent(subscriptionKey.getEventSourceKey(), subscriptionKey.getCallBackType(), subscriber);
     }
 
-    public void init() {
-        eventSourceToQueueMap.values().stream()
-                .map(EventSource_QueuePublisher::getEventSource)
-                .filter(LifeCycleEventSource.class::isInstance)
-                .map(LifeCycleEventSource.class::cast)
-                .forEach(LifeCycleEventSource::init);
-    }
+    public void appendQueueInformation(Appendable appendable) {
+        eventSourceToQueueMap.entrySet()
+                .forEach(e -> {
+                    try {
+                        EventToQueuePublisher<?> queue = e.getValue().getQueuePublisher();
+                        appendable.append("eventSource:").append(e.getKey().getSourceName())
+                                .append("\n\treadQueues:\n");
+                        for (EventToQueuePublisher.NamedQueue<?> q : queue.getTargetQueues()) {
+                            appendable.append("\t\t").append(q.getName()).append(" -> ").append(q.getTargetQueue().toString()).append("\n");
+                        }
+                    } catch (IOException ex) {
 
-    public void start() {
-        eventSourceToQueueMap.values().stream()
-                .map(EventSource_QueuePublisher::getEventSource)
-                .filter(LifeCycleEventSource.class::isInstance)
-                .map(LifeCycleEventSource.class::cast)
-                .forEach(LifeCycleEventSource::start);
+                    }
+                });
     }
 
 

@@ -273,4 +273,9 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     public <T> void setUnKnownEventHandler(Consumer<T> consumer){
         unKnownEventHandler = consumer;
     }
+
+    @Override
+    public SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
+    }
 }

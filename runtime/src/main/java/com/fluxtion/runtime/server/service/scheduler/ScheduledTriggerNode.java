@@ -1,4 +1,4 @@
-package com.fluxtion.runtime.server.service;
+package com.fluxtion.runtime.server.service.scheduler;
 
 import com.fluxtion.runtime.annotations.feature.Experimental;
 import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;

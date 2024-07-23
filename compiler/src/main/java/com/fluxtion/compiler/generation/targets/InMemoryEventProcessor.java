@@ -859,4 +859,9 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     public void deRegisterService(Service<?> service) {
         consumeServiceIfExported(ServiceListener.class, s -> s.deRegisterService(service));
     }
+
+    @Override
+    public SubscriptionManager getSubscriptionManager() {
+        return subscriptionManager;
+    }
 }

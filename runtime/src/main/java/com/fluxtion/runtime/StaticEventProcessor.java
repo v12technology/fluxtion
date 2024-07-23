@@ -22,6 +22,7 @@ import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.input.EventFeed;
+import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.node.InstanceSupplier;
@@ -437,7 +438,6 @@ public interface StaticEventProcessor extends ServiceListener, NodeDiscovery {
         }
     }
 
-
     /**
      * Register a Consumer that will be called whenever an event is posted to the processor but there are no registered
      * event handlers for that type.
@@ -456,5 +456,9 @@ public interface StaticEventProcessor extends ServiceListener, NodeDiscovery {
     @Override
     default void deRegisterService(Service<?> service) {
 
+    }
+
+    default SubscriptionManager getSubscriptionManager() {
+        throw new UnsupportedOperationException();
     }
 }
