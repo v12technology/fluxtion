@@ -75,7 +75,7 @@ public class ComposingEventProcessorAgent extends DynamicCompositeAgent implemen
 
         if (!queueReadersToAdd.isEmpty()) {
             if (tryAdd(queueReadersToAdd.get(0))) {
-                queueReadersToAdd.removeFirst();
+                queueReadersToAdd.remove(0);
             }
         }
 
