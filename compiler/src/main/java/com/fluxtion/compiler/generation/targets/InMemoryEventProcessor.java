@@ -544,6 +544,14 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         }
     }
 
+    public <T> T exportedService() {
+        return getExportedService();
+    }
+
+    public <T> T exportedService(Class<T> exportedServiceClass) {
+        return exportsService(exportedServiceClass) ? getExportedService() : null;
+    }
+
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> T getExportedService() {
