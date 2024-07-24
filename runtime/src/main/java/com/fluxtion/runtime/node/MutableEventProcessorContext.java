@@ -27,6 +27,7 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     @Getter
     @Setter
     private Clock clock = Clock.DEFAULT_CLOCK;
+    private InternalEventProcessor eventProcessorCallback;
 
     public MutableEventProcessorContext(
             @AssignToField("nodeNameLookup") NodeNameLookup nodeNameLookup,
@@ -56,6 +57,7 @@ public final class MutableEventProcessorContext implements EventProcessorContext
     }
 
     public void setEventProcessorCallback(InternalEventProcessor eventProcessorCallback) {
+        this.eventProcessorCallback = eventProcessorCallback;
         eventDispatcher.setEventProcessor(eventProcessorCallback);
     }
 
@@ -89,6 +91,16 @@ public final class MutableEventProcessorContext implements EventProcessorContext
 
     public <K, V> V put(K key, V value) {
         return (V) map.put(key, value);
+    }
+
+    @Override
+    public <T> T getExportedService(Class<T> exportedServiceClass) {
+        return eventProcessorCallback.exportedService(exportedServiceClass);
+    }
+
+    @Override
+    public <T> T getExportedService() {
+        return eventProcessorCallback.exportedService();
     }
 
     @Override
