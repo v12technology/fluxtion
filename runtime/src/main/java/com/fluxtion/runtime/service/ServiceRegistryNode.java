@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.service;
 
+import com.fluxtion.runtime.EventProcessorContextListener;
 import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.annotations.feature.Preview;
@@ -72,6 +73,10 @@ public class ServiceRegistryNode
 
     @Override
     public void nodeRegistered(Object node, String nodeName) {
+        if (node instanceof EventProcessorContextListener) {
+            ((EventProcessorContextListener) node).currentContext(getEventProcessorContext());
+        }
+
         Class<?> clazz = node.getClass();
         Method[] methods = clazz.getMethods();
         for (Method method : methods) {

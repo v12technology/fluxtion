@@ -22,6 +22,10 @@ public interface EventProcessorContext {
 
     Clock getClock();
 
+    <T> T getExportedService(Class<T> exportedServiceClass);
+
+    <T> T getExportedService();
+
     /**
      * Retrieves an injected instance at runtime. Fails with {@link RuntimeException} if no instance is found
      * <p>

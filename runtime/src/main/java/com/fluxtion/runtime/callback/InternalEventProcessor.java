@@ -20,4 +20,13 @@ public interface InternalEventProcessor {
     void setDirty(Object node, boolean dirtyFlag);
 
     <T> T getNodeById(String id) throws NoSuchFieldException;
+
+    default <T> T exportedService() {
+        return (T) this;
+    }
+
+    default <T> T exportedService(Class<T> exportedServiceClass) {
+        T svcExport = exportedService();
+        return exportedServiceClass.isInstance(svcExport) ? exportedService() : null;
+    }
 }
