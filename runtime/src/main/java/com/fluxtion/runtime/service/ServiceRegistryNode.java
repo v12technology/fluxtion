@@ -16,7 +16,9 @@ import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,9 +36,9 @@ public class ServiceRegistryNode
 
     public static final String NODE_NAME = "serviceRegistry";
     @FluxtionIgnore
-    private final Map<RegistrationKey, Callback> serviceCallbackMap = new HashMap<>();
+    private final Map<RegistrationKey, List<Callback>> serviceCallbackMap = new HashMap<>();
     @FluxtionIgnore
-    private final Map<RegistrationKey, Callback> serviceDeregisterCallbackMap = new HashMap<>();
+    private final Map<RegistrationKey, List<Callback>> serviceDeregisterCallbackMap = new HashMap<>();
     @FluxtionIgnore
     private final RegistrationKey tempKey = new RegistrationKey();
 
@@ -49,9 +51,12 @@ public class ServiceRegistryNode
         auditLog.info("registerService", service);
         tempKey.serviceClass(service.serviceClass())
                 .serviceName(service.serviceName());
-        Callback callBackMethod = serviceCallbackMap.get(tempKey);
-        if (callBackMethod != null) {
-            callBackMethod.invoke(service.instance());
+        List<Callback> callBackMethods = serviceCallbackMap.get(tempKey);
+        if (callBackMethods != null) {
+            for (int i = 0; i < callBackMethods.size(); i++) {
+                Callback callBackMethod = callBackMethods.get(i);
+                callBackMethod.invoke(service.instance());
+            }
         }
     }
 
@@ -60,9 +65,12 @@ public class ServiceRegistryNode
         auditLog.info("deRegisterService", service);
         tempKey.serviceClass(service.serviceClass())
                 .serviceName(service.serviceName());
-        Callback callBackMethod = serviceDeregisterCallbackMap.get(tempKey);
-        if (callBackMethod != null) {
-            callBackMethod.invoke(service.instance());
+        List<Callback> callBackMethods = serviceDeregisterCallbackMap.get(tempKey);
+        if (callBackMethods != null) {
+            for (int i = 0; i < callBackMethods.size(); i++) {
+                Callback callBackMethod = callBackMethods.get(i);
+                callBackMethod.invoke(service.instance());
+            }
         }
     }
 
@@ -83,24 +91,38 @@ public class ServiceRegistryNode
 
             ServiceRegistered registerAnnotation = method.getAnnotation(ServiceRegistered.class);
             if (registerAnnotation != null
-                    && Modifier.isPublic(method.getModifiers())
-                    && method.getParameterCount() == 1) {
+                && Modifier.isPublic(method.getModifiers())
+                && method.getParameterCount() == 1) {
 
                 Class<?> parameterType = method.getParameterTypes()[0];
-                serviceCallbackMap.put(
-                        new RegistrationKey(parameterType, registerAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : registerAnnotation.value()),
-                        new Callback(method, node));
+                RegistrationKey key = new RegistrationKey(
+                        parameterType,
+                        registerAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : registerAnnotation.value());
+
+                serviceCallbackMap.compute(key,
+                        (k, v) -> {
+                            List<Callback> list = v == null ? new ArrayList<>() : v;
+                            list.add(new Callback(method, node));
+                            return list;
+                        });
             }
 
             ServiceDeregistered deregisterAnnotation = method.getAnnotation(ServiceDeregistered.class);
             if (deregisterAnnotation != null
-                    && Modifier.isPublic(method.getModifiers())
-                    && method.getParameterCount() == 1) {
+                && Modifier.isPublic(method.getModifiers())
+                && method.getParameterCount() == 1) {
 
                 Class<?> parameterType = method.getParameterTypes()[0];
-                serviceDeregisterCallbackMap.put(
-                        new RegistrationKey(parameterType, deregisterAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : deregisterAnnotation.value()),
-                        new Callback(method, node));
+                RegistrationKey key = new RegistrationKey(
+                        parameterType,
+                        deregisterAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : deregisterAnnotation.value());
+
+                serviceDeregisterCallbackMap.compute(key,
+                        (k, v) -> {
+                            List<Callback> list = v == null ? new ArrayList<>() : v;
+                            list.add(new Callback(method, node));
+                            return list;
+                        });
             }
         }
     }

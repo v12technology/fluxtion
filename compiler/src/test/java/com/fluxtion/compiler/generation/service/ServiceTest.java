@@ -38,6 +38,37 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("", node.svc_A_name);
     }
 
+    @Test
+    public void multipleSvcListenerTest() {
+        sep(c -> {
+            c.addNode(new ServiceListenerNode(), "myListener");
+            c.addNode(new ServiceListenerNode(), "myListener2");
+        });
+
+        Service<MyService> service = new Service<>(new MyServiceImpl("no_name"), MyService.class);
+        Service<MyService> serviceA = new Service<>(new MyServiceImpl("svc_A"), MyService.class, "svc_A");
+
+        sep.registerService(service);
+        sep.registerService(serviceA);
+
+        ServiceListenerNode node = getField("myListener");
+        Assert.assertEquals("no_name", node.name);
+        Assert.assertEquals("svc_A", node.svc_A_name);
+
+        ServiceListenerNode node2 = getField("myListener2");
+        Assert.assertEquals("no_name", node2.name);
+        Assert.assertEquals("svc_A", node2.svc_A_name);
+
+        sep.deRegisterService(service);
+        sep.deRegisterService(serviceA);
+
+        Assert.assertEquals("", node.name);
+        Assert.assertEquals("", node.svc_A_name);
+
+        Assert.assertEquals("", node2.name);
+        Assert.assertEquals("", node2.svc_A_name);
+    }
+
 
     @Test
     public void svcRegisterShortcutTest() {
