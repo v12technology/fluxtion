@@ -94,6 +94,35 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
 
     }
 
+    @Test
+    public void svcNamedCallbackRegisterShortcutTest() {
+        sep(c -> {
+            c.addNode(new NameServiceListenerNode(), "myListener");
+        });
+
+        MyServiceImpl noName = new MyServiceImpl("no_name");
+        sep.registerService(noName, MyService.class);
+
+        MyServiceImpl svcA = new MyServiceImpl("svc_A");
+        sep.registerService(svcA, MyService.class, "svc_A");
+
+        NameServiceListenerNode node = getField("myListener");
+
+        Assert.assertEquals("no_name", node.name);
+        Assert.assertEquals(MyService.class.getCanonicalName(), node.serviceName);
+        Assert.assertEquals("svc_A", node.svc_A_name);
+        Assert.assertEquals("svc_A", node.svc_A_ServiceName);
+
+
+        sep.deRegisterService(noName, MyService.class);
+        sep.deRegisterService(svcA, MyService.class, "svc_A");
+
+        Assert.assertEquals("", node.name);
+        Assert.assertEquals("", node.serviceName);
+        Assert.assertEquals("", node.svc_A_name);
+        Assert.assertEquals("", node.svc_A_ServiceName);
+    }
+
     public static class ServiceListenerNode {
 
         private String name;
@@ -117,6 +146,53 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
         @ServiceDeregistered("svc_A")
         public void deregisterMyService2(MyService service) {
             svc_A_name = "";
+        }
+
+        @OnEventHandler
+        public boolean onMyEvent(String event) {
+            return false;
+        }
+    }
+
+    public static class NameServiceListenerNode {
+
+        private String name;
+        private String serviceName;
+
+        private String svc_A_name;
+        private String svc_A_ServiceName;
+
+        @ServiceRegistered
+        public void registerMyService(MyService service, String serviceName) {
+            name = service.getName();
+            this.serviceName = serviceName;
+        }
+
+        @ServiceRegistered("svc_A")
+        public void registerMyService2(MyService service) {
+            svc_A_name = service.getName();
+        }
+
+        @ServiceRegistered("svc_A")
+        public void registerMyService2_named(MyService service, String serviceName) {
+            svc_A_name = service.getName();
+            this.svc_A_ServiceName = serviceName;
+        }
+
+        @ServiceDeregistered
+        public void deregisterMyService(MyService service, String serviceName) {
+            name = "";
+            if (serviceName.equals(this.serviceName)) {
+                this.serviceName = "";
+            }
+        }
+
+        @ServiceDeregistered("svc_A")
+        public void deregisterMyService2(MyService service, String serviceName) {
+            svc_A_name = "";
+            if (serviceName.equals(this.svc_A_ServiceName)) {
+                this.svc_A_ServiceName = "";
+            }
         }
 
         @OnEventHandler

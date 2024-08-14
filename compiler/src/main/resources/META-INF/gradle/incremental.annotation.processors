@@ -3,3 +3,4 @@ com.fluxtion.compiler.generation.annotationprocessor.ValidateOnTriggerAnnotation
 com.fluxtion.compiler.generation.annotationprocessor.ValidateOnParentUpdateHandlerAnnotations,isolating
 com.fluxtion.compiler.generation.annotationprocessor.ValidateLifecycleAnnotations,isolating
 com.fluxtion.compiler.generation.annotationprocessor.ValidateExportFunctionAnnotations,isolating
+com.fluxtion.compiler.generation.annotationprocessor.ValidateServiceListenerAnnotations
