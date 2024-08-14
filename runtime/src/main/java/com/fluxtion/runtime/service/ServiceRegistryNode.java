@@ -55,7 +55,7 @@ public class ServiceRegistryNode
         if (callBackMethods != null) {
             for (int i = 0; i < callBackMethods.size(); i++) {
                 Callback callBackMethod = callBackMethods.get(i);
-                callBackMethod.invoke(service.instance());
+                callBackMethod.invoke(service.instance(), service.serviceName());
             }
         }
     }
@@ -69,7 +69,7 @@ public class ServiceRegistryNode
         if (callBackMethods != null) {
             for (int i = 0; i < callBackMethods.size(); i++) {
                 Callback callBackMethod = callBackMethods.get(i);
-                callBackMethod.invoke(service.instance());
+                callBackMethod.invoke(service.instance(), service.serviceName());
             }
         }
     }
@@ -90,9 +90,12 @@ public class ServiceRegistryNode
         for (Method method : methods) {
 
             ServiceRegistered registerAnnotation = method.getAnnotation(ServiceRegistered.class);
+            final int parameterCount = method.getParameterCount();
+            final boolean namedService = parameterCount == 2 && CharSequence.class.isAssignableFrom(method.getParameterTypes()[1]);
             if (registerAnnotation != null
                 && Modifier.isPublic(method.getModifiers())
-                && method.getParameterCount() == 1) {
+                && (parameterCount == 1 || namedService)
+            ) {
 
                 Class<?> parameterType = method.getParameterTypes()[0];
                 RegistrationKey key = new RegistrationKey(
@@ -102,7 +105,7 @@ public class ServiceRegistryNode
                 serviceCallbackMap.compute(key,
                         (k, v) -> {
                             List<Callback> list = v == null ? new ArrayList<>() : v;
-                            list.add(new Callback(method, node));
+                            list.add(new Callback(method, node, namedService));
                             return list;
                         });
             }
@@ -110,7 +113,7 @@ public class ServiceRegistryNode
             ServiceDeregistered deregisterAnnotation = method.getAnnotation(ServiceDeregistered.class);
             if (deregisterAnnotation != null
                 && Modifier.isPublic(method.getModifiers())
-                && method.getParameterCount() == 1) {
+                && (parameterCount == 1 || namedService)) {
 
                 Class<?> parameterType = method.getParameterTypes()[0];
                 RegistrationKey key = new RegistrationKey(
@@ -120,7 +123,7 @@ public class ServiceRegistryNode
                 serviceDeregisterCallbackMap.compute(key,
                         (k, v) -> {
                             List<Callback> list = v == null ? new ArrayList<>() : v;
-                            list.add(new Callback(method, node));
+                            list.add(new Callback(method, node, namedService));
                             return list;
                         });
             }
@@ -143,10 +146,15 @@ public class ServiceRegistryNode
     private static class Callback {
         Method method;
         Object node;
+        boolean namedService;
 
         @SneakyThrows
-        void invoke(Object service) {
-            method.invoke(node, service);
+        void invoke(Object service, String name) {
+            if (namedService) {
+                method.invoke(node, service, name);
+            } else {
+                method.invoke(node, service);
+            }
         }
     }
 }

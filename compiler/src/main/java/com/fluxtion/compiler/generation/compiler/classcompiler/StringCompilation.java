@@ -48,7 +48,9 @@ public interface StringCompilation {
                 new ValidateLifecycleAnnotations(),
                 new ValidateOnTriggerAnnotations(),
                 new ValidateOnParentUpdateHandlerAnnotations(),
-                new ValidateExportFunctionAnnotations()));
+                new ValidateExportFunctionAnnotations(),
+                new ValidateServiceListenerAnnotations()
+        ));
         if (!task.call()) {
             diagnostics.getDiagnostics().forEach(System.out::println);
             throw new RuntimeException("unable to compile source file to class:'" + className + "'");
