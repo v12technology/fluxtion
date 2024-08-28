@@ -16,10 +16,7 @@ import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manages service registrations and de-registrations pushing services into nodes that have methods annotated with:
@@ -40,9 +37,9 @@ public class ServiceRegistryNode
     @FluxtionIgnore
     private final Map<RegistrationKey, List<Callback>> serviceDeregisterCallbackMap = new HashMap<>();
     @FluxtionIgnore
-    private final List<Callback> serviceWithNameCallbacks = new ArrayList<>();
+    private final Map<Class<?>, List<Callback>> serviceWithNameCallbacks = new HashMap<>();
     @FluxtionIgnore
-    private final List<Callback> serviceDeregisterWithNameCallbacks = new ArrayList<>();
+    private final Map<Class<?>, List<Callback>> serviceDeregisterWithNameCallbacks = new HashMap<>();
     @FluxtionIgnore
     private final RegistrationKey tempKey = new RegistrationKey();
 
@@ -63,7 +60,7 @@ public class ServiceRegistryNode
             }
         }
 
-        for (Callback nameCallback : serviceWithNameCallbacks) {
+        for (Callback nameCallback : serviceWithNameCallbacks.getOrDefault(service.serviceClass(), Collections.emptyList())) {
             nameCallback.invoke(service.instance(), service.serviceName());
         }
     }
@@ -81,7 +78,7 @@ public class ServiceRegistryNode
             }
         }
 
-        for (Callback nameCallback : serviceDeregisterWithNameCallbacks) {
+        for (Callback nameCallback : serviceDeregisterWithNameCallbacks.getOrDefault(service.serviceClass(), Collections.emptyList())) {
             nameCallback.invoke(service.instance(), service.serviceName());
         }
 
@@ -115,7 +112,12 @@ public class ServiceRegistryNode
                         parameterType,
                         registerAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : registerAnnotation.value());
                 if (namedService) {
-                    serviceWithNameCallbacks.add(new Callback(method, node, true));
+                    serviceWithNameCallbacks.compute(parameterType,
+                            (k, v) -> {
+                                List<Callback> list = v == null ? new ArrayList<>() : v;
+                                list.add(new Callback(method, node, namedService));
+                                return list;
+                            });
                 } else {
                     serviceCallbackMap.compute(key,
                             (k, v) -> {
@@ -137,7 +139,13 @@ public class ServiceRegistryNode
                         deregisterAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : deregisterAnnotation.value());
 
                 if (namedService) {
-                    serviceDeregisterWithNameCallbacks.add(new Callback(method, node, true));
+//                    serviceDeregisterWithNameCallbacks.add(new Callback(method, node, true));
+                    serviceDeregisterWithNameCallbacks.compute(parameterType,
+                            (k, v) -> {
+                                List<Callback> list = v == null ? new ArrayList<>() : v;
+                                list.add(new Callback(method, node, namedService));
+                                return list;
+                            });
                 } else {
                     serviceDeregisterCallbackMap.compute(key,
                             (k, v) -> {
