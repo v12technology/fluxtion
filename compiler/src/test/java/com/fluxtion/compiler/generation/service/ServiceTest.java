@@ -127,6 +127,24 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
 
     }
 
+    @Test
+    public void multiServicesTest() {
+        sep(c -> {
+            c.addNode(new MultiServiceListenerNode(), "myListener");
+        });
+
+        MyServiceImpl svcA = new MyServiceImpl("svc_A");
+        sep.registerService(svcA, MyService.class, "svc_A");
+
+        MyService2Impl svc2 = new MyService2Impl();
+        sep.registerService(svc2, MyService2.class, "svc_2");
+
+        MultiServiceListenerNode node = getField("myListener");
+
+        Assert.assertEquals("svc_A", node.serviceName);
+        Assert.assertEquals("svc_2", node.serviceName2);
+    }
+
     public static class ServiceListenerNode {
 
         private String name;
@@ -205,6 +223,21 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    @Data
+    public static class MultiServiceListenerNode {
+        private String serviceName;
+        private String serviceName2;
+
+        @ServiceRegistered
+        public void registerMyService(MyService service, String serviceName) {
+            this.serviceName = serviceName;
+        }
+
+        @ServiceRegistered
+        public void registerMyService2(MyService2 service, String serviceName) {
+            this.serviceName2 = serviceName;
+        }
+    }
 
     public interface MyService {
         String getName();
@@ -213,5 +246,11 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
     @Data
     public static class MyServiceImpl implements MyService {
         private final String name;
+    }
+
+    public interface MyService2 {
+    }
+
+    public static class MyService2Impl implements MyService2 {
     }
 }
