@@ -40,6 +40,10 @@ public class ServiceRegistryNode
     @FluxtionIgnore
     private final Map<RegistrationKey, List<Callback>> serviceDeregisterCallbackMap = new HashMap<>();
     @FluxtionIgnore
+    private final List<Callback> serviceWithNameCallbacks = new ArrayList<>();
+    @FluxtionIgnore
+    private final List<Callback> serviceDeregisterWithNameCallbacks = new ArrayList<>();
+    @FluxtionIgnore
     private final RegistrationKey tempKey = new RegistrationKey();
 
     public ServiceRegistryNode() {
@@ -58,6 +62,10 @@ public class ServiceRegistryNode
                 callBackMethod.invoke(service.instance(), service.serviceName());
             }
         }
+
+        for (Callback nameCallback : serviceWithNameCallbacks) {
+            nameCallback.invoke(service.instance(), service.serviceName());
+        }
     }
 
     @Override
@@ -72,6 +80,11 @@ public class ServiceRegistryNode
                 callBackMethod.invoke(service.instance(), service.serviceName());
             }
         }
+
+        for (Callback nameCallback : serviceDeregisterWithNameCallbacks) {
+            nameCallback.invoke(service.instance(), service.serviceName());
+        }
+
     }
 
     @Override
@@ -101,13 +114,16 @@ public class ServiceRegistryNode
                 RegistrationKey key = new RegistrationKey(
                         parameterType,
                         registerAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : registerAnnotation.value());
-
-                serviceCallbackMap.compute(key,
-                        (k, v) -> {
-                            List<Callback> list = v == null ? new ArrayList<>() : v;
-                            list.add(new Callback(method, node, namedService));
-                            return list;
-                        });
+                if (namedService) {
+                    serviceWithNameCallbacks.add(new Callback(method, node, true));
+                } else {
+                    serviceCallbackMap.compute(key,
+                            (k, v) -> {
+                                List<Callback> list = v == null ? new ArrayList<>() : v;
+                                list.add(new Callback(method, node, namedService));
+                                return list;
+                            });
+                }
             }
 
             ServiceDeregistered deregisterAnnotation = method.getAnnotation(ServiceDeregistered.class);
@@ -120,12 +136,17 @@ public class ServiceRegistryNode
                         parameterType,
                         deregisterAnnotation.value().isEmpty() ? parameterType.getCanonicalName() : deregisterAnnotation.value());
 
-                serviceDeregisterCallbackMap.compute(key,
-                        (k, v) -> {
-                            List<Callback> list = v == null ? new ArrayList<>() : v;
-                            list.add(new Callback(method, node, namedService));
-                            return list;
-                        });
+                if (namedService) {
+                    serviceDeregisterWithNameCallbacks.add(new Callback(method, node, true));
+                } else {
+                    serviceDeregisterCallbackMap.compute(key,
+                            (k, v) -> {
+                                List<Callback> list = v == null ? new ArrayList<>() : v;
+                                list.add(new Callback(method, node, false));
+                                return list;
+                            });
+                }
+
             }
         }
     }

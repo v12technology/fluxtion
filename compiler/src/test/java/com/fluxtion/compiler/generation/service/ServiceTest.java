@@ -102,14 +102,16 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
 
         MyServiceImpl noName = new MyServiceImpl("no_name");
         sep.registerService(noName, MyService.class);
+        NameServiceListenerNode node = getField("myListener");
+        Assert.assertEquals("no_name", node.name);
+        Assert.assertEquals(MyService.class.getCanonicalName(), node.serviceName);
 
         MyServiceImpl svcA = new MyServiceImpl("svc_A");
         sep.registerService(svcA, MyService.class, "svc_A");
+        Assert.assertEquals("svc_A", node.name);
+        Assert.assertEquals("svc_A", node.serviceName);
 
-        NameServiceListenerNode node = getField("myListener");
 
-        Assert.assertEquals("no_name", node.name);
-        Assert.assertEquals(MyService.class.getCanonicalName(), node.serviceName);
         Assert.assertEquals("svc_A", node.svc_A_name);
         Assert.assertEquals("svc_A", node.svc_A_ServiceName);
 
@@ -121,6 +123,8 @@ public class ServiceTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals("", node.serviceName);
         Assert.assertEquals("", node.svc_A_name);
         Assert.assertEquals("", node.svc_A_ServiceName);
+
+
     }
 
     public static class ServiceListenerNode {
