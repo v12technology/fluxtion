@@ -967,11 +967,17 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
                     .groupBy(MidPrice::getUsdContraCcy, MidPrice::getUsdRate)
                     .defaultValue(GroupBy.emptyCollection());
 
-            JoinFlowBuilder.leftJoin(positionMap, rateMap)
+
+            val pnl = JoinFlowBuilder.leftJoin(positionMap, rateMap)
                     .mapValues(Tuples.replaceNull(0d, Double.NaN))
                     .mapValues(Tuples.mapTuple(Mappers::multiplyDoubles))
                     .reduceValues(DoubleSumFlowFunction::new)
                     .id("pnl");
+
+//            positionMap.map(GroupBy::toMap).console("positionMap:{}");
+//            rateMap.map(GroupBy::toMap).console("rateMap:{}");
+//            pnl.filter(d -> !Double.isNaN(d)).console("pnl:{}");
+
 
         });
 
