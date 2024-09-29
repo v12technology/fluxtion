@@ -2,6 +2,7 @@ package com.fluxtion.compiler.replay;
 
 import com.fluxtion.compiler.validation.BaseEventProcessorRowBasedTest;
 import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.event.ReplayRecord;
 
 import java.io.Reader;
 import java.util.concurrent.atomic.AtomicLong;
