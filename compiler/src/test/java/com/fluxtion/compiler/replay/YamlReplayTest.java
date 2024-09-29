@@ -12,26 +12,26 @@ import java.util.Arrays;
 
 public class YamlReplayTest extends MultipleSepTargetInProcessTest {
     private static final String replayEventLog = "---\n" +
-            "!!com.fluxtion.compiler.replay.ReplayRecord\n" +
-            "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 200, bookName: book1}\n" +
-            "wallClockTime: 500\n" +
-            "---\n" +
-            "!!com.fluxtion.compiler.replay.ReplayRecord\n" +
-            "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 25, bookName: book1}\n" +
-            "wallClockTime: 650\n" +
-            "---\n" +
-            "!!com.fluxtion.compiler.replay.ReplayRecord\n" +
-            "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 3500, bookName: bookAAA}\n" +
-            "wallClockTime: 700\n" +
-            "---\n" +
-            "!!com.fluxtion.compiler.replay.ReplayRecord\n" +
-            "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 200, bookName: unknown_BOOK}\n" +
-            "wallClockTime: 940\n";
+                                                 "!!com.fluxtion.runtime.event.ReplayRecord\n" +
+                                                 "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 200, bookName: book1}\n" +
+                                                 "wallClockTime: 500\n" +
+                                                 "---\n" +
+                                                 "!!com.fluxtion.runtime.event.ReplayRecord\n" +
+                                                 "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 25, bookName: book1}\n" +
+                                                 "wallClockTime: 650\n" +
+                                                 "---\n" +
+                                                 "!!com.fluxtion.runtime.event.ReplayRecord\n" +
+                                                 "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 3500, bookName: bookAAA}\n" +
+                                                 "wallClockTime: 700\n" +
+                                                 "---\n" +
+                                                 "!!com.fluxtion.runtime.event.ReplayRecord\n" +
+                                                 "event: !!com.fluxtion.compiler.replay.PnlUpdate {amount: 200, bookName: unknown_BOOK}\n" +
+                                                 "wallClockTime: 940\n";
 
     private static String expectedFullRun = "time,globalPnl\n" +
-            "500,200\n" +
-            "650,25\n" +
-            "700,3525\n";
+                                            "500,200\n" +
+                                            "650,25\n" +
+                                            "700,3525\n";
 
     public YamlReplayTest(SepTestConfig compiledSep) {
         super(compiledSep);
@@ -59,8 +59,8 @@ public class YamlReplayTest extends MultipleSepTargetInProcessTest {
                 .runReplay();
 
         Assert.assertEquals("time,globalPnl\n" +
-                "650,25\n" +
-                "700,3525\n", stringWriter.toString());
+                            "650,25\n" +
+                            "700,3525\n", stringWriter.toString());
     }
 
     @Test
@@ -74,8 +74,8 @@ public class YamlReplayTest extends MultipleSepTargetInProcessTest {
                 .runReplay();
 
         Assert.assertEquals("time,globalPnl\n" +
-                "500,200\n" +
-                "650,25\n", stringWriter.toString());
+                            "500,200\n" +
+                            "650,25\n", stringWriter.toString());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class YamlReplayTest extends MultipleSepTargetInProcessTest {
                 .runReplay();
 
         Assert.assertEquals("time,globalPnl\n" +
-                "650,25\n", stringWriter.toString());
+                            "650,25\n", stringWriter.toString());
     }
 
 
