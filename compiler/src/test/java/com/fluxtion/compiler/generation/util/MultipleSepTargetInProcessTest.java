@@ -224,6 +224,13 @@ public abstract class MultipleSepTargetInProcessTest {
         return sep;
     }
 
+    protected StaticEventProcessor startComplete() {
+        if (sep instanceof Lifecycle) {
+            ((Lifecycle) sep).startComplete();
+        }
+        return sep;
+    }
+
     protected StaticEventProcessor stop() {
         if (sep instanceof Lifecycle) {
             ((Lifecycle) sep).stop();

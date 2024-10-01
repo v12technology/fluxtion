@@ -2,10 +2,7 @@ package com.fluxtion.compiler.generation.lifecycle;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.annotations.Start;
-import com.fluxtion.runtime.annotations.Stop;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -30,10 +27,32 @@ public class LifecycleTest extends MultipleSepTargetInProcessTest {
         init();
         onEvent(cbList);
         Assert.assertTrue(cbList.isEmpty());
+
         start();
         MatcherAssert.assertThat(cbList, Matchers.contains("top-start", "bottom-start"));
+
         stop();
         MatcherAssert.assertThat(cbList, Matchers.contains("top-start", "bottom-start", "bottom-stop", "top-stop"));
+    }
+
+    @Test
+    public void startCompleteStopTest() {
+//        writeSourceFile = true;
+        ArrayList<String> cbList = new ArrayList<>();
+        sep(c -> {
+            c.addNode(new Bottom(new Top()));
+        });
+        init();
+        onEvent(cbList);
+        Assert.assertTrue(cbList.isEmpty());
+        start();
+        MatcherAssert.assertThat(cbList, Matchers.contains("top-start", "bottom-start"));
+
+        startComplete();
+        MatcherAssert.assertThat(cbList, Matchers.contains("top-start", "bottom-start", "top-startComplete", "bottom-startComplete"));
+
+        stop();
+        MatcherAssert.assertThat(cbList, Matchers.contains("top-start", "bottom-start", "top-startComplete", "bottom-startComplete", "bottom-stop", "top-stop"));
     }
 
 
@@ -54,6 +73,11 @@ public class LifecycleTest extends MultipleSepTargetInProcessTest {
         @Start
         public void start() {
             invokeList.add("top-start");
+        }
+
+        @StartComplete
+        public void startComplete() {
+            invokeList.add("top-startComplete");
         }
 
         @Stop
@@ -86,6 +110,11 @@ public class LifecycleTest extends MultipleSepTargetInProcessTest {
         @Start
         public void start() {
             invokeList.add("bottom-start");
+        }
+
+        @StartComplete
+        public void startComplete() {
+            invokeList.add("bottom-startComplete");
         }
 
         @Stop

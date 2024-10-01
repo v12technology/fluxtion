@@ -54,6 +54,13 @@ public class Service<T> implements Lifecycle {
     }
 
     @Override
+    public void startComplete() {
+        if (instance instanceof Lifecycle) {
+            ((Lifecycle) instance).startComplete();
+        }
+    }
+
+    @Override
     public void stop() {
         if (instance instanceof Lifecycle) {
             ((Lifecycle) instance).stop();
