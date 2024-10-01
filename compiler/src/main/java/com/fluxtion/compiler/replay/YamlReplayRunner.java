@@ -55,6 +55,11 @@ public class YamlReplayRunner {
         return this;
     }
 
+    public YamlReplayRunner startComplete() {
+        eventProcessor.startComplete();
+        return this;
+    }
+
     public YamlReplayRunner afterTime(long startTime) {
         return betweenTimes(startTime, Long.MAX_VALUE);
     }

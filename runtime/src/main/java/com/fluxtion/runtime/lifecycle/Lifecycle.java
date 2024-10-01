@@ -16,12 +16,14 @@
  */
 package com.fluxtion.runtime.lifecycle;
 
+import com.fluxtion.runtime.EventProcessor;
+
 /**
  * Lifecycle events that are issued by a Static event processor. Any node in the
  * execution graph can implement this interface and will receive the relevant
  * callbacks.
  * <p>
- * These notifications are generally used to intitialise and teardown a node in
+ * These notifications are generally used to initialise and teardown a node in
  * the graph before any events have been received. The static event processor
  * guarantees:
  * <ul>
@@ -52,10 +54,21 @@ public interface Lifecycle {
     void tearDown();
 
     /**
-     * invoke after init. Start methods are invoked in topological order. Start/stop can attach application nodes to
-     * a life cycle method when the {@link com.fluxtion.runtime.EventProcessor} can process methods
+     * Callback received after init, start methods are invoked in topological order. Application nodes can attach
+     * a life cycle method to {@link EventProcessor#start()}. There are no guarantees that start will be called, it
+     * is the decision of the application to call this method if at all. It is an application error to call start before
+     * init.
      */
     default void start() {
+    }
+
+    /**
+     * Callback received after all start methods have completed, startComplete methods are invoked in topological order.
+     * Application nodes can attach a life cycle method to {@link EventProcessor#startComplete()}. There are no guarantees that
+     * start will be called, it is the decision of the application to call this method if at all. It is an application
+     * error to call startComplete before init.
+     */
+    default void startComplete() {
     }
 
     /**
@@ -65,5 +78,5 @@ public interface Lifecycle {
     default void stop() {
     }
 
-    enum LifecycleEvent {Init, TearDown, Start, Stop, BatchPause, BatchEnd}
+    enum LifecycleEvent {Init, TearDown, Start, StartComplete, Stop, BatchPause, BatchEnd}
 }
