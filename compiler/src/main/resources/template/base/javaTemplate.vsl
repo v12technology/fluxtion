@@ -105,6 +105,19 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
     }
 
     @Override
+    public void startComplete() {
+        if(!initCalled){
+         throw new RuntimeException("init() must be called before startComplete()");
+        }
+        processing = true;
+        auditEvent(Lifecycle.LifecycleEvent.StartComplete);
+        ${MODEL.startCompleteMethods}
+        afterEvent();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
     public void stop() {
         if(!initCalled){
             throw new RuntimeException("init() must be called before stop()");
