@@ -371,6 +371,19 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
     }
 
     @Override
+    public void startComplete() {
+        if (!initCalled) {
+            throw new RuntimeException("init() must be called before startComplete()");
+        }
+        processing = true;
+        auditNewEvent(LifecycleEvent.StartComplete);
+        simpleEventProcessorModel.getStartCompleteMethods().forEach(this::invokeRunnable);
+        postEventProcessing();
+        callbackDispatcher.dispatchQueuedCallbacks();
+        processing = false;
+    }
+
+    @Override
     public void stop() {
         if (!initCalled) {
             throw new RuntimeException("init() must be called before start()");
@@ -504,8 +517,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         simpleEventProcessorModel.getDispatchMap().forEach((eventClass, filterDescriptionListMap) ->
                 filterDescriptionListMap.forEach((filterDescription, cbMethodHandles) -> {
                             if (!filterDescription.equals(FilterDescription.NO_FILTER)
-                                    && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)
-                                    && !filterDescription.equals(FilterDescription.INVERSE_FILTER)
+                                && !filterDescription.equals(FilterDescription.DEFAULT_FILTER)
+                                && !filterDescription.equals(FilterDescription.INVERSE_FILTER)
                             ) {
                                 filteredEventHandlerToBitsetMap.put(
                                         filterDescription,
@@ -588,15 +601,15 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
                 .collect(Collectors.joining(
                         ";\n\t",
                         "public " + className + "(InMemoryEventProcessor processor) throws java.lang.NoSuchFieldException {\n" +
-                                "\tthis.processor = processor;\n\t",
+                        "\tthis.processor = processor;\n\t",
                         ";\n}\n"));
 
         String delegateOnEvent = "public void onEvent(Object o){\n\tprocessor.onEvent(o);\n}\n\n" +
-                "public void init(){\n\tprocessor.init();\n}\n\n" +
-                "public void start(){\n\tprocessor.start();\n}\n\n" +
-                "public void stop(){\n\tprocessor.stop();\n}\n\n" +
-                "public InMemoryEventProcessor processor(){\n\treturn processor;\n}\n\n" +
-                "public void tearDown(){\n\tprocessor.tearDown();\n}";
+                                 "public void init(){\n\tprocessor.init();\n}\n\n" +
+                                 "public void start(){\n\tprocessor.start();\n}\n\n" +
+                                 "public void stop(){\n\tprocessor.stop();\n}\n\n" +
+                                 "public InMemoryEventProcessor processor(){\n\treturn processor;\n}\n\n" +
+                                 "public void tearDown(){\n\tprocessor.tearDown();\n}";
 
         List<Method> keys = new ArrayList<>(exportedFunctionMap.keySet());
         keys.sort(Comparator.comparing(Method::toString));
@@ -610,14 +623,14 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         String exportedMethods = joiner.toString();
 
         StringBuilder sb = new StringBuilder("package " + packageName + ";\n\n" +
-                "import " + this.getClass().getCanonicalName() + ";\n" +
-                "import " + ExportFunctionAuditEvent.class.getCanonicalName() + ";\n" +
-                "public class " + className + additionalInterfaces + " {\n" +
-                declarations + "\n" +
-                constructor + "\n" +
-                delegateOnEvent + "\n" +
-                exportedMethods + "\n" +
-                "}");
+                                             "import " + this.getClass().getCanonicalName() + ";\n" +
+                                             "import " + ExportFunctionAuditEvent.class.getCanonicalName() + ";\n" +
+                                             "public class " + className + additionalInterfaces + " {\n" +
+                                             declarations + "\n" +
+                                             constructor + "\n" +
+                                             delegateOnEvent + "\n" +
+                                             exportedMethods + "\n" +
+                                             "}");
 //        System.out.println(sb.toString());
         Class clazz = StringCompilation.compile(fqn, sb.toString());
         exportingWrapper = clazz.getConstructor(InMemoryEventProcessor.class).newInstance(this);
@@ -848,8 +861,8 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
         @Override
         public String toString() {
             return "Node{" +
-                    "callbackHandle=" + callbackHandle +
-                    '}';
+                   "callbackHandle=" + callbackHandle +
+                   '}';
         }
     }
 

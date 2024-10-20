@@ -3,6 +3,7 @@ package com.fluxtion.compiler.replay;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.ReplayRecord;
 import com.fluxtion.runtime.time.Clock;
 import lombok.SneakyThrows;
 import org.yaml.snakeyaml.Yaml;

@@ -94,6 +94,10 @@ public class SimpleEventProcessorModel {
     /**
      * life-cycle callback methods for initialise, sorted in call order.
      */
+    private final ArrayList<CbMethodHandle> startCompleteMethods;
+    /**
+     * life-cycle callback methods for initialise, sorted in call order.
+     */
     private final ArrayList<CbMethodHandle> stopMethods;
 
     /**
@@ -243,6 +247,7 @@ public class SimpleEventProcessorModel {
         beanPropertyMap = new HashMap<>();
         initialiseMethods = new ArrayList<>();
         startMethods = new ArrayList<>();
+        startCompleteMethods = new ArrayList<>();
         stopMethods = new ArrayList<>();
         tearDownMethods = new ArrayList<>();
         batchEndMethods = new ArrayList<>();
@@ -453,17 +458,17 @@ public class SimpleEventProcessorModel {
                     Set<Constructor> constructors = ReflectionUtils.getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                     if (constructors.isEmpty()) {
                         throw new RuntimeException("cannot find matching constructor for:" + f
-                                + " failed to match for these fields:" + privateFields.stream()
-                                .map(MappedField::getMappedName)
-                                .collect(Collectors.joining(", ", "[", "]")));
+                                                   + " failed to match for these fields:" + privateFields.stream()
+                                                           .map(MappedField::getMappedName)
+                                                           .collect(Collectors.joining(", ", "[", "]")));
                     }
                     List<String> fieldsThatClash = validateNoTypeClash(privateFields, constructors.iterator().next());
                     if (!fieldsThatClash.isEmpty()) {
                         throw new RuntimeException(
                                 "cannot find matching constructor for:" + f
-                                        + " use @" + AssignToField.class.getSimpleName()
-                                        + " to resolve clashing types these fields:"
-                                        + fieldsThatClash.stream().collect(Collectors.joining(", ", "[", "]")));
+                                + " use @" + AssignToField.class.getSimpleName()
+                                + " to resolve clashing types these fields:"
+                                + fieldsThatClash.stream().collect(Collectors.joining(", ", "[", "]")));
                     }
                 }
                 List<Field.MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
@@ -508,6 +513,13 @@ public class SimpleEventProcessorModel {
                     if (LOGGER.isDebugEnabled()) {
                         final String validCb = name + "." + method.getName() + "()";
                         LOGGER.debug("start call back : " + validCb);
+                    }
+                }
+                if (annotationInHierarchy(method, StartComplete.class)) {
+                    startCompleteMethods.add(new CbMethodHandle(method, object, name));
+                    if (LOGGER.isDebugEnabled()) {
+                        final String validCb = name + "." + method.getName() + "()";
+                        LOGGER.debug("startComplete call back : " + validCb);
                     }
                 }
                 if (annotationInHierarchy(method, TearDown.class)) {
@@ -570,7 +582,7 @@ public class SimpleEventProcessorModel {
                     String val = method.getAnnotation(OnParentUpdate.class).value();
                     if (method.getParameterTypes().length != 1) {
                         final String errorMsg = "Cannot create OnParentUpdate callback method must have a single parameter "
-                                + cbMethodHandle;
+                                                + cbMethodHandle;
                         LOGGER.error(errorMsg);
                         throw new RuntimeException(errorMsg);
                     }
@@ -626,7 +638,7 @@ public class SimpleEventProcessorModel {
                             }
                         } else {
                             LOGGER.debug("Cannot create OnParentUpdate callback" + cbMethodHandle
-                                    + " no parent field matches:'" + val + "'");
+                                         + " no parent field matches:'" + val + "'");
                         }
                     } else {
                         //store for matching later
@@ -692,7 +704,7 @@ public class SimpleEventProcessorModel {
                             }
 
                             boolean noPropagateMethod = cbMethod.getAnnotation(NoPropagateFunction.class) != null
-                                    || !propagateClass;
+                                                        || !propagateClass;
                             LongAdder argNumber = new LongAdder();
                             boolean booleanReturn = method.getReturnType() == boolean.class;
                             StringBuilder signature = booleanReturn
@@ -966,7 +978,7 @@ public class SimpleEventProcessorModel {
 
     private boolean noDirtyFlagNeeded(Field node) {
         boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty()
-                && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
+                              && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
         Method[] methodList = node.instance.getClass().getDeclaredMethods();
         for (Method method : methodList) {
             if (annotationInHierarchy(method, AfterTrigger.class)) {
@@ -1167,6 +1179,10 @@ public class SimpleEventProcessorModel {
 
     public List<CbMethodHandle> getStartMethods() {
         return Collections.unmodifiableList(startMethods);
+    }
+
+    public List<CbMethodHandle> getStartCompleteMethods() {
+        return Collections.unmodifiableList(startCompleteMethods);
     }
 
     public List<CbMethodHandle> getStopMethods() {
@@ -1448,7 +1464,7 @@ public class SimpleEventProcessorModel {
                     .filter(e -> {
                         EventHandlerFilterOverride override = (EventHandlerFilterOverride) e.getKey();
                         return override.getEventHandlerInstance() == instance
-                                && override.getEventType() == onEventMethod.getParameterTypes()[0];
+                               && override.getEventType() == onEventMethod.getParameterTypes()[0];
                     })
                     .mapToInt(Entry::getValue)
                     .findFirst();

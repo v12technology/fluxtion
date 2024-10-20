@@ -1,11 +1,11 @@
-package com.fluxtion.compiler.replay;
+package com.fluxtion.runtime.event;
 
 /**
  * Holds an event with a wall clock time, ready to be replayed into an {@link com.fluxtion.runtime.EventProcessor}.
  * <p>
- * See {@link YamlReplayRunner} for an example of replaying ReplayRecords into an {@link com.fluxtion.runtime.EventProcessor}
+ * See YamlReplayRunner in Fluxtion compiler for an example of replaying ReplayRecords into an {@link com.fluxtion.runtime.EventProcessor}
  * <p>
- * See {@link YamlReplayRecordWriter} for an example of recording ReplayRecords from an {@link com.fluxtion.runtime.EventProcessor}
+ * See YamlReplayRecordWriter in Fluxtion compiler for an example of recording ReplayRecords from an {@link com.fluxtion.runtime.EventProcessor}
  */
 public class ReplayRecord {
     private long wallClockTime;
