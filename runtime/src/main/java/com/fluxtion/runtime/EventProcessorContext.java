@@ -72,4 +72,79 @@ public interface EventProcessorContext {
     <T> T getInjectedInstanceAllowNull(Class<T> instanceClass, String name);
 
     <K, V> V getContextProperty(K key);
+
+
+    /**
+     * The public {@link StaticEventProcessor} instance for this context
+     *
+     * @return Encapsulating StaticEventProcessor
+     */
+    default StaticEventProcessor getStaticEventProcessor() {
+        return getExportedService(StaticEventProcessor.class);
+    }
+
+    /**
+     * Helper method for {@link EventDispatcher#processReentrantEvent(Object)}
+     *
+     * @param event to dispatch to this {@link StaticEventProcessor}
+     */
+    default void processReentrantEvent(Object event) {
+        getEventDispatcher().processReentrantEvent(event);
+    }
+
+    /**
+     * Helper method for {@link EventDispatcher#processAsNewEventCycle(Object)} (Object)}
+     *
+     * @param event to dispatch to this {@link StaticEventProcessor}
+     */
+    default void processAsNewEventCycle(Object event) {
+        getEventDispatcher().processAsNewEventCycle(event);
+    }
+
+    /**
+     * Helper method for {@link EventDispatcher#processReentrantEvents(Iterable)}
+     *
+     * @param iterable to dispatch to this {@link StaticEventProcessor}
+     */
+    default void processAsNewEventCycle(Iterable<Object> iterable) {
+        getEventDispatcher().processAsNewEventCycle(iterable);
+    }
+
+    /**
+     * Helper method for {@link DirtyStateMonitor#isDirty(Object)}}
+     *
+     * @param node to check for dirty state
+     */
+    default void isDirty(Object node) {
+        getDirtyStateMonitor().isDirty(node);
+    }
+
+    /**
+     * Helper method for {@link DirtyStateMonitor#markDirty(Object)} (Object)}}
+     *
+     * @param node to mark as dirty during this event cycle
+     */
+    default void markDirty(Object node) {
+        getDirtyStateMonitor().markDirty(node);
+    }
+
+    /**
+     * Helper method for {@link NodeNameLookup#lookupInstanceName(Object)}
+     *
+     * @param node the node whose name to lookup
+     * @return the name of the node
+     */
+    default String lookupInstanceName(Object node) {
+        return getNodeNameLookup().lookupInstanceName(node);
+    }
+
+    /**
+     * Helper method for {@link NodeNameLookup#getInstanceById(String)}}
+     *
+     * @param instanceId used to look up a node instance
+     * @return the node whose name matches the supplied predicate
+     */
+    default <V> V getInstanceById(String instanceId) throws NoSuchFieldException {
+        return getNodeNameLookup().getInstanceById(instanceId);
+    }
 }
