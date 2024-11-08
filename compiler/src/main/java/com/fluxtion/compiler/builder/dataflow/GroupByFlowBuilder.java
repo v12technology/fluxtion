@@ -11,6 +11,7 @@ import com.fluxtion.runtime.dataflow.groupby.*;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue;
 import com.fluxtion.runtime.dataflow.helpers.DefaultValue.DefaultValueFromSupplier;
 import com.fluxtion.runtime.dataflow.helpers.Peekers;
+import com.fluxtion.runtime.dataflow.helpers.Tuples;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -160,16 +161,40 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
         return mapBiFunction(new InnerJoin()::join, rightGroupBy);
     }
 
+    public <K2 extends K, V2, R> GroupByFlowBuilder<K, R> innerJoin(
+            GroupByFlowBuilder<K2, V2> rightGroupBy,
+            SerializableBiFunction<V, V2, R> mergeFunction) {
+        return mapBiFunction(new InnerJoin()::join, rightGroupBy).mapValues(Tuples.mapTuple(mergeFunction));
+    }
+
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> outerJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
         return mapBiFunction(new OuterJoin()::join, rightGroupBy);
+    }
+
+    public <K2 extends K, V2, R> GroupByFlowBuilder<K, R> outerJoin(
+            GroupByFlowBuilder<K2, V2> rightGroupBy,
+            SerializableBiFunction<V, V2, R> mergeFunction) {
+        return mapBiFunction(new OuterJoin()::join, rightGroupBy).mapValues(Tuples.mapTuple(mergeFunction));
     }
 
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> leftJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
         return mapBiFunction(new LeftJoin()::join, rightGroupBy);
     }
 
+    public <K2 extends K, V2, R> GroupByFlowBuilder<K, R> leftJoin(
+            GroupByFlowBuilder<K2, V2> rightGroupBy,
+            SerializableBiFunction<V, V2, R> mergeFunction) {
+        return mapBiFunction(new LeftJoin()::join, rightGroupBy).mapValues(Tuples.mapTuple(mergeFunction));
+    }
+
     public <K2 extends K, V2> GroupByFlowBuilder<K, Tuple<V, V2>> rightJoin(GroupByFlowBuilder<K2, V2> rightGroupBy) {
         return mapBiFunction(new RightJoin()::join, rightGroupBy);
+    }
+
+    public <K2 extends K, V2, R> GroupByFlowBuilder<K, R> rightJoin(
+            GroupByFlowBuilder<K2, V2> rightGroupBy,
+            SerializableBiFunction<V, V2, R> mergeFunction) {
+        return mapBiFunction(new RightJoin()::join, rightGroupBy).mapValues(Tuples.mapTuple(mergeFunction));
     }
 
     public <K2 extends K, V2, KOUT, VOUT>
