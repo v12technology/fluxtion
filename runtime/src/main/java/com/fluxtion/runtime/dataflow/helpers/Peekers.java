@@ -70,11 +70,11 @@ public interface Peekers {
             String output = transformFunction == null ? input.toString() : transformFunction.apply(input).toString();
             System.out.println(
                     message.replace("{}", output).replace("%e", "" + clock.getEventTime())
-                            .replace("{}", output).replace("%t", "" + clock.getWallClockTime())
-                            .replace("{}", output).replace("%p", "" + clock.getProcessTime())
-                            .replace("{}", output).replace("%de", "" + (clock.getEventTime() - initialTime))
-                            .replace("{}", output).replace("%dt", "" + (clock.getWallClockTime() - initialTime))
-                            .replace("{}", output).replace("%dp", "" + (clock.getProcessTime() - initialTime))
+                            .replace("%t", "" + clock.getWallClockTime())
+                            .replace("%p", "" + clock.getProcessTime())
+                            .replace("%de", "" + (clock.getEventTime() - initialTime))
+                            .replace("%dt", "" + (clock.getWallClockTime() - initialTime))
+                            .replace("%dp", "" + (clock.getProcessTime() - initialTime))
             );
         }
     }
