@@ -40,7 +40,6 @@ incoming events that must be processed:
 the complete solution looks like this:
 
 ```java
-
 public static void main(String[] args) {
     var pnlCalculator = Fluxtion.interpret(c -> {
               var tradeStream = DataFlow.subscribe(Trade.class);
@@ -58,7 +57,6 @@ public static void main(String[] args) {
   
     pnlCalculator.init();
 }
-    
 ```
 
 ## Getting data into a DataFlow
@@ -67,7 +65,6 @@ To get external data into a DataFlow we use the `DataFlow.subscribe(Class<T> eve
 world using `EventProcess.onEvent(<T> eventInstaance)`, demonstrated in the snippet below:
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -151,7 +148,6 @@ public class TradeToPosition implements AggregateFlowFunction<Trade, InstrumentP
 Using the aggregate function with a groupBy is defined as follows
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -164,7 +160,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 produces the following output to console
 
@@ -178,7 +173,6 @@ The running total of contra positions are calculated with
 
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -191,7 +185,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 
 ## Merging dealt and contra positions
@@ -200,7 +193,6 @@ position for an asset. We use the outerJoin as we want to include all rows as an
 sides of the join
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c -> {
                 var tradeStream = DataFlow.subscribe(Trade.class);
@@ -217,7 +209,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 
 produces the following output to console
@@ -245,7 +236,6 @@ The DerivedRateNode has event handlers for MidRate and MtmInstrument and ensures
 the mtm calculation whenever either of these changes.
 
 ```java
-
 public static void main(String[] args) {
     var pnlCalculator = Fluxtion.interpret(c -> {
               var tradeStream = DataFlow.subscribe(Trade.class);
@@ -280,7 +270,6 @@ public static void main(String[] args) {
     System.out.println("---------- change mtm EUR -----------");
     pnlCalculator.onEvent(new MtmInstrument(EUR));
 }
-    
 ```
 
 running the example produces the following output
