@@ -250,6 +250,20 @@ public interface Predicates {
         }
     }
 
+    class AnyUpdatedPredicate {
+
+        private final List<Object> monitored = new ArrayList<>();
+
+        public AnyUpdatedPredicate(@AssignToField("monitored") List<?> monitored) {
+            this.monitored.addAll(monitored);
+        }
+
+        @OnTrigger
+        public boolean propagateEvent() {
+            return true;
+        }
+    }
+
     @Value
     class PredicateWrapper {
         SerializableSupplier<Boolean> predicate;
