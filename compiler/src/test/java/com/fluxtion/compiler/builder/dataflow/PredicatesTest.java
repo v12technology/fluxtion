@@ -167,6 +167,43 @@ public class PredicatesTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void anyUpdatedWithBuilder() {
+        sep(c -> {
+            DataFlow.subscribe(String.class)
+                    .publishTriggerOverride(
+                            PredicateBuilder.anyTriggered(
+                                    DataFlow.subscribeToSignal("signalA"),
+                                    DataFlow.subscribeToSignal("signalB")))
+                    .mapToInt(Mappers.count()).id("count_strings");
+        });
+        onEvent("test");
+        onEvent("aa");
+        publishSignal("signalA");
+        publishSignal("signalB");
+        publishSignal("signalC");
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(2));
+    }
+
+    @Test
+    public void anyUpdatedWithHelper() {
+        sep(c -> {
+            DataFlow.subscribe(String.class)
+                    .publishTriggerOverride(
+                            DataFlow.subscribeToSignal("signalA"),
+                            DataFlow.subscribeToSignal("signalB"))
+                    .mapToInt(Mappers.count()).id("count_strings");
+        });
+        onEvent("test");
+        onEvent("aa");
+        publishSignal("signalA");
+        publishSignal("signalB");
+        publishSignal("signalC");
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(2));
+    }
+
+    @Test
     public void allUpdatedWithReset() {
         sep(c -> {
             //inputs
