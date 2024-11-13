@@ -15,10 +15,8 @@ public interface CollectionHelper {
     @SafeVarargs
     @SuppressWarnings("varargs")
     static <K, V> Map<K, V> ofEntries(Map.Entry<? extends K, ? extends V>... entries) {
-        if (entries.length == 0) { // implicit null check of entries array
-            @SuppressWarnings("unchecked")
-            var map = (Map<K, V>) Collections.emptyMap();
-            return map;
+        if (entries.length == 0) {
+            return Collections.emptyMap();
         } else {
             HashMap<K, V> map = new HashMap<>(entries.length);
             for (Map.Entry<? extends K, ? extends V> entry : entries) {
