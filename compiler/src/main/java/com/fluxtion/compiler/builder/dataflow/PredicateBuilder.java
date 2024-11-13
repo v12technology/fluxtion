@@ -1,6 +1,7 @@
 package com.fluxtion.compiler.builder.dataflow;
 
 
+import com.fluxtion.runtime.dataflow.helpers.Predicates;
 import com.fluxtion.runtime.dataflow.helpers.Predicates.AllUpdatedPredicate;
 
 public class PredicateBuilder {
@@ -25,5 +26,15 @@ public class PredicateBuilder {
      */
     static Object allChangedWithReset(Object resetKey, Object... obj) {
         return new AllUpdatedPredicate(StreamHelper.getSourcesAsList(obj), StreamHelper.getSource(resetKey));
+    }
+
+    /**
+     * Fires a notification if any objects have fired a trigger in this event cycle
+     *
+     * @param obj the nodes to monitor
+     * @return A node that triggers when all inputs have triggered at least once
+     */
+    static Object anyTriggered(Object... obj) {
+        return new Predicates.AnyUpdatedPredicate(StreamHelper.getSourcesAsList(obj));
     }
 }
