@@ -41,9 +41,4 @@ public abstract class AbstractEventHandlerNode<T> implements EventHandlerNode<T>
     public void setFilterId(int filterId) {
         this.filterId = filterId;
     }
-
-    @Override
-    public abstract boolean onEvent(T e);
-
-
 }

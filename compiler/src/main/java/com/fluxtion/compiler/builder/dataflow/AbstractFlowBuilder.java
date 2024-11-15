@@ -43,8 +43,18 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
         return identity();
     }
 
+    public B updateTrigger(Object... publishTrigger) {
+        eventStream.setUpdateTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
+        return identity();
+    }
+
     public B publishTrigger(Object publishTrigger) {
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        return identity();
+    }
+
+    public B publishTrigger(Object... publishTrigger) {
+        eventStream.setPublishTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
         return identity();
     }
 
@@ -53,8 +63,18 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
         return identity();
     }
 
+    public B publishTriggerOverride(Object... publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(PredicateBuilder.anyTriggered(publishTrigger));
+        return identity();
+    }
+
     public B resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        return identity();
+    }
+
+    public B resetTrigger(Object... publishTrigger) {
+        eventStream.setResetTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
         return identity();
     }
 

@@ -8,6 +8,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
+import com.fluxtion.runtime.dataflow.aggregate.function.AbstractAggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.DoubleSumFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.IntSumFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
@@ -767,6 +768,19 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    public static class Data3ToSum extends AbstractAggregateFlowFunction<Data3, Integer> {
+
+        @Override
+        protected Integer calculateAggregate(Data3 input, Integer previous) {
+            return (previous == null ? 0 : previous) + input.getX();
+        }
+
+        @Override
+        protected Integer resetAction(Integer previous) {
+            return 0;
+        }
+    }
+
     @Test
     public void groupingKey() {
         Map<GroupByKey<Data3>, Data3> expected = new HashMap<>();
@@ -847,6 +861,32 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         onEvent(dataB2);
         expected.put(keyFactory.apply(dataB2), 100);
         MatcherAssert.assertThat(getStreamed("results"), is(expected));
+    }
+
+    @Test
+    public void abstractAggregateFlowFunctionTest() {
+        Map<String, Integer> resultMap = new HashMap<>();
+        sep(c -> {
+            DataFlow.groupBy(Data3::getName, Data3ToSum::new)
+                    .resetTrigger(DataFlow.subscribeToSignal("reset"))
+                    .map(GroupBy::toMap)
+                    .id("results");
+        });
+
+        onEvent(new Data3("A", 10, 1));
+        resultMap.put("A", 1);
+        MatcherAssert.assertThat(getStreamed("results"), is(resultMap));
+
+        onEvent(new Data3("A", 10, 100));
+        onEvent(new Data3("A", 10, 100));
+        onEvent(new Data3("B", 10, 3));
+        resultMap.put("A", 201);
+        resultMap.put("B", 3);
+        MatcherAssert.assertThat(getStreamed("results"), is(resultMap));
+
+        publishSignal("reset");
+        resultMap.clear();
+        MatcherAssert.assertThat(getStreamed("results"), is(resultMap));
     }
 
     @Test

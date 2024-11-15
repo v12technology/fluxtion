@@ -42,8 +42,18 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
         return identity();
     }
 
+    public GroupByFlowBuilder<K, V> updateTrigger(Object... publishTrigger) {
+        eventStream.setUpdateTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
+        return identity();
+    }
+
     public GroupByFlowBuilder<K, V> publishTrigger(Object publishTrigger) {
         eventStream.setPublishTriggerNode(StreamHelper.getSource(publishTrigger));
+        return identity();
+    }
+
+    public GroupByFlowBuilder<K, V> publishTrigger(Object... publishTrigger) {
+        eventStream.setPublishTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
         return identity();
     }
 
@@ -52,8 +62,18 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
         return identity();
     }
 
+    public GroupByFlowBuilder<K, V> publishTriggerOverride(Object... publishTrigger) {
+        eventStream.setPublishTriggerOverrideNode(PredicateBuilder.anyTriggered(publishTrigger));
+        return identity();
+    }
+
     public GroupByFlowBuilder<K, V> resetTrigger(Object resetTrigger) {
         eventStream.setResetTriggerNode(StreamHelper.getSource(resetTrigger));
+        return identity();
+    }
+
+    public GroupByFlowBuilder<K, V> resetTrigger(Object... publishTrigger) {
+        eventStream.setResetTriggerNode(PredicateBuilder.anyTriggered(publishTrigger));
         return identity();
     }
 

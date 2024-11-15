@@ -58,7 +58,7 @@ public class MetaSerializerTest extends MultipleSepTargetInProcessTest {
 
         public CbSample(@AssignToField("name") String name) {
             super(name);
-            cbClass = InstanceCallbackEvent.cbClassList.remove(0);
+            cbClass = InstanceCallbackEvent.nextCallBackEvent().getClass();
         }
 
 
