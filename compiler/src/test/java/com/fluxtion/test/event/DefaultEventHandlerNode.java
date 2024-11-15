@@ -17,8 +17,8 @@
  */
 package com.fluxtion.test.event;
 
-import com.fluxtion.runtime.node.EventHandlerNode;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.EventHandlerNode;
 
 /**
  * @param <T>
@@ -50,7 +50,7 @@ public final class DefaultEventHandlerNode<T> implements EventHandlerNode<T> {
     }
 
     @Override
-    public boolean onEvent(T e) {
+    public <E extends T> boolean onEvent(E e) {
         this.event = e;
         return true;
     }

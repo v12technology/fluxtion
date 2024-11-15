@@ -68,7 +68,7 @@ public interface EventHandlerNode<T> {
      * @param e the {@link com.fluxtion.runtime.event.Event Event} to process.
      * @return event propagtion flag
      */
-    boolean onEvent(T e);
+    <E extends T> boolean onEvent(E e);
 
     /**
      * called when all nodes that depend upon this EventHadler have successfully
@@ -83,7 +83,7 @@ public interface EventHandlerNode<T> {
      *
      * @return Class of {@link com.fluxtion.runtime.event.Event Event} to process
      */
-    default Class<T> eventClass() {
+    default Class<? extends T> eventClass() {
         return null;
     }
 }

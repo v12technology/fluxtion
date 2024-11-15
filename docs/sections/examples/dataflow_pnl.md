@@ -40,7 +40,6 @@ incoming events that must be processed:
 the complete solution looks like this:
 
 ```java
-
 public static void main(String[] args) {
     var pnlCalculator = Fluxtion.interpret(c -> {
               var tradeStream = DataFlow.subscribe(Trade.class);
@@ -58,7 +57,6 @@ public static void main(String[] args) {
   
     pnlCalculator.init();
 }
-    
 ```
 
 ## Getting data into a DataFlow
@@ -67,7 +65,6 @@ To get external data into a DataFlow we use the `DataFlow.subscribe(Class<T> eve
 world using `EventProcess.onEvent(<T> eventInstaance)`, demonstrated in the snippet below:
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -91,14 +88,66 @@ trade in -> Trade[symbol=Symbol[symbolName=USDCHF, dealtInstrument=Instrument[in
 
 ## Calculating aggregate position of an asset
 
-Once we have a DataFlow stream defined with a subscribe we can now perform operations on it to filter and aggregate. We
+Once we have a DataFlow stream defined with a DataFlow.subscribe we can now perform operations on it to filter and aggregate. We
 will group the trade volume by its dealt instrument and apply an aggregate function to each new item to be added to a group.
 Think of the group like a table in memory whose primary key is supplied with the method reference `Trade::dealtInstrument` 
-The aggregate function is stateful, an instance is allocate to a group, so a Supplier of function is passed into the DataFlow
-groupBy declaration
+
+The aggregate function is stateful, an instance is allocated to a group. A supplier of function is passed into the DataFlow
+groupBy declaration with the method reference `TradeToPosition::aggregateDealt`
+
+### Aggregate function
+The aggregate function that converts and reduces trades into a single aggregate InstrumentPosMtm. A user implements the 
+AggregateFlowFunction interface to build an aggregate function.
 
 ```java
+public class TradeToPosition implements AggregateFlowFunction<Trade, InstrumentPosMtm, TradeToPosition> {
+    private InstrumentPosMtm instrumentPosMtm = new InstrumentPosMtm();
+    private final boolean dealtSide;
 
+    public TradeToPosition(boolean dealtSide) {
+        this.dealtSide = dealtSide;
+    }
+
+    public static TradeToPosition aggregateDealt() {
+        return new TradeToPosition(true);
+    }
+
+    public static TradeToPosition aggregateContra() {
+        return new TradeToPosition(false);
+    }
+
+    @Override
+    public InstrumentPosMtm aggregate(Trade input) {
+        final double previousPosition = instrumentPosMtm.getPosition();
+        if (dealtSide) {
+            instrumentPosMtm.setInstrument(input.dealtInstrument());
+            final double dealtPosition = input.dealtVolume();
+            instrumentPosMtm.setPosition(Double.isNaN(previousPosition) ? dealtPosition : dealtPosition + previousPosition);
+        } else {
+            instrumentPosMtm.setInstrument(input.contraInstrument());
+            final double contraPosition = input.contraVolume();
+            instrumentPosMtm.setPosition(Double.isNaN(previousPosition) ? contraPosition : contraPosition + previousPosition);
+        }
+        return instrumentPosMtm;
+    }
+
+    @Override
+    public InstrumentPosMtm get() {
+        return instrumentPosMtm;
+    }
+
+    @Override
+    public InstrumentPosMtm reset() {
+        instrumentPosMtm = new InstrumentPosMtm();
+        return instrumentPosMtm;
+    }
+}
+```
+### Aggregating DataFlow
+
+Using the aggregate function with a groupBy is defined as follows
+
+```java
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -111,7 +160,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 produces the following output to console
 
@@ -125,7 +173,6 @@ The running total of contra positions are calculated with
 
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c ->{
       DataFlow.subscribe(Trade.class)
@@ -138,7 +185,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 
 ## Merging dealt and contra positions
@@ -147,7 +193,6 @@ position for an asset. We use the outerJoin as we want to include all rows as an
 sides of the join
 
 ```java
-
 public static void main(String[] args) {
     var processor = Fluxtion.interpret(c -> {
                 var tradeStream = DataFlow.subscribe(Trade.class);
@@ -164,7 +209,6 @@ public static void main(String[] args) {
     processor.onEvent(new Trade(symbolEURUSD, 500, -1100));
     processor.onEvent(new Trade(symbolUSDCHF, 500, -1100));
 }
-    
 ```  
 
 produces the following output to console
@@ -192,7 +236,6 @@ The DerivedRateNode has event handlers for MidRate and MtmInstrument and ensures
 the mtm calculation whenever either of these changes.
 
 ```java
-
 public static void main(String[] args) {
     var pnlCalculator = Fluxtion.interpret(c -> {
               var tradeStream = DataFlow.subscribe(Trade.class);
@@ -227,7 +270,6 @@ public static void main(String[] args) {
     System.out.println("---------- change mtm EUR -----------");
     pnlCalculator.onEvent(new MtmInstrument(EUR));
 }
-    
 ```
 
 running the example produces the following output

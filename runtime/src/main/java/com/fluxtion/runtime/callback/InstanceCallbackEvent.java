@@ -1,31 +1,44 @@
 package com.fluxtion.runtime.callback;
 
+import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.annotations.builder.SepNode;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface InstanceCallbackEvent {
+public abstract class InstanceCallbackEvent extends NamedNodeSimple {
 
-    List<Class<?>> cbClassList = new ArrayList<>();
+    private static final List<Class<? extends InstanceCallbackEvent>> cbClassList = new ArrayList<>();
+
+    private InstanceCallbackEvent(String name) {
+        super(name);
+    }
+
+    @SneakyThrows
+    public static InstanceCallbackEvent nextCallBackEvent() {
+        if (EventProcessorBuilderService.service().buildTime()) {
+            Class<? extends InstanceCallbackEvent> cbClass = InstanceCallbackEvent.cbClassList.remove(0);
+            return cbClass.getDeclaredConstructor().newInstance();
+        }
+        return null;
+    }
 
     static void main(String[] args) {
         for (int i = 0; i < 128; i++) {
             System.out.printf("@SepNode%n" +
-                    "class InstanceCallbackEvent_%1$d extends NamedNodeSimple {%n" +
-                    "    public InstanceCallbackEvent_%1$d(){%n" +
-                    "        super(\"callBackTriggerEvent_%1$d\");%n" +
-                    "    }%n" +
-                    "}%n%n", i);
+                              "public static class InstanceCallbackEvent_%1$d extends InstanceCallbackEvent {%n" +
+                              "    public InstanceCallbackEvent_%1$d(){%n" +
+                              "        super(\"callBackTriggerEvent_%1$d\");%n" +
+                              "    }%n" +
+                              "}%n%n", i);
         }
         for (int i = 0; i < 128; i++) {
             System.out.printf("cbClassList.add(InstanceCallbackEvent_%d.class);%n", i);
         }
     }
 
-    static void reset() {
-//        ExportFunctionTriggerEvent.reset();
-//        System.out.println("FunctionTriggerNode::reset");
+    public static void reset() {
         cbClassList.clear();
         cbClassList.add(InstanceCallbackEvent_0.class);
         cbClassList.add(InstanceCallbackEvent_1.class);
@@ -159,896 +172,896 @@ public interface InstanceCallbackEvent {
 
 
     @SepNode
-    class InstanceCallbackEvent_0 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_0 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_0() {
             super("callBackTriggerEvent_0");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_1 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_1 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_1() {
             super("callBackTriggerEvent_1");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_2 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_2 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_2() {
             super("callBackTriggerEvent_2");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_3 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_3 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_3() {
             super("callBackTriggerEvent_3");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_4 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_4 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_4() {
             super("callBackTriggerEvent_4");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_5 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_5 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_5() {
             super("callBackTriggerEvent_5");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_6 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_6 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_6() {
             super("callBackTriggerEvent_6");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_7 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_7 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_7() {
             super("callBackTriggerEvent_7");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_8 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_8 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_8() {
             super("callBackTriggerEvent_8");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_9 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_9 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_9() {
             super("callBackTriggerEvent_9");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_10 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_10 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_10() {
             super("callBackTriggerEvent_10");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_11 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_11 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_11() {
             super("callBackTriggerEvent_11");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_12 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_12 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_12() {
             super("callBackTriggerEvent_12");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_13 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_13 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_13() {
             super("callBackTriggerEvent_13");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_14 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_14 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_14() {
             super("callBackTriggerEvent_14");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_15 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_15 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_15() {
             super("callBackTriggerEvent_15");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_16 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_16 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_16() {
             super("callBackTriggerEvent_16");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_17 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_17 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_17() {
             super("callBackTriggerEvent_17");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_18 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_18 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_18() {
             super("callBackTriggerEvent_18");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_19 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_19 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_19() {
             super("callBackTriggerEvent_19");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_20 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_20 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_20() {
             super("callBackTriggerEvent_20");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_21 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_21 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_21() {
             super("callBackTriggerEvent_21");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_22 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_22 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_22() {
             super("callBackTriggerEvent_22");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_23 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_23 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_23() {
             super("callBackTriggerEvent_23");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_24 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_24 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_24() {
             super("callBackTriggerEvent_24");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_25 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_25 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_25() {
             super("callBackTriggerEvent_25");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_26 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_26 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_26() {
             super("callBackTriggerEvent_26");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_27 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_27 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_27() {
             super("callBackTriggerEvent_27");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_28 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_28 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_28() {
             super("callBackTriggerEvent_28");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_29 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_29 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_29() {
             super("callBackTriggerEvent_29");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_30 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_30 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_30() {
             super("callBackTriggerEvent_30");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_31 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_31 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_31() {
             super("callBackTriggerEvent_31");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_32 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_32 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_32() {
             super("callBackTriggerEvent_32");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_33 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_33 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_33() {
             super("callBackTriggerEvent_33");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_34 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_34 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_34() {
             super("callBackTriggerEvent_34");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_35 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_35 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_35() {
             super("callBackTriggerEvent_35");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_36 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_36 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_36() {
             super("callBackTriggerEvent_36");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_37 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_37 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_37() {
             super("callBackTriggerEvent_37");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_38 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_38 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_38() {
             super("callBackTriggerEvent_38");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_39 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_39 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_39() {
             super("callBackTriggerEvent_39");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_40 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_40 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_40() {
             super("callBackTriggerEvent_40");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_41 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_41 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_41() {
             super("callBackTriggerEvent_41");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_42 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_42 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_42() {
             super("callBackTriggerEvent_42");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_43 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_43 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_43() {
             super("callBackTriggerEvent_43");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_44 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_44 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_44() {
             super("callBackTriggerEvent_44");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_45 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_45 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_45() {
             super("callBackTriggerEvent_45");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_46 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_46 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_46() {
             super("callBackTriggerEvent_46");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_47 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_47 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_47() {
             super("callBackTriggerEvent_47");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_48 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_48 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_48() {
             super("callBackTriggerEvent_48");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_49 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_49 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_49() {
             super("callBackTriggerEvent_49");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_50 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_50 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_50() {
             super("callBackTriggerEvent_50");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_51 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_51 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_51() {
             super("callBackTriggerEvent_51");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_52 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_52 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_52() {
             super("callBackTriggerEvent_52");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_53 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_53 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_53() {
             super("callBackTriggerEvent_53");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_54 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_54 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_54() {
             super("callBackTriggerEvent_54");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_55 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_55 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_55() {
             super("callBackTriggerEvent_55");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_56 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_56 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_56() {
             super("callBackTriggerEvent_56");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_57 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_57 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_57() {
             super("callBackTriggerEvent_57");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_58 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_58 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_58() {
             super("callBackTriggerEvent_58");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_59 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_59 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_59() {
             super("callBackTriggerEvent_59");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_60 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_60 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_60() {
             super("callBackTriggerEvent_60");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_61 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_61 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_61() {
             super("callBackTriggerEvent_61");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_62 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_62 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_62() {
             super("callBackTriggerEvent_62");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_63 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_63 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_63() {
             super("callBackTriggerEvent_63");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_64 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_64 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_64() {
             super("callBackTriggerEvent_64");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_65 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_65 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_65() {
             super("callBackTriggerEvent_65");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_66 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_66 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_66() {
             super("callBackTriggerEvent_66");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_67 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_67 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_67() {
             super("callBackTriggerEvent_67");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_68 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_68 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_68() {
             super("callBackTriggerEvent_68");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_69 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_69 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_69() {
             super("callBackTriggerEvent_69");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_70 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_70 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_70() {
             super("callBackTriggerEvent_70");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_71 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_71 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_71() {
             super("callBackTriggerEvent_71");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_72 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_72 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_72() {
             super("callBackTriggerEvent_72");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_73 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_73 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_73() {
             super("callBackTriggerEvent_73");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_74 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_74 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_74() {
             super("callBackTriggerEvent_74");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_75 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_75 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_75() {
             super("callBackTriggerEvent_75");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_76 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_76 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_76() {
             super("callBackTriggerEvent_76");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_77 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_77 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_77() {
             super("callBackTriggerEvent_77");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_78 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_78 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_78() {
             super("callBackTriggerEvent_78");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_79 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_79 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_79() {
             super("callBackTriggerEvent_79");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_80 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_80 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_80() {
             super("callBackTriggerEvent_80");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_81 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_81 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_81() {
             super("callBackTriggerEvent_81");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_82 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_82 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_82() {
             super("callBackTriggerEvent_82");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_83 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_83 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_83() {
             super("callBackTriggerEvent_83");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_84 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_84 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_84() {
             super("callBackTriggerEvent_84");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_85 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_85 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_85() {
             super("callBackTriggerEvent_85");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_86 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_86 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_86() {
             super("callBackTriggerEvent_86");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_87 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_87 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_87() {
             super("callBackTriggerEvent_87");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_88 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_88 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_88() {
             super("callBackTriggerEvent_88");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_89 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_89 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_89() {
             super("callBackTriggerEvent_89");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_90 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_90 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_90() {
             super("callBackTriggerEvent_90");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_91 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_91 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_91() {
             super("callBackTriggerEvent_91");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_92 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_92 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_92() {
             super("callBackTriggerEvent_92");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_93 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_93 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_93() {
             super("callBackTriggerEvent_93");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_94 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_94 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_94() {
             super("callBackTriggerEvent_94");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_95 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_95 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_95() {
             super("callBackTriggerEvent_95");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_96 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_96 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_96() {
             super("callBackTriggerEvent_96");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_97 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_97 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_97() {
             super("callBackTriggerEvent_97");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_98 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_98 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_98() {
             super("callBackTriggerEvent_98");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_99 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_99 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_99() {
             super("callBackTriggerEvent_99");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_100 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_100 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_100() {
             super("callBackTriggerEvent_100");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_101 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_101 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_101() {
             super("callBackTriggerEvent_101");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_102 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_102 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_102() {
             super("callBackTriggerEvent_102");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_103 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_103 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_103() {
             super("callBackTriggerEvent_103");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_104 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_104 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_104() {
             super("callBackTriggerEvent_104");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_105 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_105 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_105() {
             super("callBackTriggerEvent_105");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_106 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_106 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_106() {
             super("callBackTriggerEvent_106");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_107 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_107 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_107() {
             super("callBackTriggerEvent_107");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_108 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_108 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_108() {
             super("callBackTriggerEvent_108");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_109 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_109 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_109() {
             super("callBackTriggerEvent_109");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_110 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_110 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_110() {
             super("callBackTriggerEvent_110");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_111 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_111 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_111() {
             super("callBackTriggerEvent_111");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_112 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_112 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_112() {
             super("callBackTriggerEvent_112");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_113 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_113 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_113() {
             super("callBackTriggerEvent_113");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_114 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_114 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_114() {
             super("callBackTriggerEvent_114");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_115 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_115 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_115() {
             super("callBackTriggerEvent_115");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_116 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_116 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_116() {
             super("callBackTriggerEvent_116");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_117 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_117 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_117() {
             super("callBackTriggerEvent_117");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_118 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_118 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_118() {
             super("callBackTriggerEvent_118");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_119 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_119 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_119() {
             super("callBackTriggerEvent_119");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_120 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_120 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_120() {
             super("callBackTriggerEvent_120");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_121 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_121 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_121() {
             super("callBackTriggerEvent_121");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_122 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_122 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_122() {
             super("callBackTriggerEvent_122");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_123 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_123 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_123() {
             super("callBackTriggerEvent_123");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_124 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_124 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_124() {
             super("callBackTriggerEvent_124");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_125 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_125 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_125() {
             super("callBackTriggerEvent_125");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_126 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_126 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_126() {
             super("callBackTriggerEvent_126");
         }
     }
 
     @SepNode
-    class InstanceCallbackEvent_127 extends NamedNodeSimple {
+    public static class InstanceCallbackEvent_127 extends InstanceCallbackEvent {
         public InstanceCallbackEvent_127() {
             super("callBackTriggerEvent_127");
         }
