@@ -107,7 +107,7 @@ public final class DefaultEventHandlerNode<T>
     }
 
     @Override
-    public boolean onEvent(T e) {
+    public <E extends T> boolean onEvent(E e) {
         auditLog.info("inputEvent", e.getClass().getSimpleName());
         this.event = e;
         return true;
