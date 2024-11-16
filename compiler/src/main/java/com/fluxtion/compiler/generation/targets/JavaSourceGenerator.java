@@ -134,6 +134,7 @@ public class JavaSourceGenerator {
     private final HashMap<String, String> importMap = new HashMap<>();
     private final StringBuilder ct = new StringBuilder(5 * 1000 * 1000);
     private final StringBuilder switchF = new StringBuilder(5 * 1000 * 1000);
+    private final StringBuilder filteredMethodBuffer = new StringBuilder(5 * 1000 * 1000);
     /**
      * Create an if based dispatch using instanceof operator
      */
@@ -272,6 +273,11 @@ public class JavaSourceGenerator {
     @Getter
     private String eventHandlers;
     /**
+     * String representing filtered event handler methods
+     */
+    @Getter
+    private String filterEventHandlers;
+    /**
      * String representing exported events
      */
     @Getter
@@ -304,6 +310,7 @@ public class JavaSourceGenerator {
     private String resetForkTasks;
     final Set<Class<?>> nonUserClass;
     private String forkedAssignments;
+    private boolean bufferDispatch = false;
 
     public JavaSourceGenerator(
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
@@ -755,8 +762,9 @@ public class JavaSourceGenerator {
     }
 
     private void generateEventBufferedDispatcher() {
+        eventHandlers += "\n  //EVENT BUFFERING - START\n";
         if (!eventProcessorConfig.isSupportBufferAndTrigger()) {
-            eventHandlers += "\n    public void bufferEvent(Object event) {" +
+            eventHandlers += "    public void bufferEvent(Object event) {" +
                              "        throw new UnsupportedOperationException(\"bufferEvent not supported\");\n" +
                              "    }\n";
             eventHandlers += "\n    public void triggerCalculation() {" +
@@ -765,8 +773,11 @@ public class JavaSourceGenerator {
             return;
         }
 
+        bufferDispatch = true;
+        filteredMethodBuffer.setLength(0);
+
         boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
-        StringBuilder noTriggerDispatch = new StringBuilder("\n    public void bufferEvent(Object event){\n" +
+        StringBuilder noTriggerDispatch = new StringBuilder("    public void bufferEvent(Object event){\n" +
                                                             "        buffering = true;\n");
         //build buffer event method
         String bufferEvents = "";
@@ -833,9 +844,13 @@ public class JavaSourceGenerator {
                                  (dispatchString == null ? "" : dispatchString) +
                                  "        afterEvent();\n" +
                                  "\n    }\n";
+
+        bufferDispatch = false;
         isInlineEventHandling = prev;
         eventHandlers += bufferEvents;
+        eventHandlers += filteredMethodBuffer;
         eventHandlers += bufferedTrigger;
+        eventHandlers += "  //EVENT BUFFERING - END\n\n";
     }
 
     /**
@@ -908,6 +923,11 @@ public class JavaSourceGenerator {
         //process <Event>.ID free events.
         eventDispatch = dispatchStringNoId + "\n";
         eventHandlers += "  //EVENT DISPATCH - END\n";
+        if (!(filteredMethodBuffer.length() == 0)) {
+            filteredMethodBuffer.insert(0, "\n  //FILTERED DISPATCH - START");
+            filteredMethodBuffer.append("  //FILTERED DISPATCH - END\n");
+        }
+        eventHandlers += filteredMethodBuffer.toString();
     }
 
     private void generateExportMethodDispatcher() {
@@ -967,8 +987,9 @@ public class JavaSourceGenerator {
 
             //INVOKE TARGET
             InvokerFilterTarget invokerTarget = new InvokerFilterTarget();
-            invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(filterDescription);
+            invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(filterDescription, bufferDispatch);
             invokerTarget.filterDescription = filterDescription;
+            invokerTarget.eventClassName = filterDescription.eventClass == null ? null : getClassTypeName(filterDescription.eventClass);
             invokerTarget.stringMapName = JavaGenHelper.generateFilteredDispatchMap(filterDescription);
             invokerTarget.intMapName = JavaGenHelper.generateFilteredDispatchMap(filterDescription);
 
@@ -981,7 +1002,8 @@ public class JavaSourceGenerator {
                 if (noFilter && isDefaultFilter) {
                     //progress without header
                     invokerTarget.filterDescription = new FilterDescription(eventClass);
-                    invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(invokerTarget.filterDescription);
+                    invokerTarget.eventClassName = filterDescription.eventClass == null ? null : getClassTypeName(filterDescription.eventClass);
+                    invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(invokerTarget.filterDescription, bufferDispatch);
                     invokerTarget.stringMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
                     invokerTarget.intMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
                 } else if (noFilter || isNoFilter || isDefaultFilter) {
@@ -1003,11 +1025,15 @@ public class JavaSourceGenerator {
                 buildDispatchForCbMethodHandles(cbList, ct);
                 buildPostDispatchForCbMethodHandles(cbMapPostEvent.get(filterDescription), ct);
                 invokerTarget.methodBody = ct.toString();
+
                 if (!noFilter) {
+                    ct.delete(0, ct.length());
+                    ct.append(invokerTarget.getMethodDispatch());
                     ct.append(s24 + "afterEvent();\n");
                     ct.append(s24 + "return;\n");
                 }
                 switchF.append(ct);
+                filteredMethodBuffer.append(invokerTarget.toMethodString());
             }
         }
         return switchF.length() == 0 ? null : switchF.toString();
