@@ -36,6 +36,10 @@ public class InvokerFilterTarget {
      */
     public String methodName;
     /**
+     *
+     */
+    public String eventClassName;
+    /**
      * the name of the map holding the invokers for this Event class
      */
     public String intMapName;
@@ -43,4 +47,17 @@ public class InvokerFilterTarget {
      * the name of the map holding the invokers for this Event class
      */
     public String stringMapName;
+
+    public String getMethodDispatch() {
+        return eventClassName == null ? "" : methodName + "(typedEvent);\n";
+    }
+
+    public String toMethodString() {
+        if (eventClassName == null) {
+            return "";
+        }
+        return "\nprivate void " + methodName + "(" + eventClassName + " typedEvent){\n" +
+               methodBody +
+               "}\n";
+    }
 }
