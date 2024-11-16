@@ -310,6 +310,7 @@ public class JavaSourceGenerator {
     private String resetForkTasks;
     final Set<Class<?>> nonUserClass;
     private String forkedAssignments;
+    private boolean bufferDispatch = false;
 
     public JavaSourceGenerator(
             SimpleEventProcessorModel model, EventProcessorConfig eventProcessorConfig) {
@@ -761,8 +762,9 @@ public class JavaSourceGenerator {
     }
 
     private void generateEventBufferedDispatcher() {
+        eventHandlers += "\n  //EVENT BUFFERING - START\n";
         if (!eventProcessorConfig.isSupportBufferAndTrigger()) {
-            eventHandlers += "\n    public void bufferEvent(Object event) {" +
+            eventHandlers += "    public void bufferEvent(Object event) {" +
                              "        throw new UnsupportedOperationException(\"bufferEvent not supported\");\n" +
                              "    }\n";
             eventHandlers += "\n    public void triggerCalculation() {" +
@@ -771,8 +773,11 @@ public class JavaSourceGenerator {
             return;
         }
 
+        bufferDispatch = true;
+        filteredMethodBuffer.setLength(0);
+
         boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
-        StringBuilder noTriggerDispatch = new StringBuilder("\n    public void bufferEvent(Object event){\n" +
+        StringBuilder noTriggerDispatch = new StringBuilder("    public void bufferEvent(Object event){\n" +
                                                             "        buffering = true;\n");
         //build buffer event method
         String bufferEvents = "";
@@ -839,9 +844,13 @@ public class JavaSourceGenerator {
                                  (dispatchString == null ? "" : dispatchString) +
                                  "        afterEvent();\n" +
                                  "\n    }\n";
+
+        bufferDispatch = false;
         isInlineEventHandling = prev;
         eventHandlers += bufferEvents;
+        eventHandlers += filteredMethodBuffer;
         eventHandlers += bufferedTrigger;
+        eventHandlers += "  //EVENT BUFFERING - END\n\n";
     }
 
     /**
@@ -978,7 +987,7 @@ public class JavaSourceGenerator {
 
             //INVOKE TARGET
             InvokerFilterTarget invokerTarget = new InvokerFilterTarget();
-            invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(filterDescription);
+            invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(filterDescription, bufferDispatch);
             invokerTarget.filterDescription = filterDescription;
             invokerTarget.eventClassName = filterDescription.eventClass == null ? null : getClassTypeName(filterDescription.eventClass);
             invokerTarget.stringMapName = JavaGenHelper.generateFilteredDispatchMap(filterDescription);
@@ -994,7 +1003,7 @@ public class JavaSourceGenerator {
                     //progress without header
                     invokerTarget.filterDescription = new FilterDescription(eventClass);
                     invokerTarget.eventClassName = filterDescription.eventClass == null ? null : getClassTypeName(filterDescription.eventClass);
-                    invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(invokerTarget.filterDescription);
+                    invokerTarget.methodName = JavaGenHelper.generateFilteredDispatchMethodName(invokerTarget.filterDescription, bufferDispatch);
                     invokerTarget.stringMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
                     invokerTarget.intMapName = JavaGenHelper.generateFilteredDispatchMap(invokerTarget.filterDescription);
                 } else if (noFilter || isNoFilter || isDefaultFilter) {
