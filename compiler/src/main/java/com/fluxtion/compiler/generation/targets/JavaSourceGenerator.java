@@ -923,7 +923,7 @@ public class JavaSourceGenerator {
         //process <Event>.ID free events.
         eventDispatch = dispatchStringNoId + "\n";
         eventHandlers += "  //EVENT DISPATCH - END\n";
-        if (!filteredMethodBuffer.isEmpty()) {
+        if (!(filteredMethodBuffer.length() == 0)) {
             filteredMethodBuffer.insert(0, "\n  //FILTERED DISPATCH - START");
             filteredMethodBuffer.append("  //FILTERED DISPATCH - END\n");
         }
