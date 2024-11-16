@@ -27,7 +27,7 @@ public interface JavaGenHelper {
 
     StringBuilder builder = new StringBuilder(1000 * 1000);
 
-    static String generateFilteredDispatchMethodName(FilterDescription filter) {
+    static String generateFilteredDispatchMethodName(FilterDescription filter, boolean bufferDispatch) {
         String filterName = filter.variableName;
         if (filterName == null) {
             filterName = (filter.isIntFilter ? filter.value : filter.stringValue) + "";
@@ -37,7 +37,7 @@ public interface JavaGenHelper {
         if (filter.eventClass != null) {
             filterClass = filter.eventClass.getSimpleName();
         }
-        return getIdentifier("handle_" + filterClass + "_" + filterName);
+        return getIdentifier("handle_" + filterClass + "_" + filterName + (bufferDispatch ? "_bufferDispatch" : ""));
     }
 
     static String generateFilteredDispatchMap(FilterDescription filter) {

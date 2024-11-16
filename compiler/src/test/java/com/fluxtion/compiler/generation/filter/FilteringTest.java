@@ -22,6 +22,7 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.compiler.generation.util.Slf4jAuditLogger;
 import com.fluxtion.runtime.annotations.FilterType;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.audit.EventLogControlEvent;
 import com.fluxtion.runtime.event.DefaultEvent;
 import com.fluxtion.runtime.event.Signal;
@@ -29,6 +30,7 @@ import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -82,6 +84,28 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         assertThat(testHandler.count, is(2));
         publishInstance(String.class, 2);
         assertThat(testHandler.count, is(3));
+    }
+
+    @Ignore
+    @Test
+    //TODO fix for interpreted mode
+    public void testClassFilterBuffer() {
+        sep(cfg -> {
+            TestHandler testHandler = cfg.addPublicNode(new TestHandler(), "handler");
+            cfg.addPublicNode(new Child(testHandler), "child");
+        });
+        TestHandler testHandler = getField("handler");
+        Child child = getField("child");
+        bufferEvent(new ClassFilterEvent(String.class));
+        bufferEvent(new ClassFilterEvent(Double.class));
+        assertThat(testHandler.count, is(1));
+        assertThat(child.count, is(0));
+
+
+        //trigger
+        triggerCalculation();
+        assertThat(testHandler.count, is(1));
+        assertThat(child.count, is(0));
     }
 
     @Test
@@ -218,4 +242,15 @@ public class FilteringTest extends MultipleSepTargetInProcessTest {
         }
     }
 
+    @Data
+    public static class Child {
+        final TestHandler parent;
+        public int count;
+
+        @OnTrigger
+        public boolean triggered() {
+            count++;
+            return true;
+        }
+    }
 }
