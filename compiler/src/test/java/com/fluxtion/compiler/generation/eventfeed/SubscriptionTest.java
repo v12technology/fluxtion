@@ -1,4 +1,4 @@
-package com.fluxtion.compiler.generation.input;
+package com.fluxtion.compiler.generation.eventfeed;
 
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
