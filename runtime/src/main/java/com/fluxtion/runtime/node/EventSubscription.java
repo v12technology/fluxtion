@@ -5,6 +5,7 @@ import com.fluxtion.runtime.event.Event;
 import java.util.Objects;
 
 public class EventSubscription<T> implements Event {
+    private final String feedName;
     private final int filterId;
     private final String filterString;
     private final Class<T> eventClass;
@@ -16,12 +17,27 @@ public class EventSubscription<T> implements Event {
         this.filterString = filterString;
         this.eventClass = eventClass;
         this.eventTime = System.currentTimeMillis();
+        this.feedName = "";
         toString = "EventSubscription{" +
-                "eventClass=" + eventClass +
-                (filterId == Integer.MAX_VALUE ? "" : ", filterId=" + filterId) +
-                (filterString.isEmpty() ? "" : ", filterString=" + filterString) +
-                '}';
-        ;
+                   "feedName=*" +
+                   ",  eventClass=" + eventClass +
+                   (filterId == Integer.MAX_VALUE ? "" : ", filterId=" + filterId) +
+                   (filterString.isEmpty() ? "" : ", filterString=" + filterString) +
+                   '}';
+    }
+
+    public EventSubscription(String feedName, int filterId, String filterString, Class<T> eventClass) {
+        this.feedName = feedName;
+        this.filterId = filterId;
+        this.filterString = filterString;
+        this.eventClass = eventClass;
+        this.eventTime = System.currentTimeMillis();
+        toString = "EventSubscription{" +
+                   "feedName=" + feedName +
+                   ", eventClass=" + eventClass +
+                   (filterId == Integer.MAX_VALUE ? "" : ", filterId=" + filterId) +
+                   (filterString.isEmpty() ? "" : ", filterString=" + filterString) +
+                   '}';
     }
 
     public int filterId() {
@@ -54,12 +70,12 @@ public class EventSubscription<T> implements Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EventSubscription<?> that = (EventSubscription<?>) o;
-        return filterId == that.filterId && filterString.equals(that.filterString) && eventClass.equals(that.eventClass);
+        return feedName.equals(that.feedName) && filterId == that.filterId && filterString.equals(that.filterString) && Objects.equals(eventClass, that.eventClass);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(filterId, filterString, eventClass);
+        return Objects.hash(filterId, filterString, eventClass, feedName);
     }
 
     @Override

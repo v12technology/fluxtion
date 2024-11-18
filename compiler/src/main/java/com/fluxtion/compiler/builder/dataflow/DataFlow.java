@@ -8,14 +8,18 @@ import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.event.Signal;
 import com.fluxtion.runtime.node.DefaultEventHandlerNode;
+import com.fluxtion.runtime.node.NamedFeedEventHandlerNode;
+import com.fluxtion.runtime.node.NamedFeedTopicFilteredEventHandlerNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +43,89 @@ public interface DataFlow {
         return new FlowBuilder<>(
                 EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription))
         );
+    }
+
+    /**
+     * Subscribes to {@link NamedFeedEvent}'s published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName.
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static FlowBuilder<NamedFeedEvent<ByteBuffer>> subscribeToFeed(String feedName) {
+        NamedFeedEventHandlerNode<ByteBuffer> feedEventHandlerNode = new NamedFeedEventHandlerNode<>(feedName);
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+    }
+
+    /**
+     * Subscribes to events of type {@link NamedFeedEvent<T>} published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName.
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @param <T>      The type of {@link NamedFeedEvent#getData()}
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<NamedFeedEvent<T>> subscribeToFeed(String feedName, Class<T> dataType) {
+        NamedFeedEventHandlerNode<T> feedEventHandlerNode = new NamedFeedEventHandlerNode<>(feedName);
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+    }
+
+    /**
+     * Subscribes to events of type {@link NamedFeedEvent<T>} published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName and converts events into instances of  {@literal <R>}
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @param <T>      The type of {@link NamedFeedEvent#getData()}
+     * @param <R>      The output type of the map function
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, SerializableFunction<T, R> mapFunction) {
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedEventHandlerNode<T>(feedName)))
+                .map(NamedFeedEvent::getData)
+                .map(mapFunction);
+    }
+
+    /**
+     * Subscribes to {@link NamedFeedEvent}'s published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName and filters by topic on the NamedFeedEvent.
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @param topic    the filtering topic to apply to the input {@link NamedFeedEvent}
+     * @return A {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static FlowBuilder<NamedFeedEvent<ByteBuffer>> subscribeToFeed(String feedName, String topic) {
+        NamedFeedTopicFilteredEventHandlerNode<ByteBuffer> feedEventHandlerNode = new NamedFeedTopicFilteredEventHandlerNode<>(feedName, topic);
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+    }
+
+    /**
+     * Subscribes to events of type{@link NamedFeedEvent<T>} published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName and filters by topic on the NamedFeedEvent.
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @param topic    the filtering topic to apply to the input {@link NamedFeedEvent}
+     * @param <T>      The type of {@link NamedFeedEvent#getData()}
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T> FlowBuilder<NamedFeedEvent<T>> subscribeToFeed(String feedName, String topic, Class<T> dataType) {
+        NamedFeedTopicFilteredEventHandlerNode<T> feedEventHandlerNode = new NamedFeedTopicFilteredEventHandlerNode<>(feedName, topic);
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+    }
+
+    /**
+     * Subscribes to events of type {@link NamedFeedEvent<T>} published by an {@link com.fluxtion.runtime.input.EventFeed} service
+     * registered with feedName and converts events into instances of  {@literal <R>}. Applies a filter of topic to the
+     * incoming {@link NamedFeedEvent}
+     *
+     * @param feedName the service name of the registered {@link com.fluxtion.runtime.input.EventFeed}
+     * @param <T>      The type of {@link NamedFeedEvent#getData()}
+     * @param <R>      The output type of the map function
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, String topic, SerializableFunction<T, R> mapFunction) {
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedTopicFilteredEventHandlerNode<T>(feedName, topic)))
+                .map(NamedFeedEvent::getData)
+                .map(mapFunction);
     }
 
     /**
@@ -102,8 +189,8 @@ public interface DataFlow {
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new RuntimeException("no default constructor found for class:"
-                        + sourceProperty.getContainingClass()
-                        + " either add default constructor or pass in a node instance");
+                                           + sourceProperty.getContainingClass()
+                                           + " either add default constructor or pass in a node instance");
             }
         } else {
             source = (T) sourceProperty.captured()[0];

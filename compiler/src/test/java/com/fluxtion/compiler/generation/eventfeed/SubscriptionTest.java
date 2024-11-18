@@ -6,11 +6,13 @@ import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.event.Signal;
+import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.event.Signal.IntSignal;
 import com.fluxtion.runtime.input.EventFeed;
+import com.fluxtion.runtime.input.NamedEventFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.node.EventSubscription;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +20,6 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SubscriptionTest extends MultipleSepTargetInProcessTest {
@@ -56,21 +57,21 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subscriptionTestFunctional() {
-        Set<Object> subscriptions = new HashSet<>();
+        Set<EventSubscription<?>> subscriptions = new HashSet<>();
         sep(c -> {
-            DataFlow.subscribeToIntSignal("subscriber_1").id("subscriber_1");
+            DataFlow.subscribeToFeed("feedA");
         });
-        sep.addEventFeed(new MyEventFeed(subscriptions));
-        assertThat(subscriptions,
+
+        sep.registerService(new MyNamedEventFeed(subscriptions), NamedEventFeed.class, "feedA");
+        MatcherAssert.assertThat(subscriptions,
                 Matchers.containsInAnyOrder(
                         new EventSubscription<>(
+                                "feedA",
                                 Integer.MAX_VALUE,
-                                "subscriber_1",
-                                Signal.IntSignal.class)
+                                "feedA",
+                                NamedFeedEvent.class)
                 )
         );
-        sep.publishIntSignal("subscriber_1", 200);
-        assertThat(getStreamed("subscriber_1"), is(200));
     }
 
     @Test
@@ -141,6 +142,42 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
 
         @Override
         public void unSubscribe(StaticEventProcessor subscriber, Object subscriptionId) {
+            if (!subscriptions.contains(subscriptionId)) {
+                throw new IllegalStateException("No subscription to remove for symbol:" + subscriptionId);
+            }
+            subscriptions.remove(subscriptionId);
+        }
+
+        @Override
+        public void removeAllSubscriptions(StaticEventProcessor subscriber) {
+            subscriptions.clear();
+        }
+    }
+
+    public static class MyNamedEventFeed implements NamedEventFeed {
+
+        private final Set<EventSubscription<?>> subscriptions;
+        private StaticEventProcessor subscriber;
+
+        public MyNamedEventFeed(Set<EventSubscription<?>> subscriptions) {
+            this.subscriptions = subscriptions;
+        }
+
+        @Override
+        public void registerSubscriber(StaticEventProcessor subscriber) {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void subscribe(StaticEventProcessor subscriber, EventSubscription<?> subscriptionId) {
+            if (subscriptions.contains(subscriptionId)) {
+                throw new IllegalStateException("multiple subscriptions for same symbol:" + subscriptionId);
+            }
+            subscriptions.add(subscriptionId);
+        }
+
+        @Override
+        public void unSubscribe(StaticEventProcessor subscriber, EventSubscription<?> subscriptionId) {
             if (!subscriptions.contains(subscriptionId)) {
                 throw new IllegalStateException("No subscription to remove for symbol:" + subscriptionId);
             }

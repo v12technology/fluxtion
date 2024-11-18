@@ -34,13 +34,16 @@ import java.util.function.BooleanSupplier;
  */
 public final class DefaultEventHandlerNode<T>
         extends EventLogNode
-        implements EventHandlerNode<T>, TriggeredFlowFunction<T>, NamedNode, Lifecycle {
+        implements
+        Lifecycle,
+        NamedNode,
+        EventHandlerNode<T>,
+        TriggeredFlowFunction<T> {
 
     private final int filterId;
     private final String filterString;
     private final Class<T> eventClass;
     private final String name;
-    private final transient EventSubscription<?> subscription;
     private T event;
     private BooleanSupplier dirtySupplier;
     @Inject
@@ -73,7 +76,6 @@ public final class DefaultEventHandlerNode<T>
         } else {
             name = "handler" + eventClass.getSimpleName();
         }
-        subscription = new EventSubscription(filterId, filterString, eventClass);
         eventProcessorContext = null;
     }
 
@@ -88,7 +90,6 @@ public final class DefaultEventHandlerNode<T>
         this.filterString = filterString;
         this.eventClass = eventClass;
         this.name = name;
-        subscription = new EventSubscription(filterId, filterString, eventClass);
     }
 
     @Override
@@ -134,6 +135,7 @@ public final class DefaultEventHandlerNode<T>
         int hash = 7;
         hash = 13 * hash + this.filterId;
         hash = 13 * hash + Objects.hashCode(this.eventClass);
+        hash = 13 * hash + Objects.hashCode(this.filterString);
         return hash;
     }
 
@@ -165,13 +167,11 @@ public final class DefaultEventHandlerNode<T>
     @Override
     public void init() {
         dirtySupplier = eventProcessorContext.getDirtyStateMonitor().dirtySupplier(this);
-        eventProcessorContext.getSubscriptionManager().subscribe(subscription);
     }
 
     @Override
     @TearDown
     public void tearDown() {
-        eventProcessorContext.getSubscriptionManager().unSubscribe(subscription);
     }
 
     @Override
