@@ -9,9 +9,14 @@ public class NamedFeedEvent<T> extends DefaultEvent {
         this(eventFeedName, null);
     }
 
-    public NamedFeedEvent(String eventFeedName, String topic) {
+    public NamedFeedEvent(String eventFeedName, String topic, T data) {
         super(eventFeedName);
         this.topic = topic;
+        this.data = data;
+    }
+
+    public NamedFeedEvent(String eventFeedName, String topic) {
+        this(eventFeedName, topic, null);
     }
 
     public NamedFeedEvent<T> copyFrom(NamedFeedEvent<T> other) {

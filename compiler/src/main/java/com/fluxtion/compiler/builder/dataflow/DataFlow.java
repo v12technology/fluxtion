@@ -65,9 +65,10 @@ public interface DataFlow {
      * @param <T>      The type of {@link NamedFeedEvent#getData()}
      * @return An {@link FlowBuilder} that can used to construct stream processing logic
      */
-    static <T> FlowBuilder<NamedFeedEvent<T>> subscribeToFeed(String feedName, Class<T> dataType) {
+    static <T> FlowBuilder<T> subscribeToFeed(String feedName, Class<T> dataType) {
         NamedFeedEventHandlerNode<T> feedEventHandlerNode = new NamedFeedEventHandlerNode<>(feedName);
-        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
+                .map(NamedFeedEvent::getData);
     }
 
     /**
@@ -107,9 +108,10 @@ public interface DataFlow {
      * @param <T>      The type of {@link NamedFeedEvent#getData()}
      * @return An {@link FlowBuilder} that can used to construct stream processing logic
      */
-    static <T> FlowBuilder<NamedFeedEvent<T>> subscribeToFeed(String feedName, String topic, Class<T> dataType) {
+    static <T> FlowBuilder<T> subscribeToFeed(String feedName, String topic, Class<T> dataType) {
         NamedFeedTopicFilteredEventHandlerNode<T> feedEventHandlerNode = new NamedFeedTopicFilteredEventHandlerNode<>(feedName, topic);
-        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode));
+        return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
+                .map(NamedFeedEvent::getData);
     }
 
     /**
