@@ -770,6 +770,7 @@ public class JavaSourceGenerator {
             eventHandlers += "\n    public void triggerCalculation() {" +
                              "        throw new UnsupportedOperationException(\"triggerCalculation not supported\");\n" +
                              "    }\n";
+            eventHandlers += "  //EVENT BUFFERING - END\n\n";
             return;
         }
 
