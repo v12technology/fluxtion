@@ -201,9 +201,32 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void flatMapFromIteratorTest() {
+        sep(c -> subscribe(String.class)
+                .flatMapFromIterator(EventStreamBuildTest::csvToIterator)
+                .push(new NotifyAndPushTarget()::addStringElement)
+        );
+        onEvent("one,2,THREE");
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(notifyTarget.getStrings(), CoreMatchers.hasItems("one", "2", "THREE"));
+    }
+
+    @Test
     public void flatMapThenMapEachElementTest() {
         sep(c -> subscribe(String.class)
                 .flatMap(EventStreamBuildTest::csvToIterable)
+                .mapToInt(EventStreamBuildTest::parseInt)
+                .map(Mappers.cumSumInt()).id("sum")
+        );
+        onEvent("15,33,55");
+        assertThat(getStreamed("sum"), is(103));
+    }
+
+    @Test
+    public void flatMapFromIteratorThenMapEachElementTest() {
+        sep(c -> subscribe(String.class)
+                .flatMapFromIterator(EventStreamBuildTest::csvToIterator)
                 .mapToInt(EventStreamBuildTest::parseInt)
                 .map(Mappers.cumSumInt()).id("sum")
         );
@@ -990,6 +1013,10 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
     public static Iterable<String> csvToIterable(String input) {
         return Arrays.asList(input.split(","));
+    }
+
+    public static Iterator<String> csvToIterator(String input) {
+        return Arrays.asList(input.split(",")).iterator();
     }
 
     public static String[] csvToStringArray(String input) {
