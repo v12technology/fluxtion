@@ -21,10 +21,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> implements FlowDataSupplier<FlowSupplier<T>> {
 
@@ -129,6 +126,10 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public <R> FlowBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction) {
         return new FlowBuilder<>(new FlatMapFlowFunction<>(eventStream, iterableFunction));
+    }
+
+    public <R> FlowBuilder<R> flatMapFromIterator(SerializableFunction<T, Iterator<R>> iterableFunction) {
+        return new FlowBuilder<>(new FlatMapIteratorFlowFunction<>(eventStream, iterableFunction));
     }
 
     public <R> FlowBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction) {
