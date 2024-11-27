@@ -33,6 +33,11 @@ public interface Mappers {
         return in;
     }
 
+    @SuppressWarnings("all")
+    public static <T, R> R cast(T in) {
+        return (R) in;
+    }
+
     static <T> SerializableToIntFunction<T> count() {
         return Aggregates.countFactory().get()::aggregate;
     }
