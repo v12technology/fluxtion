@@ -3,6 +3,7 @@ package com.fluxtion.compiler.generation.sink;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.output.MessageSink;
 import com.fluxtion.runtime.output.SinkPublisher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -23,6 +24,15 @@ public class SinkTest extends MultipleSepTargetInProcessTest {
         List<String> myList = new ArrayList<>();
         sep(c -> c.addNode(new MyNode("sinkA")));
         addSink("sinkA", (Consumer<String>) myList::add);
+        onEvent("hello world");
+        assertThat(myList, Matchers.is(Matchers.contains("hello world")));
+    }
+
+    @Test
+    public void addMessageSinkNode() {
+        List<String> myList = new ArrayList<>();
+        sep(c -> c.addNode(new MyNode("sinkA")));
+        sep.registerService((MessageSink<String>) myList::add, MessageSink.class, "sinkA");
         onEvent("hello world");
         assertThat(myList, Matchers.is(Matchers.contains("hello world")));
     }

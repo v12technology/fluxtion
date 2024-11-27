@@ -2,6 +2,8 @@ package com.fluxtion.runtime.output;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.annotations.runtime.ServiceDeregistered;
+import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
 import com.fluxtion.runtime.node.SingleNamedNode;
 
 import java.util.function.Consumer;
@@ -38,6 +40,22 @@ public class SinkPublisher<T> extends SingleNamedNode {
         intConsumer = null;
         longConsumer = null;
         doubleConsumer = null;
+    }
+
+    @ServiceRegistered
+    public void messageSinkRegistered(MessageSink<T> messageSink, String name){
+        if(name.equals(getName())){
+            auditLog.info("registeredMessageSink", name);
+            sink = messageSink;
+        }
+    }
+
+    @ServiceDeregistered
+    public void messageSinkDeregistered(MessageSink<T> messageSink, String name){
+        if(name.equals(getName())){
+            auditLog.info("deregisteredMessageSink", name);
+            sink = null;
+        }
     }
 
     public void publish(T publishItem) {
