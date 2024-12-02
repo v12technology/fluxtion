@@ -147,4 +147,20 @@ public interface EventProcessorContext {
     default <V> V getInstanceById(String instanceId) throws NoSuchFieldException {
         return getNodeNameLookup().getInstanceById(instanceId);
     }
+
+    /**
+     * Creates a subscription to {@link com.fluxtion.runtime.input.EventFeed} registered with a matching feed name
+     * @param feedName the name to match on a registered {@link com.fluxtion.runtime.input.EventFeed}
+     */
+    default void subscribeToNamedFeed(String feedName) {
+        getSubscriptionManager().subscribeToNamedFeed(feedName);
+    }
+
+    /**
+     * Removes a subscription to {@link com.fluxtion.runtime.input.EventFeed} registered with a matching feed name
+     * @param feedName the name to match on a registered {@link com.fluxtion.runtime.input.EventFeed}
+     */
+    default void unSubscribeToNamedFeed(String feedName) {
+        getSubscriptionManager().unSubscribeToNamedFeed(feedName);
+    }
 }
