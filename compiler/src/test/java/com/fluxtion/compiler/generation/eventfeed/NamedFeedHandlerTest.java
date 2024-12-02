@@ -3,6 +3,9 @@ package com.fluxtion.compiler.generation.eventfeed;
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.EventProcessorContextListener;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.node.NamedFeedEventHandlerNode;
 import com.fluxtion.runtime.node.NamedFeedTopicFilteredEventHandlerNode;
@@ -89,7 +92,6 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
 
     @Test
     public void subscribeToTopicFilteredFeed() {
-        writeSourceFile = true;
         sep(c -> {
             DataFlow.subscribeToFeed("myFeed", "topic_A", NamedFeedHandlerTest::byteBufferToString)
                     .mapToList()
@@ -118,7 +120,37 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
         MatcherAssert.assertThat(getStreamed("results"), Matchers.contains("myData_A1", "myData_A2"));
     }
 
+    @Test
+    public void nodeSubscribeToTopicFilteredFeed() {
+        sep(c -> {
+            c.addNode(new EventFeedListenerNode(), "node");
+        });
+
+        NamedFeedEvent<String> feedEvent = new NamedFeedEvent<>("myFeed");
+        feedEvent.setData("myData_1");
+        onEvent(feedEvent);
+
+        Assert.assertEquals("myData_1", getField("node", EventFeedListenerNode.class).data);
+    }
+
     public static String byteBufferToString(ByteBuffer buffer) {
         return new String(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.remaining());
+    }
+
+    public static class EventFeedListenerNode implements EventProcessorContextListener {
+
+        public static final String MY_EVENT_FEED = "myFeed";
+        public String data;
+
+        @Override
+        public void currentContext(EventProcessorContext currentContext) {
+            currentContext.subscribeToNamedFeed(MY_EVENT_FEED);
+        }
+
+        @OnEventHandler(filterString = MY_EVENT_FEED)
+        public boolean onEvent(NamedFeedEvent<String> event) {
+            data = event.getData();
+            return false;
+        }
     }
 }

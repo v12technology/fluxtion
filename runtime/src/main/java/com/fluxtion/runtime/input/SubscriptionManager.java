@@ -11,5 +11,9 @@ public interface SubscriptionManager {
 
     void subscribeToNamedFeed(EventSubscription<?> subscription);
 
+    void subscribeToNamedFeed(String feedName);
+
     void unSubscribeToNamedFeed(EventSubscription<?> subscription);
+
+    void unSubscribeToNamedFeed(String feedName);
 }

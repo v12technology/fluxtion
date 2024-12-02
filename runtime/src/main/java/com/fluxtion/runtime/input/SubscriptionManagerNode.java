@@ -4,6 +4,7 @@ import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.TearDown;
 import com.fluxtion.runtime.annotations.runtime.ServiceDeregistered;
 import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
+import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.node.EventSubscription;
 import com.fluxtion.runtime.node.NamedNode;
 
@@ -89,6 +90,11 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
     }
 
     @Override
+    public void subscribeToNamedFeed(String feedName) {
+        subscribeToNamedFeed(new EventSubscription<>(feedName, Integer.MAX_VALUE, feedName, NamedFeedEvent.class));
+    }
+
+    @Override
     public void unSubscribeToNamedFeed(EventSubscription<?> subscription) {
         namedFeedSubscriptionMap.computeIfPresent(subscription, (k, i) -> {
             if (--i < 1) {
@@ -97,6 +103,11 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
             }
             return i;
         });
+    }
+
+    @Override
+    public void unSubscribeToNamedFeed(String feedName) {
+        unSubscribeToNamedFeed(new EventSubscription<>(feedName, Integer.MAX_VALUE, feedName, NamedFeedEvent.class));
     }
 
     @TearDown
