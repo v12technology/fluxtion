@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.EventProcessorContext;
@@ -69,7 +74,7 @@ public class CallBackNode<R>
     @Override
     public void fireCallback(R data) {
         dataQueue.add(data);
-        dispatcher.processAsNewEventCycle(event);
+        dispatcher.processReentrantEvent(event);
     }
 
     /**
@@ -84,6 +89,18 @@ public class CallBackNode<R>
             R nextItem = dataIterator.next();
             fireCallback(nextItem);
         }
+    }
+
+    /**
+     * Fires a new event cycle, with this callback executed after any queued events have completed. The value of {@link #data}
+     * will be the value passed in when this node triggers
+     *
+     * @param data
+     */
+    @Override
+    public void fireNewEventCycle(R data) {
+        dataQueue.add(data);
+        dispatcher.processAsNewEventCycle(event);
     }
 
     @Override
