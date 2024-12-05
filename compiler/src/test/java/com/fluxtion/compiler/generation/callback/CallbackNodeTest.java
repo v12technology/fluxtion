@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.generation.callback;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
@@ -68,11 +73,11 @@ public class CallbackNodeTest extends MultipleSepTargetInProcessTest {
         }
 
         public void stringEvent(MyEvent<String> myEvent) {
-            fireCallback(myEvent.getData());
+            fireNewEventCycle(myEvent.getData());
         }
 
         public void doubleEvent(MyEvent<Double> myEvent) {
-            fireCallback(myEvent.getData());
+            fireNewEventCycle(myEvent.getData());
         }
 
         @Override
