@@ -96,7 +96,7 @@ public class InMemoryEventProcessor implements EventProcessor, StaticEventProces
             triggerCalculation();
         }
         if (processing) {
-            callbackDispatcher.processReentrantEvent(event);
+            callbackDispatcher.queueReentrantEvent(event);
         } else {
             processing = true;
             onEventInternal(event);
