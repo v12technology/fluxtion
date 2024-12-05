@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
-
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
--->
+  ~ SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-only
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.4.2</version>
+        <version>9.4.3</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
-    
+
     <artifactId>compiler</artifactId>
     <name>fluxtion :: compiler</name>
 
@@ -46,45 +35,45 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>19</source>-->
-<!--                    <target>19</target>-->
-<!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <version>3.0.0-M7</version>-->
-<!--                <configuration>-->
-<!--                    <argLine>&#45;&#45;enable-preview</argLine>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
             <!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <version>2.22.2</version>-->
-<!--                <configuration>-->
-<!--                    <argLine>-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED-->
-<!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED-->
-<!--                    </argLine>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+            <!--                <configuration>-->
+            <!--                    <source>19</source>-->
+            <!--                    <target>19</target>-->
+            <!--                    <compilerArgs>&#45;&#45;enable-preview</compilerArgs>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-surefire-plugin</artifactId>-->
+            <!--                <version>3.0.0-M7</version>-->
+            <!--                <configuration>-->
+            <!--                    <argLine>&#45;&#45;enable-preview</argLine>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-surefire-plugin</artifactId>-->
+            <!--                <version>2.22.2</version>-->
+            <!--                <configuration>-->
+            <!--                    <argLine>-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED-->
+            <!--                        &#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED-->
+            <!--                    </argLine>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -112,10 +101,6 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.slf4j</groupId>-->
-<!--            <artifactId>slf4j-nop</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -129,7 +114,7 @@ Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-ext</artifactId>
-<!--            <version>1.5.1</version>-->
+            <!--            <version>1.5.1</version>-->
         </dependency>
         <dependency>
             <groupId>net.vidageek</groupId>

@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.node.NamedNode;
@@ -66,14 +71,21 @@ public class CallbackDispatcherImpl implements EventProcessorCallbackInternal, N
     public void processReentrantEvent(Object event) {
         SingleEventPublishWrapper<Object> callBackWrapper = new SingleEventPublishWrapper<>();
         callBackWrapper.data = event;
-        myStack.add(callBackWrapper::dispatch);
+        myStack.addFirst(callBackWrapper::dispatch);
     }
 
     @Override
     public void processReentrantEvents(Iterable<Object> iterable) {
         IteratingEventPublishWrapper publishingWrapper = new IteratingEventPublishWrapper();
         publishingWrapper.dataIterator = iterable.iterator();
-        myStack.add(publishingWrapper::dispatch);
+        myStack.addFirst(publishingWrapper::dispatch);
+    }
+
+    @Override
+    public void queueReentrantEvent(Object event) {
+        SingleEventPublishWrapper<Object> callBackWrapper = new SingleEventPublishWrapper<>();
+        callBackWrapper.data = event;
+        myStack.add(callBackWrapper::dispatch);
     }
 
     @Override

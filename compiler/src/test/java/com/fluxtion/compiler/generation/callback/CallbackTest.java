@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.generation.callback;
 
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
@@ -175,4 +180,6 @@ public class CallbackTest extends MultipleSepTargetInProcessTest {
             return value;
         }
     }
+
+
 }

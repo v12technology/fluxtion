@@ -156,7 +156,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
             triggerCalculation();
         }
         if(processing){
-          callbackDispatcher.processReentrantEvent(event);
+            callbackDispatcher.queueReentrantEvent(event);
         }else{
             processing = true;
             onEventInternal(event);

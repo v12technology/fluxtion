@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.callback;
 
 import com.fluxtion.runtime.annotations.Initialise;
@@ -104,6 +109,11 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHa
     }
 
     @Override
+    public void fireNewEventCycle(R data) {
+        callBackDispatcher.processAsNewEventCycle(event);
+    }
+
+    @Override
     public void processReentrantEvent(Object event) {
         callBackDispatcher.processReentrantEvent(event);
     }
@@ -111,6 +121,11 @@ public class CallbackImpl<R, T extends CallbackEvent<?>> extends AbstractEventHa
     @Override
     public void processReentrantEvents(Iterable<Object> iterator) {
         callBackDispatcher.processReentrantEvents(iterator);
+    }
+
+    @Override
+    public void queueReentrantEvent(Object event) {
+        callBackDispatcher.queueReentrantEvent(event);
     }
 
     @Override
