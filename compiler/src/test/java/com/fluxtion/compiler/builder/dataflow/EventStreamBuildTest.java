@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
@@ -201,6 +206,28 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void flatMapWithSignalTest() {
+        sep(c -> {
+                    subscribe(String.class)
+                            .flatMap(EventStreamBuildTest::csvToIterable, "myfilter")
+                            .push(new NotifyAndPushTarget()::addStringElement);
+
+                    subscribeToSignal("myfilter")
+                            .mapToInt(Mappers.count()).id("count_strings");
+                }
+        );
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(0));
+
+        onEvent("one,2,THREE");
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(notifyTarget.getStrings(), CoreMatchers.hasItems("one", "2", "THREE"));
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(1));
+    }
+
+    @Test
     public void flatMapFromIteratorTest() {
         sep(c -> subscribe(String.class)
                 .flatMapFromIterator(EventStreamBuildTest::csvToIterator)
@@ -210,6 +237,28 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(notifyTarget.getOnEventCount(), is(3));
         assertThat(notifyTarget.getStrings(), CoreMatchers.hasItems("one", "2", "THREE"));
+    }
+
+    @Test
+    public void flatMapFromIteratorWithSignalTest() {
+        sep(c -> {
+                    subscribe(String.class)
+                            .flatMapFromIterator(EventStreamBuildTest::csvToIterator, "myfilter")
+                            .push(new NotifyAndPushTarget()::addStringElement);
+
+                    subscribeToSignal("myfilter")
+                            .mapToInt(Mappers.count()).id("count_strings");
+                }
+        );
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(0));
+
+        onEvent("one,2,THREE");
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getOnEventCount(), is(3));
+        assertThat(notifyTarget.getStrings(), CoreMatchers.hasItems("one", "2", "THREE"));
+
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(1));
     }
 
     @Test
@@ -243,6 +292,25 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
         );
         onEvent("15,33,55");
         assertThat(getStreamed("sum"), is(103));
+    }
+
+    @Test
+    public void flatMapFromArrayWithSignalThenMapEachElementTest() {
+        sep(c -> {
+                    subscribe(String.class)
+                            .flatMapFromArray(EventStreamBuildTest::csvToStringArray, "myfilter")
+                            .mapToInt(EventStreamBuildTest::parseInt)
+                            .map(Mappers.cumSumInt()).id("sum");
+
+                    subscribeToSignal("myfilter")
+                            .mapToInt(Mappers.count()).id("count_strings");
+                }
+        );
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(0));
+
+        onEvent("15,33,55");
+        assertThat(getStreamed("sum"), is(103));
+        assertThat(getStreamed("count_strings"), CoreMatchers.is(1));
     }
 
     @Test
