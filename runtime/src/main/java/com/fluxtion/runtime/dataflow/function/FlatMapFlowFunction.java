@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
@@ -5,12 +10,14 @@ import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.Inject;
-import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.callback.Callback;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
+import com.fluxtion.runtime.node.BaseNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Flatmap stream node
@@ -19,7 +26,7 @@ import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
  * @param <R> Output type
  * @param <S> Previous {@link FlowFunction} type
  */
-public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends EventLogNode implements TriggeredFlowFunction<R> {
+public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends BaseNode implements TriggeredFlowFunction<R> {
 
     @NoTriggerReference
     private final S inputEventStream;
@@ -31,6 +38,9 @@ public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends EventL
     public Callback<R> callback;
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
+    @Getter
+    @Setter
+    private String flatMapCompleteSignal;
 
     public FlatMapFlowFunction(S inputEventStream, SerializableFunction<T, Iterable<R>> iterableFunction) {
         this.inputEventStream = inputEventStream;
@@ -47,6 +57,9 @@ public class FlatMapFlowFunction<T, R, S extends FlowFunction<T>> extends EventL
         T input = inputEventStream.get();
         Iterable<R> iterable = iterableFunction.apply(input);
         callback.fireCallback(iterable.iterator());
+        if (flatMapCompleteSignal != null) {
+            getContext().getStaticEventProcessor().publishSignal(flatMapCompleteSignal, flatMapCompleteSignal);
+        }
     }
 
     @OnTrigger
