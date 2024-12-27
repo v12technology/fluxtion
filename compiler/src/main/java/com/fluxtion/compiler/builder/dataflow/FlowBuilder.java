@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
@@ -128,12 +133,30 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return new FlowBuilder<>(new FlatMapFlowFunction<>(eventStream, iterableFunction));
     }
 
+    public <R> FlowBuilder<R> flatMap(SerializableFunction<T, Iterable<R>> iterableFunction, String flatMapCompleteSignal) {
+        FlatMapFlowFunction<T, R, TriggeredFlowFunction<T>> flatMapIteratorFlowFunction = new FlatMapFlowFunction<>(eventStream, iterableFunction);
+        flatMapIteratorFlowFunction.setFlatMapCompleteSignal(flatMapCompleteSignal);
+        return new FlowBuilder<>(flatMapIteratorFlowFunction);
+    }
+
     public <R> FlowBuilder<R> flatMapFromIterator(SerializableFunction<T, Iterator<R>> iterableFunction) {
         return new FlowBuilder<>(new FlatMapIteratorFlowFunction<>(eventStream, iterableFunction));
     }
 
+    public <R> FlowBuilder<R> flatMapFromIterator(SerializableFunction<T, Iterator<R>> iterableFunction, String flatMapCompleteSignal) {
+        FlatMapIteratorFlowFunction<T, R, TriggeredFlowFunction<T>> flatMapIteratorFlowFunction = new FlatMapIteratorFlowFunction<>(eventStream, iterableFunction);
+        flatMapIteratorFlowFunction.setFlatMapCompleteSignal(flatMapCompleteSignal);
+        return new FlowBuilder<>(flatMapIteratorFlowFunction);
+    }
+
     public <R> FlowBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction) {
         return new FlowBuilder<>(new FlatMapArrayFlowFunction<>(eventStream, iterableFunction));
+    }
+
+    public <R> FlowBuilder<R> flatMapFromArray(SerializableFunction<T, R[]> iterableFunction, String flatMapCompleteSignal) {
+        FlatMapArrayFlowFunction<T, R, TriggeredFlowFunction<T>> flatMapIteratorFlowFunction = new FlatMapArrayFlowFunction<>(eventStream, iterableFunction);
+        flatMapIteratorFlowFunction.setFlatMapCompleteSignal(flatMapCompleteSignal);
+        return new FlowBuilder<>(flatMapIteratorFlowFunction);
     }
 
     public <R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>

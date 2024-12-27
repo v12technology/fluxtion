@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.output;
 
 import com.fluxtion.runtime.event.DefaultEvent;
@@ -11,9 +16,7 @@ public class SinkRegistration<T> extends DefaultEvent {
 
     private Consumer<T> consumer;
     private IntConsumer intConsumer;
-
     private DoubleConsumer doubleConsumer;
-
     private LongConsumer longConsumer;
 
     public static <S> SinkRegistration<S> sink(String filterId, Consumer<S> consumer) {
