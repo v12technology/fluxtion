@@ -1,12 +1,40 @@
+/*
+ * Copyright (c) 2019, 2024 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
+
 package com.fluxtion.runtime.event;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class NamedFeedEvent<T> extends DefaultEvent {
 
     private String topic;
     private T data;
+    @Getter
+    @Setter
+    private boolean delete;
 
     public NamedFeedEvent(String eventFeedName) {
-        this(eventFeedName, null);
+        this(eventFeedName, null, null);
+    }
+
+    public NamedFeedEvent(String eventFeedName, T data) {
+        this(eventFeedName, null, data);
     }
 
     public NamedFeedEvent(String eventFeedName, String topic, T data) {
@@ -20,11 +48,12 @@ public class NamedFeedEvent<T> extends DefaultEvent {
     }
 
     public NamedFeedEvent<T> copyFrom(NamedFeedEvent<T> other) {
-        setTopic(topic);
+        setTopic(other.topic);
         setData(other.data);
+        setDelete(other.delete);
+        filterId = other.filterId;
         setEventFeedName(getEventFeedName());
         setEventTime(getEventTime());
-        filterId = other.filterId;
         return this;
     }
 
@@ -55,10 +84,10 @@ public class NamedFeedEvent<T> extends DefaultEvent {
     @Override
     public String toString() {
         return "NamedFeedEvent{" +
-               "eventFeed='" + filterString + '\'' +
-               ", topic='" + topic + '\'' +
-               ", data=" + data +
-               ", eventTime=" + eventTime +
-               '}';
+                "eventFeed='" + filterString + '\'' +
+                ", topic='" + topic + '\'' +
+                ", data=" + data +
+                ", eventTime=" + eventTime +
+                '}';
     }
 }

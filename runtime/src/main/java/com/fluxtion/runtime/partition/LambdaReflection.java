@@ -1,25 +1,13 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Server Side Public License, version 1,
- * as published by MongoDB, Inc.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side Public License for more details.
- *
- * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see
- * <http://www.mongodb.com/licensing/server-side-public-license>.
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 package com.fluxtion.runtime.partition;
 
 import lombok.SneakyThrows;
 
 import java.io.Serializable;
-import java.lang.invoke.SerializedLambda;
+import java.lang.invoke.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
@@ -240,4 +228,18 @@ public interface LambdaReflection {
         return supplier.method();
     }
 
+    @SneakyThrows
+    @SuppressWarnings("all")
+    public static <T, R> LambdaReflection.SerializableFunction<T, R> method2Function(Method keyMethod) {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        Class<?> clazz = keyMethod.getDeclaringClass();
+        CallSite site = LambdaMetafactory.altMetafactory(lookup,
+                "apply",
+                MethodType.methodType(LambdaReflection.SerializableFunction.class),
+                MethodType.methodType(Object.class, Object.class),
+                lookup.findVirtual(clazz, keyMethod.getName(), MethodType.methodType(keyMethod.getReturnType())),
+                MethodType.methodType(keyMethod.getReturnType(), clazz),
+                LambdaMetafactory.FLAG_SERIALIZABLE);
+        return (LambdaReflection.SerializableFunction<T, R>) site.getTarget().invokeExact();
+    }
 }
