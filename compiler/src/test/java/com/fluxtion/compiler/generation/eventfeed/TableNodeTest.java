@@ -20,7 +20,7 @@ package com.fluxtion.compiler.generation.eventfeed;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
-import com.fluxtion.runtime.event.NamedFeedEvent;
+import com.fluxtion.runtime.event.NamedFeedEventImpl;
 import com.fluxtion.runtime.node.NamedFeedTableNode;
 import com.fluxtion.runtime.node.TableNode;
 import lombok.AllArgsConstructor;
@@ -49,9 +49,9 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
             c.addNode(dataAggregator, "dataAggregator");
         });
 
-        onEvent(new NamedFeedEvent<>("feed1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 200)));
         //ignore different feed
-        onEvent(new NamedFeedEvent<>("feed2").setData(new City("LONDON", 99)));
+        onEvent(new NamedFeedEventImpl<>("feed2").setData(new City("LONDON", 99)));
         DataAggregator dataAggregator = getField("dataAggregator");
 
         Map<String, City> expectedCityTable = new HashMap<>();
@@ -59,11 +59,11 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
         Map<String, City> tableMap = dataAggregator.getCityTable().getTableMap();
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        onEvent(new NamedFeedEvent<>("feed1").setData(new City("LONDON", 8888)));
+        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 8888)));
         expectedCityTable.put("LONDON", new City("LONDON", 8888));
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        NamedFeedEvent<City> namedFeedEvent = new NamedFeedEvent<City>("feed1").setData(new City("LONDON", 8888));
+        NamedFeedEventImpl<City> namedFeedEvent = new NamedFeedEventImpl<City>("feed1").setData(new City("LONDON", 8888));
         namedFeedEvent.setDelete(true);
         onEvent(namedFeedEvent);
         Assert.assertTrue(tableMap.isEmpty());
@@ -82,20 +82,20 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
             c.addNode(dataAggregator, "dataAggregator");
         });
 
-        onEvent(new NamedFeedEvent<>("feed1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 200)));
         //ignore different feed
-        onEvent(new NamedFeedEvent<>("feed2").setData(new City("LONDON", 99)));
+        onEvent(new NamedFeedEventImpl<>("feed2").setData(new City("LONDON", 99)));
         DataAggregator dataAggregator = getField("dataAggregator");
         Map<String, City> tableMap = dataAggregator.getCityTable().getTableMap();
 
         Assert.assertTrue(tableMap.isEmpty());
 
-        onEvent(new NamedFeedEvent<>("feed1", "topic1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1", "topic1").setData(new City("LONDON", 200)));
         Map<String, City> expectedCityTable = new HashMap<>();
         expectedCityTable.put("LONDON", new City("LONDON", 200));
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        onEvent(new NamedFeedEvent<>("feed1", "topic1").setData(new City("LONDON", 8888)));
+        onEvent(new NamedFeedEventImpl<>("feed1", "topic1").setData(new City("LONDON", 8888)));
         expectedCityTable.put("LONDON", new City("LONDON", 8888));
         Assert.assertEquals(expectedCityTable, tableMap);
     }

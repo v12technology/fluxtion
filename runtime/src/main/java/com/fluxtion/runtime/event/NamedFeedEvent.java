@@ -18,86 +18,16 @@
 
 package com.fluxtion.runtime.event;
 
-import com.fluxtion.runtime.util.CollectionHelper;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
-public class NamedFeedEvent<T> extends DefaultEvent {
+public interface NamedFeedEvent<T> extends Event {
+    String getEventFeedName();
 
-    @Setter
-    private String topic;
-    private List<T> data;
-    @Getter
-    @Setter
-    private boolean delete;
-    @Getter
-    @Setter
-    private long sequenceNumber;
+    String getTopic();
 
-    public NamedFeedEvent(String eventFeedName) {
-        this(eventFeedName, null, null);
-    }
+    List<T> getData();
 
-    public NamedFeedEvent(String eventFeedName, List<T> data) {
-        this(eventFeedName, null, data);
-    }
+    long getSequenceNumber();
 
-    public NamedFeedEvent(String eventFeedName, String topic, List<T> data) {
-        super(eventFeedName);
-        this.topic = topic;
-        this.data = data;
-    }
-
-    public NamedFeedEvent(String eventFeedName, String topic) {
-        this(eventFeedName, topic, null);
-    }
-
-    public NamedFeedEvent<T> copyFrom(NamedFeedEvent<T> other) {
-        setTopic(other.topic);
-        setData(other.data);
-        setDelete(other.delete);
-        filterId = other.filterId;
-        setEventFeedName(getEventFeedName());
-        setEventTime(getEventTime());
-        return this;
-    }
-
-    public void setEventFeedName(String eventFeedName) {
-        this.filterString = eventFeedName;
-    }
-
-    public String getEventFeedName() {
-        return filterString;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public List<T> getData() {
-        return data;
-    }
-
-    public NamedFeedEvent<T> setData(List<T> data) {
-        this.data = data;
-        return this;
-    }
-
-    @SafeVarargs
-    public final NamedFeedEvent<T> setData(T... data) {
-        setData(CollectionHelper.listOf(data));
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "NamedFeedEvent{" +
-                "eventFeed='" + filterString + '\'' +
-                ", topic='" + topic + '\'' +
-                ", data=" + data +
-                ", eventTime=" + eventTime +
-                '}';
-    }
+    boolean isDelete();
 }
