@@ -19,7 +19,9 @@ package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
 import com.fluxtion.runtime.event.NamedFeedEvent;
+import com.fluxtion.runtime.input.NamedEventFeed;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.SneakyThrows;
 
@@ -68,6 +70,15 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
         this.feedName = feedName;
         this.topicName = topicName;
         this.keyMethodReference = keyMethodReference;
+    }
+
+    @ServiceRegistered
+    public void serviceRegistered(NamedEventFeed feed, String feedName) {
+        if (feedName != null && feedName.equals(this.feedName)) {
+            auditLog.info("requestSnapshot", feedName);
+        } else {
+            auditLog.info("ignoreFeedSnapshot", feedName);
+        }
     }
 
     @SneakyThrows
