@@ -9,6 +9,7 @@ import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.node.NamedFeedEventHandlerNode;
 import com.fluxtion.runtime.node.NamedFeedTopicFilteredEventHandlerNode;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,17 +31,17 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
         NamedFeedEvent<String> feedEvent = new NamedFeedEvent<>("myFeed");
         feedEvent.setData("myData");
         onEvent(feedEvent);
-        Assert.assertEquals("myData", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
 
         feedEvent.setData("myDataNew");
         onEvent(feedEvent);
-        Assert.assertEquals("myDataNew", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myDataNew"));
 
         //should ignore events from a different feed
         NamedFeedEvent<String> feedBEvent = new NamedFeedEvent<>("feed_B");
         feedBEvent.setData("myDataXXX");
         onEvent(feedBEvent);
-        Assert.assertEquals("myDataNew", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myDataNew"));
     }
 
     @Test
@@ -58,19 +59,19 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
         //should now match with topic
         feedEvent.setTopic("filter_A");
         onEvent(feedEvent);
-        Assert.assertEquals("myData", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
 
         //ignore different topic
         feedEvent = new NamedFeedEvent<>("myFeed", "filter_B");
         feedEvent.setData("myData_filter_B");
         onEvent(feedEvent);
-        Assert.assertEquals("myData", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
 
         //match
         feedEvent = new NamedFeedEvent<>("myFeed", "filter_A");
         feedEvent.setData("myData_filter_A");
         onEvent(feedEvent);
-        Assert.assertEquals("myData_filter_A", processorHandler.getFeedEvent().getData());
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData_filter_A"));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler(filterString = MY_EVENT_FEED)
         public boolean onEvent(NamedFeedEvent<String> event) {
-            data = event.getData();
+            data = event.getData().get(0);
             return false;
         }
     }

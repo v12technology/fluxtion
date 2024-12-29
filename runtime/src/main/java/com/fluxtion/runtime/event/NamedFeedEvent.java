@@ -18,26 +18,33 @@
 
 package com.fluxtion.runtime.event;
 
+import com.fluxtion.runtime.util.CollectionHelper;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 public class NamedFeedEvent<T> extends DefaultEvent {
 
+    @Setter
     private String topic;
-    private T data;
+    private List<T> data;
     @Getter
     @Setter
     private boolean delete;
+    @Getter
+    @Setter
+    private long sequenceNumber;
 
     public NamedFeedEvent(String eventFeedName) {
         this(eventFeedName, null, null);
     }
 
-    public NamedFeedEvent(String eventFeedName, T data) {
+    public NamedFeedEvent(String eventFeedName, List<T> data) {
         this(eventFeedName, null, data);
     }
 
-    public NamedFeedEvent(String eventFeedName, String topic, T data) {
+    public NamedFeedEvent(String eventFeedName, String topic, List<T> data) {
         super(eventFeedName);
         this.topic = topic;
         this.data = data;
@@ -69,16 +76,19 @@ public class NamedFeedEvent<T> extends DefaultEvent {
         return topic;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public T getData() {
+    public List<T> getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public NamedFeedEvent<T> setData(List<T> data) {
         this.data = data;
+        return this;
+    }
+
+    @SafeVarargs
+    public final NamedFeedEvent<T> setData(T... data) {
+        setData(CollectionHelper.listOf(data));
+        return this;
     }
 
     @Override

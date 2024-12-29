@@ -26,10 +26,7 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("all")
 public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V> {
@@ -75,7 +72,8 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @ServiceRegistered
     public void serviceRegistered(NamedFeed feed, String feedName) {
         if (feedName != null && feedName.equals(this.feedName)) {
-            auditLog.info("requestSnapshot", feedName);
+            auditLog.info("requestSnapshot", feedName)
+                    .info("snapshot", feed.lastUpdate());
         } else {
             auditLog.info("ignoreFeedSnapshot", feedName);
         }
@@ -85,16 +83,20 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @OnEventHandler(filterVariable = "feedName")
     public boolean tableUpdate(NamedFeedEvent feed) {
         if (topicName == null || topicName.equals(feed.getTopic())) {
-            Object data = feed.getData();
-            Object key = keyMethodReference.apply(data);
-            auditLog.debug("received", feed);
-            if (feed.isDelete()) {
-                auditLog.debug("deletedKey", key);
-                tableMap.remove(key);
-            } else {
-                auditLog.debug("putKey", key);
-                tableMap.put(key, data);
+            List data = feed.getData();
+            for (int i = 0, dataSize = data.size(); i < dataSize; i++) {
+                Object datum = data.get(i);
+                Object key = keyMethodReference.apply(datum);
+                auditLog.debug("received", feed);
+                if (feed.isDelete()) {
+                    auditLog.debug("deletedKey", key);
+                    tableMap.remove(key);
+                } else {
+                    auditLog.debug("putKey", key);
+                    tableMap.put(key, datum);
+                }
             }
+
             return true;
         }
         return false;

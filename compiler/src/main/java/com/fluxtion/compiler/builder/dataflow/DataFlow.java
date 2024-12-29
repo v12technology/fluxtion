@@ -68,7 +68,7 @@ public interface DataFlow {
     static <T> FlowBuilder<T> subscribeToFeed(String feedName, Class<T> dataType) {
         NamedFeedEventHandlerNode<T> feedEventHandlerNode = new NamedFeedEventHandlerNode<>(feedName);
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
-                .map(NamedFeedEvent::getData);
+                .flatMap(NamedFeedEvent::getData);
     }
 
     /**
@@ -82,7 +82,7 @@ public interface DataFlow {
      */
     static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, SerializableFunction<T, R> mapFunction) {
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedEventHandlerNode<T>(feedName)))
-                .map(NamedFeedEvent::getData)
+                .flatMap(NamedFeedEvent::getData)
                 .map(mapFunction);
     }
 
@@ -111,7 +111,7 @@ public interface DataFlow {
     static <T> FlowBuilder<T> subscribeToFeed(String feedName, String topic, Class<T> dataType) {
         NamedFeedTopicFilteredEventHandlerNode<T> feedEventHandlerNode = new NamedFeedTopicFilteredEventHandlerNode<>(feedName, topic);
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
-                .map(NamedFeedEvent::getData);
+                .flatMap(NamedFeedEvent::getData);
     }
 
     /**
@@ -126,7 +126,7 @@ public interface DataFlow {
      */
     static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, String topic, SerializableFunction<T, R> mapFunction) {
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedTopicFilteredEventHandlerNode<T>(feedName, topic)))
-                .map(NamedFeedEvent::getData)
+                .flatMap(NamedFeedEvent::getData)
                 .map(mapFunction);
     }
 
@@ -191,8 +191,8 @@ public interface DataFlow {
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new RuntimeException("no default constructor found for class:"
-                                           + sourceProperty.getContainingClass()
-                                           + " either add default constructor or pass in a node instance");
+                        + sourceProperty.getContainingClass()
+                        + " either add default constructor or pass in a node instance");
             }
         } else {
             source = (T) sourceProperty.captured()[0];
