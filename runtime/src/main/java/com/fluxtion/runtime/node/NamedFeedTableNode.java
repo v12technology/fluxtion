@@ -17,6 +17,7 @@
  */
 package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
@@ -36,6 +37,7 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     private final String topicName;
     private transient final Map tableMap = new HashMap();
     private transient final Map tableMapReadonly = Collections.unmodifiableMap(tableMap);
+    private long lastSequenceNumber;
 
     public NamedFeedTableNode(String feedName, String keyFunction) {
         this(feedName, null, keyFunction);
@@ -69,11 +71,17 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
         this.keyMethodReference = keyMethodReference;
     }
 
+    @Initialise
+    public void initialise() {
+        lastSequenceNumber = -1;
+    }
+
     @ServiceRegistered
     public void serviceRegistered(NamedFeed feed, String feedName) {
         if (feedName != null && feedName.equals(this.feedName)) {
             auditLog.info("requestSnapshot", feedName)
                     .info("snapshot", feed.lastUpdate());
+            tableUpdate(feed.lastUpdate());
         } else {
             auditLog.info("ignoreFeedSnapshot", feedName);
         }
@@ -82,8 +90,9 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @SneakyThrows
     @OnEventHandler(filterVariable = "feedName")
     public boolean tableUpdate(NamedFeedEvent feed) {
-        if (topicName == null || topicName.equals(feed.getTopic())) {
+        if (feed.getSequenceNumberStart() > lastSequenceNumber & topicName == null || topicName.equals(feed.getTopic())) {
             List data = feed.getData();
+            lastSequenceNumber = feed.getSequenceNumberStart();
             for (int i = 0, dataSize = data.size(); i < dataSize; i++) {
                 Object datum = data.get(i);
                 Object key = keyMethodReference.apply(datum);

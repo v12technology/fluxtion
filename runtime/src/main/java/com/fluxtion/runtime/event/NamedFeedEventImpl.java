@@ -21,6 +21,7 @@ package com.fluxtion.runtime.event;
 import com.fluxtion.runtime.util.CollectionHelper;
 import lombok.Getter;
 import lombok.Setter;
+import org.agrona.collections.Object2LongHashMap;
 
 import java.util.List;
 
@@ -34,7 +35,11 @@ public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEven
     private boolean delete;
     @Getter
     @Setter
-    private long sequenceNumber;
+    private long sequenceNumberStart;
+    @Getter
+    @Setter
+    private Object2LongHashMap data2SequenceNumber = new Object2LongHashMap(16);
+
 
     public NamedFeedEventImpl(String eventFeedName) {
         this(eventFeedName, null, null);

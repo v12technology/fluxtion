@@ -27,7 +27,7 @@ public interface NamedFeedEvent<T> extends Event {
 
     List<T> getData();
 
-    long getSequenceNumber();
+    long getSequenceNumberStart();
 
     boolean isDelete();
 }
