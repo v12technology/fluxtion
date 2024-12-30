@@ -90,7 +90,7 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @SneakyThrows
     @OnEventHandler(filterVariable = "feedName")
     public boolean tableUpdate(NamedFeedEvent feed) {
-        if (feed.getSequenceNumberStart() > lastSequenceNumber & topicName == null || topicName.equals(feed.getTopic())) {
+        if (feed.getSequenceNumberStart() > lastSequenceNumber & (topicName == null || topicName.equals(feed.getTopic()))) {
             List data = feed.getData();
             lastSequenceNumber = feed.getSequenceNumberStart();
             for (int i = 0, dataSize = data.size(); i < dataSize; i++) {
