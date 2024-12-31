@@ -1,7 +1,21 @@
 /*
- * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
- * SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (c) 2019, 2024 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+
 package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.annotations.Initialise;
@@ -14,10 +28,7 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings("all")
 public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V> {
@@ -70,8 +81,11 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     public void serviceRegistered(NamedFeed feed, String feedName) {
         if (feedName != null && feedName.equals(this.feedName)) {
             auditLog.info("requestSnapshot", feedName)
-                    .info("snapshot", feed.lastUpdate());
-            tableUpdate(feed.lastUpdate());
+                    .info("eventLogSize", feed.eventLog().size());
+            List<NamedFeedEvent<Object>> eventLog = feed.eventLog();
+            for (int i = 0, eventLogSize = eventLog.size(); i < eventLogSize; i++) {
+                tableUpdate(eventLog.get(i));
+            }
         } else {
             auditLog.info("ignoreFeedSnapshot", feedName);
         }
