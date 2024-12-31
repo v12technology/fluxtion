@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
- * All rights reserved.
+ * Copyright (c) 2019-2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,

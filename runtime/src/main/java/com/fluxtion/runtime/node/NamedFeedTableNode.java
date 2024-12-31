@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
- * All rights reserved.
+ * Copyright (c) 2024 gregory higgins.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -28,7 +27,10 @@ import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("all")
 public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V> {
@@ -77,14 +79,15 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
         lastSequenceNumber = -1;
     }
 
+
     @ServiceRegistered
     public void serviceRegistered(NamedFeed feed, String feedName) {
         if (feedName != null && feedName.equals(this.feedName)) {
             auditLog.info("requestSnapshot", feedName)
-                    .info("eventLogSize", feed.eventLog().size());
-            List<NamedFeedEvent<Object>> eventLog = feed.eventLog();
-            for (int i = 0, eventLogSize = eventLog.size(); i < eventLogSize; i++) {
-                tableUpdate(eventLog.get(i));
+                    .info("eventLogSize", feed.eventLog().length);
+            NamedFeedEvent<V>[] eventLog = feed.eventLog();
+            for (NamedFeedEvent<V> namedFeedEvent : eventLog) {
+                tableUpdate(namedFeedEvent);
             }
         } else {
             auditLog.info("ignoreFeedSnapshot", feedName);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2024 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,11 +21,9 @@ package com.fluxtion.runtime.input;
 import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.node.EventSubscription;
 
-import java.util.List;
-
 public interface NamedFeed extends EventFeed<EventSubscription<?>> {
 
-    default <T> List<NamedFeedEvent<T>> eventLog() {
+    default <T> NamedFeedEvent<T>[] eventLog() {
         return null;
     }
 }
