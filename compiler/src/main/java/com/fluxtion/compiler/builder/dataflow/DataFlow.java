@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
@@ -68,7 +73,7 @@ public interface DataFlow {
     static <T> FlowBuilder<T> subscribeToFeed(String feedName, Class<T> dataType) {
         NamedFeedEventHandlerNode<T> feedEventHandlerNode = new NamedFeedEventHandlerNode<>(feedName);
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
-                .flatMap(NamedFeedEvent::getData);
+                .map(NamedFeedEvent::getData);
     }
 
     /**
@@ -82,7 +87,7 @@ public interface DataFlow {
      */
     static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, SerializableFunction<T, R> mapFunction) {
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedEventHandlerNode<T>(feedName)))
-                .flatMap(NamedFeedEvent::getData)
+                .map(NamedFeedEvent::getData)
                 .map(mapFunction);
     }
 
@@ -111,7 +116,7 @@ public interface DataFlow {
     static <T> FlowBuilder<T> subscribeToFeed(String feedName, String topic, Class<T> dataType) {
         NamedFeedTopicFilteredEventHandlerNode<T> feedEventHandlerNode = new NamedFeedTopicFilteredEventHandlerNode<>(feedName, topic);
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(feedEventHandlerNode))
-                .flatMap(NamedFeedEvent::getData);
+                .map(NamedFeedEvent::getData);
     }
 
     /**
@@ -126,7 +131,7 @@ public interface DataFlow {
      */
     static <T, R> FlowBuilder<R> subscribeToFeed(String feedName, String topic, SerializableFunction<T, R> mapFunction) {
         return new FlowBuilder<>(EventProcessorBuilderService.service().addOrReuse(new NamedFeedTopicFilteredEventHandlerNode<T>(feedName, topic)))
-                .flatMap(NamedFeedEvent::getData)
+                .map(NamedFeedEvent::getData)
                 .map(mapFunction);
     }
 

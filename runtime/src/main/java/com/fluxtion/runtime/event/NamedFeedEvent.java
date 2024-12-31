@@ -18,16 +18,14 @@
 
 package com.fluxtion.runtime.event;
 
-import java.util.List;
-
 public interface NamedFeedEvent<T> extends Event {
     String getEventFeedName();
 
     String getTopic();
 
-    List<T> getData();
+    T getData();
 
-    long getSequenceNumberStart();
+    long getSequenceNumber();
 
     boolean isDelete();
 }

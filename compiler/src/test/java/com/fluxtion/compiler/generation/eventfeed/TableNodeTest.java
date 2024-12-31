@@ -1,19 +1,6 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
- * All rights reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Server Side Public License, version 1,
- * as published by MongoDB, Inc.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side Public License for more details.
- *
- * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see
- * <http://www.mongodb.com/licensing/server-side-public-license>.
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 package com.fluxtion.compiler.generation.eventfeed;
@@ -49,9 +36,14 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
             c.addNode(dataAggregator, "dataAggregator");
         });
 
-        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1")
+                .setData(new City("LONDON", 200))
+                .setSequenceNumber(0)
+        );
         //ignore different feed
-        onEvent(new NamedFeedEventImpl<>("feed2").setData(new City("LONDON", 99)));
+        onEvent(new NamedFeedEventImpl<>("feed2")
+                .setData(new City("LONDON", 99))
+                .setSequenceNumber(1));
         DataAggregator dataAggregator = getField("dataAggregator");
 
         Map<String, City> expectedCityTable = new HashMap<>();
@@ -59,11 +51,23 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
         Map<String, City> tableMap = dataAggregator.getCityTable().getTableMap();
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 8888)));
+        onEvent(new NamedFeedEventImpl<>("feed1")
+                .setData(new City("LONDON", 8888))
+                .setSequenceNumber(2));
         expectedCityTable.put("LONDON", new City("LONDON", 8888));
+        tableMap = dataAggregator.getCityTable().getTableMap();
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        NamedFeedEventImpl<City> namedFeedEvent = new NamedFeedEventImpl<City>("feed1").setData(new City("LONDON", 8888));
+        NamedFeedEventImpl<City> namedFeedEvent = new NamedFeedEventImpl<City>("feed1")
+                .setData(new City("LONDON", 8888))
+                .setSequenceNumber(100);
+        namedFeedEvent.setDelete(true);
+        onEvent(namedFeedEvent);
+        Assert.assertTrue(tableMap.isEmpty());
+
+        namedFeedEvent = new NamedFeedEventImpl<City>("feed1")
+                .setData(new City("LONDON", 10))
+                .setSequenceNumber(4);
         namedFeedEvent.setDelete(true);
         onEvent(namedFeedEvent);
         Assert.assertTrue(tableMap.isEmpty());
@@ -82,20 +86,29 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
             c.addNode(dataAggregator, "dataAggregator");
         });
 
-        onEvent(new NamedFeedEventImpl<>("feed1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1")
+                .setData(new City("LONDON", 200))
+                .setSequenceNumber(0));
         //ignore different feed
-        onEvent(new NamedFeedEventImpl<>("feed2").setData(new City("LONDON", 99)));
+        //ignore different feed
+        onEvent(new NamedFeedEventImpl<>("feed2")
+                .setData(new City("LONDON", 99))
+                .setSequenceNumber(1));
         DataAggregator dataAggregator = getField("dataAggregator");
         Map<String, City> tableMap = dataAggregator.getCityTable().getTableMap();
 
         Assert.assertTrue(tableMap.isEmpty());
 
-        onEvent(new NamedFeedEventImpl<>("feed1", "topic1").setData(new City("LONDON", 200)));
+        onEvent(new NamedFeedEventImpl<>("feed1", "topic1")
+                .setData(new City("LONDON", 200))
+                .setSequenceNumber(2));
         Map<String, City> expectedCityTable = new HashMap<>();
         expectedCityTable.put("LONDON", new City("LONDON", 200));
         Assert.assertEquals(expectedCityTable, tableMap);
 
-        onEvent(new NamedFeedEventImpl<>("feed1", "topic1").setData(new City("LONDON", 8888)));
+        onEvent(new NamedFeedEventImpl<>("feed1", "topic1")
+                .setData(new City("LONDON", 8888))
+                .setSequenceNumber(3));
         expectedCityTable.put("LONDON", new City("LONDON", 8888));
         Assert.assertEquals(expectedCityTable, tableMap);
     }

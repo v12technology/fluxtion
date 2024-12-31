@@ -1,55 +1,33 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
- * All rights reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the Server Side Public License, version 1,
- * as published by MongoDB, Inc.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * Server Side Public License for more details.
- *
- * You should have received a copy of the Server Side Public License
- * along with this program.  If not, see
- * <http://www.mongodb.com/licensing/server-side-public-license>.
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 package com.fluxtion.runtime.event;
 
-import com.fluxtion.runtime.util.CollectionHelper;
 import lombok.Getter;
 import lombok.Setter;
-import org.agrona.collections.Object2LongHashMap;
+import lombok.experimental.Accessors;
 
-import java.util.List;
-
+@Setter
+@Getter
+@Accessors(chain = true)
 public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEvent<T> {
 
-    @Setter
     private String topic;
-    private List<T> data;
-    @Getter
-    @Setter
+    private T data;
     private boolean delete;
-    @Getter
-    @Setter
-    private long sequenceNumberStart;
-    @Getter
-    @Setter
-    private Object2LongHashMap data2SequenceNumber = new Object2LongHashMap(16);
-
+    private long sequenceNumber;
 
     public NamedFeedEventImpl(String eventFeedName) {
         this(eventFeedName, null, null);
     }
 
-    public NamedFeedEventImpl(String eventFeedName, List<T> data) {
+    public NamedFeedEventImpl(String eventFeedName, T data) {
         this(eventFeedName, null, data);
     }
 
-    public NamedFeedEventImpl(String eventFeedName, String topic, List<T> data) {
+    public NamedFeedEventImpl(String eventFeedName, String topic, T data) {
         super(eventFeedName);
         this.topic = topic;
         this.data = data;
@@ -76,27 +54,6 @@ public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEven
     @Override
     public String getEventFeedName() {
         return filterString;
-    }
-
-    @Override
-    public String getTopic() {
-        return topic;
-    }
-
-    @Override
-    public List<T> getData() {
-        return data;
-    }
-
-    public NamedFeedEventImpl<T> setData(List<T> data) {
-        this.data = data;
-        return this;
-    }
-
-    @SafeVarargs
-    public final NamedFeedEventImpl<T> setData(T... data) {
-        setData(CollectionHelper.listOf(data));
-        return this;
     }
 
     @Override

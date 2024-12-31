@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.generation.eventfeed;
 
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
@@ -31,17 +36,17 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
         NamedFeedEventImpl<String> feedEvent = new NamedFeedEventImpl<>("myFeed");
         feedEvent.setData("myData");
         onEvent(feedEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myData"));
 
         feedEvent.setData("myDataNew");
         onEvent(feedEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myDataNew"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myDataNew"));
 
         //should ignore events from a different feed
         NamedFeedEventImpl<String> feedBEvent = new NamedFeedEventImpl<>("feed_B");
         feedBEvent.setData("myDataXXX");
         onEvent(feedBEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myDataNew"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myDataNew"));
     }
 
     @Test
@@ -59,19 +64,19 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
         //should now match with topic
         feedEvent.setTopic("filter_A");
         onEvent(feedEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myData"));
 
         //ignore different topic
         feedEvent = new NamedFeedEventImpl<>("myFeed", "filter_B");
         feedEvent.setData("myData_filter_B");
         onEvent(feedEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myData"));
 
         //match
         feedEvent = new NamedFeedEventImpl<>("myFeed", "filter_A");
         feedEvent.setData("myData_filter_A");
         onEvent(feedEvent);
-        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.hasItems("myData_filter_A"));
+        MatcherAssert.assertThat(processorHandler.getFeedEvent().getData(), CoreMatchers.is("myData_filter_A"));
     }
 
     @Test
@@ -150,7 +155,7 @@ public class NamedFeedHandlerTest extends MultipleSepTargetInProcessTest {
 
         @OnEventHandler(filterString = MY_EVENT_FEED)
         public boolean onEvent(NamedFeedEventImpl<String> event) {
-            data = event.getData().get(0);
+            data = event.getData();
             return false;
         }
     }
