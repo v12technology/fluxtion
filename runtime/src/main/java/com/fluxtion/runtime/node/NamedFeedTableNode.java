@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2024 gregory higgins.
+ * Copyright (c) 2024-2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -97,12 +98,12 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @SneakyThrows
     @OnEventHandler(filterVariable = "feedName")
     public boolean tableUpdate(NamedFeedEvent feed) {
-        if (feed.getSequenceNumber() > lastSequenceNumber & (topicName == null || topicName.equals(feed.getTopic()))) {
-            Object dataItem = feed.getData();
-            lastSequenceNumber = feed.getSequenceNumber();
+        if (feed.sequenceNumber() > lastSequenceNumber & (topicName == null || topicName.equals(feed.topic()))) {
+            Object dataItem = feed.data();
+            lastSequenceNumber = feed.sequenceNumber();
             Object key = keyMethodReference.apply(dataItem);
             auditLog.debug("received", feed);
-            if (feed.isDelete()) {
+            if (feed.delete()) {
                 auditLog.debug("deletedKey", key);
                 tableMap.remove(key);
             } else {

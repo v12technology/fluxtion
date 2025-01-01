@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 
 @Setter
 @Getter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEvent<T> {
 
     private String topic;
@@ -33,31 +33,47 @@ public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEven
     private long sequenceNumber;
 
     public NamedFeedEventImpl(String eventFeedName) {
-        this(eventFeedName, null, null);
+        this(eventFeedName, null, 0, null);
     }
 
     public NamedFeedEventImpl(String eventFeedName, T data) {
-        this(eventFeedName, null, data);
+        this(eventFeedName, null, 0, data);
+    }
+
+    public NamedFeedEventImpl(String filterId, long sequenceNumber, T data) {
+        this(filterId, null, sequenceNumber, data);
     }
 
     public NamedFeedEventImpl(String eventFeedName, String topic, T data) {
-        super(eventFeedName);
+        this(eventFeedName, topic, 0, data);
+    }
+
+    public NamedFeedEventImpl(String eventFeedName, String topic) {
+        this(eventFeedName, topic, 0, null);
+    }
+
+    public NamedFeedEventImpl(String filterId, String topic, long sequenceNumber, T data) {
+        super(filterId);
+        this.sequenceNumber = sequenceNumber;
         this.topic = topic;
         this.data = data;
     }
 
-    public NamedFeedEventImpl(String eventFeedName, String topic) {
-        this(eventFeedName, topic, null);
-    }
-
     public NamedFeedEventImpl<T> copyFrom(NamedFeedEventImpl<T> other) {
-        setTopic(other.topic);
-        setData(other.data);
-        setDelete(other.delete);
+        topic(other.topic);
+        data(other.data);
+        delete(other.delete);
+        sequenceNumber(other.sequenceNumber);
         filterId = other.filterId;
-        setEventFeedName(getEventFeedName());
+        setEventFeedName(eventFeedName());
         setEventTime(getEventTime());
         return this;
+    }
+
+    public NamedFeedEventImpl<T> clone() {
+        NamedFeedEventImpl<T> namedFeedEvent = new NamedFeedEventImpl<>(eventFeedName(), topic(), sequenceNumber(), data());
+        namedFeedEvent.copyFrom(this);
+        return namedFeedEvent;
     }
 
     public void setEventFeedName(String eventFeedName) {
@@ -65,7 +81,7 @@ public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEven
     }
 
     @Override
-    public String getEventFeedName() {
+    public String eventFeedName() {
         return filterString;
     }
 
@@ -74,6 +90,8 @@ public class NamedFeedEventImpl<T> extends DefaultEvent implements NamedFeedEven
         return "NamedFeedEvent{" +
                 "eventFeed='" + filterString + '\'' +
                 ", topic='" + topic + '\'' +
+                ", sequenceNumber='" + sequenceNumber + '\'' +
+                ", delete='" + delete + '\'' +
                 ", data=" + data +
                 ", eventTime=" + eventTime +
                 '}';

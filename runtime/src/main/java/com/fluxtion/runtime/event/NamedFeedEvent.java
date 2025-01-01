@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019-2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -18,13 +19,13 @@
 package com.fluxtion.runtime.event;
 
 public interface NamedFeedEvent<T> extends Event {
-    String getEventFeedName();
+    String eventFeedName();
 
-    String getTopic();
+    String topic();
 
-    T getData();
+    T data();
 
-    long getSequenceNumber();
+    long sequenceNumber();
 
-    boolean isDelete();
+    boolean delete();
 }
