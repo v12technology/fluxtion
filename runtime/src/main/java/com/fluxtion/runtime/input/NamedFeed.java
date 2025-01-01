@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 gregory higgins.
+ * Copyright (c) 2024-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,10 @@ import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.node.EventSubscription;
 
 public interface NamedFeed extends EventFeed<EventSubscription<?>> {
+    NamedFeedEvent<?>[] EMPTY_ARRAY = new NamedFeedEvent[0];
 
+    @SuppressWarnings({"raw", "unchecked"})
     default <T> NamedFeedEvent<T>[] eventLog() {
-        return null;
+        return (NamedFeedEvent<T>[]) (Object) EMPTY_ARRAY;
     }
 }

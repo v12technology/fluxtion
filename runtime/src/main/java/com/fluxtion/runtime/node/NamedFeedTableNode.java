@@ -110,7 +110,6 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
                 auditLog.debug("putKey", key);
                 tableMap.put(key, dataItem);
             }
-
             return true;
         }
         return false;
