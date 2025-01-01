@@ -17,7 +17,7 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
 
     //feeds
     private final transient List<EventFeed> registeredFeeds = new ArrayList<>();
-    private final transient Map<String, NamedEventFeed> registeredNameEventFeedMap = new HashMap<>();
+    private final transient Map<String, NamedFeed> registeredNameEventFeedMap = new HashMap<>();
     //subscriptions
     private final transient Map<Object, Integer> subscriptionMap = new HashMap<>();
     private final transient Map<EventSubscription<?>, Integer> namedFeedSubscriptionMap = new HashMap<>();
@@ -63,7 +63,7 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
     }
 
     @ServiceRegistered
-    public void registerEventFeedService(NamedEventFeed eventFeed, String feedName) {
+    public void registerEventFeedService(NamedFeed eventFeed, String feedName) {
         if (!registeredNameEventFeedMap.containsKey(feedName)) {
             eventFeed.registerSubscriber(eventProcessor);
             registeredNameEventFeedMap.put(feedName, eventFeed);
@@ -74,7 +74,7 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
     }
 
     @ServiceDeregistered
-    public void deRegisterEventFeedService(NamedEventFeed eventFeed, String feedName) {
+    public void deRegisterEventFeedService(NamedFeed eventFeed, String feedName) {
         registeredNameEventFeedMap.remove(feedName);
     }
 

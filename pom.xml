@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright (C) 2024 gregory higgins (C) 2024 gregory higgins
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the Server Side Public License, version 1,
-as published by MongoDB, Inc.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-Server Side Public License for more details.
-
-You should have received a copy of the Server Side Public License
-along with this program.  If not, see 
-<http://www.mongodb.com/licensing/server-side-public-license>.
--->
+  ~ Copyright (c) 2025 gregory higgins.
+  ~ All rights reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the Server Side Public License, version 1,
+  ~ as published by MongoDB, Inc.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ Server Side Public License for more details.
+  ~
+  ~ You should have received a copy of the Server Side Public License
+  ~ along with this program.  If not, see
+  ~ <http://www.mongodb.com/licensing/server-side-public-license>.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>9.4.6</version>
+    <version>9.5.0</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
-    
+
     <modules>
         <module>parent-root</module>
         <module>runtime</module>
         <module>compiler</module>
     </modules>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
@@ -36,10 +37,10 @@ along with this program.  If not, see
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pushReleases>true</pushReleases>
-<!--        <next.release.version>6.1.0</next.release.version>-->
-<!--        <next.development.version>6.1.1</next.development.version>-->
+        <!--        <next.release.version>6.1.0</next.release.version>-->
+        <!--        <next.development.version>6.1.1</next.development.version>-->
     </properties>
-    
+
     <licenses>
         <license>
             <distribution>repo</distribution>
@@ -47,20 +48,20 @@ along with this program.  If not, see
             <url>http://www.mongodb.com/licensing/server-side-public-license</url>
         </license>
     </licenses>
-    
+
     <developers>
         <developer>
             <name>Greg Higgins</name>
             <email>greg.higgins@v12technology.com</email>
         </developer>
     </developers>
-    
+
     <scm>
         <connection>scm:git:https://github.com/v12technology/fluxtion.git</connection>
         <developerConnection>scm:git:https://github.com/v12technology/fluxtion.git</developerConnection>
         <url>https://github.com/v12technology/fluxtion</url>
-    </scm>    
-    
+    </scm>
+
     <build>
         <plugins>
             <plugin>
@@ -75,13 +76,13 @@ along with this program.  If not, see
                     <!--<useReleaseProfile>false</useReleaseProfile>-->
                     <!--<noTag>true</noTag>-->
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-<!--                    <releaseVersion>${next.release.version}</releaseVersion>-->
-<!--                    <developmentVersion>${next.development.version}</developmentVersion>-->
+                    <!--                    <releaseVersion>${next.release.version}</releaseVersion>-->
+                    <!--                    <developmentVersion>${next.development.version}</developmentVersion>-->
                     <!--<allowSnapshots>true</allowSnapshots>-->
                     <!-- see goals wiki page for configuration options -->
                 </configuration>
             </plugin>
         </plugins>
-    </build>   
-    
+    </build>
+
 </project>

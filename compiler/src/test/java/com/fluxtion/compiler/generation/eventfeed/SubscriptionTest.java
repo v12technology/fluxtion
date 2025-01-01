@@ -9,7 +9,7 @@ import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.event.Signal.IntSignal;
 import com.fluxtion.runtime.input.EventFeed;
-import com.fluxtion.runtime.input.NamedEventFeed;
+import com.fluxtion.runtime.input.NamedFeed;
 import com.fluxtion.runtime.input.SubscriptionManager;
 import com.fluxtion.runtime.node.EventSubscription;
 import org.hamcrest.MatcherAssert;
@@ -62,7 +62,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
             DataFlow.subscribeToFeed("feedA");
         });
 
-        sep.registerService(new MyNamedEventFeed(subscriptions), NamedEventFeed.class, "feedA");
+        sep.registerService(new MyNamedEventFeed(subscriptions), NamedFeed.class, "feedA");
         MatcherAssert.assertThat(subscriptions,
                 Matchers.containsInAnyOrder(
                         new EventSubscription<>(
@@ -154,7 +154,7 @@ public class SubscriptionTest extends MultipleSepTargetInProcessTest {
         }
     }
 
-    public static class MyNamedEventFeed implements NamedEventFeed {
+    public static class MyNamedEventFeed implements NamedFeed {
 
         private final Set<EventSubscription<?>> subscriptions;
         private StaticEventProcessor subscriber;

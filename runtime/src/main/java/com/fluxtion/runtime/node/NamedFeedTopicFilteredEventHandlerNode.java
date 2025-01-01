@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2025 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.runtime.node;
 
 import com.fluxtion.runtime.annotations.builder.AssignToField;
@@ -23,7 +28,7 @@ public class NamedFeedTopicFilteredEventHandlerNode<T>
 
     @Override
     public <E extends NamedFeedEvent<?>> boolean onEvent(E e) {
-        if (e.getTopic() != null && topic.equals(e.getTopic())) {
+        if (e.topic() != null && topic.equals(e.topic())) {
             feedEvent = (NamedFeedEvent<T>) e;
             return true;
         }

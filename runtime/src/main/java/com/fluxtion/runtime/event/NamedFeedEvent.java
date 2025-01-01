@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,76 +18,14 @@
 
 package com.fluxtion.runtime.event;
 
-import lombok.Getter;
-import lombok.Setter;
+public interface NamedFeedEvent<T> extends Event {
+    String eventFeedName();
 
-public class NamedFeedEvent<T> extends DefaultEvent {
+    String topic();
 
-    private String topic;
-    private T data;
-    @Getter
-    @Setter
-    private boolean delete;
+    T data();
 
-    public NamedFeedEvent(String eventFeedName) {
-        this(eventFeedName, null, null);
-    }
+    long sequenceNumber();
 
-    public NamedFeedEvent(String eventFeedName, T data) {
-        this(eventFeedName, null, data);
-    }
-
-    public NamedFeedEvent(String eventFeedName, String topic, T data) {
-        super(eventFeedName);
-        this.topic = topic;
-        this.data = data;
-    }
-
-    public NamedFeedEvent(String eventFeedName, String topic) {
-        this(eventFeedName, topic, null);
-    }
-
-    public NamedFeedEvent<T> copyFrom(NamedFeedEvent<T> other) {
-        setTopic(other.topic);
-        setData(other.data);
-        setDelete(other.delete);
-        filterId = other.filterId;
-        setEventFeedName(getEventFeedName());
-        setEventTime(getEventTime());
-        return this;
-    }
-
-    public void setEventFeedName(String eventFeedName) {
-        this.filterString = eventFeedName;
-    }
-
-    public String getEventFeedName() {
-        return filterString;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    @Override
-    public String toString() {
-        return "NamedFeedEvent{" +
-                "eventFeed='" + filterString + '\'' +
-                ", topic='" + topic + '\'' +
-                ", data=" + data +
-                ", eventTime=" + eventTime +
-                '}';
-    }
+    boolean delete();
 }
