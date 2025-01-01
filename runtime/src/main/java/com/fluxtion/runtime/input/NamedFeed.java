@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2025 gregory higgins.
+ * Copyright (c) 2024-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,14 +16,16 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.fluxtion.runtime.node;
+package com.fluxtion.runtime.input;
 
 import com.fluxtion.runtime.event.NamedFeedEvent;
+import com.fluxtion.runtime.node.EventSubscription;
 
-import java.util.Map;
+public interface NamedFeed extends EventFeed<EventSubscription<?>> {
+    NamedFeedEvent<?>[] EMPTY_ARRAY = new NamedFeedEvent[0];
 
-public interface TableNode<K, V> {
-    Map<K, V> getTableMap();
-
-    <T> NamedFeedEvent<T> getLastFeedEvent();
+    @SuppressWarnings({"raw", "unchecked"})
+    default <T> NamedFeedEvent<T>[] eventLog() {
+        return (NamedFeedEvent<T>[]) (Object) EMPTY_ARRAY;
+    }
 }

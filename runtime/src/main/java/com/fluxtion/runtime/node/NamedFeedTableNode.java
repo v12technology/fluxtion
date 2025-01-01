@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2024-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,17 @@
  * along with this program.  If not, see
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
+
 package com.fluxtion.runtime.node;
 
+import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
+import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
 import com.fluxtion.runtime.event.NamedFeedEvent;
+import com.fluxtion.runtime.input.NamedFeed;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
@@ -37,6 +42,9 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     private final String topicName;
     private transient final Map tableMap = new HashMap();
     private transient final Map tableMapReadonly = Collections.unmodifiableMap(tableMap);
+    private long lastSequenceNumber;
+    @Getter
+    private NamedFeedEvent lastFeedEvent;
 
     public NamedFeedTableNode(String feedName, String keyFunction) {
         this(feedName, null, keyFunction);
@@ -70,19 +78,41 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
         this.keyMethodReference = keyMethodReference;
     }
 
+    @Initialise
+    public void initialise() {
+        lastSequenceNumber = -1;
+    }
+
+
+    @ServiceRegistered
+    public void serviceRegistered(NamedFeed feed, String feedName) {
+        if (feedName != null && feedName.equals(this.feedName)) {
+            auditLog.info("requestSnapshot", feedName)
+                    .info("eventLogSize", feed.eventLog().length);
+            NamedFeedEvent<V>[] eventLog = feed.eventLog();
+            for (NamedFeedEvent<V> namedFeedEvent : eventLog) {
+                tableUpdate(namedFeedEvent);
+            }
+        } else {
+            auditLog.info("ignoreFeedSnapshot", feedName);
+        }
+    }
+
     @SneakyThrows
     @OnEventHandler(filterVariable = "feedName")
-    public boolean tableUpdate(NamedFeedEvent feed) {
-        if (topicName == null || topicName.equals(feed.getTopic())) {
-            Object data = feed.getData();
-            Object key = keyMethodReference.apply(data);
-            auditLog.debug("received", feed);
-            if (feed.isDelete()) {
+    public boolean tableUpdate(NamedFeedEvent feedEvent) {
+        if (feedEvent.sequenceNumber() > lastSequenceNumber & (topicName == null || topicName.equals(feedEvent.topic()))) {
+            this.lastFeedEvent = feedEvent;
+            Object dataItem = feedEvent.data();
+            lastSequenceNumber = feedEvent.sequenceNumber();
+            Object key = keyMethodReference.apply(dataItem);
+            auditLog.debug("received", feedEvent);
+            if (feedEvent.delete()) {
                 auditLog.debug("deletedKey", key);
                 tableMap.remove(key);
             } else {
                 auditLog.debug("putKey", key);
-                tableMap.put(key, data);
+                tableMap.put(key, dataItem);
             }
             return true;
         }
