@@ -20,6 +20,7 @@ package com.fluxtion.compiler.generation.eventfeed;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.event.NamedFeedEventImpl;
 import com.fluxtion.runtime.node.NamedFeedTableNode;
 import com.fluxtion.runtime.node.TableNode;
@@ -84,6 +85,10 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
         namedFeedEvent.delete(true);
         onEvent(namedFeedEvent);
         Assert.assertTrue(tableMap.isEmpty());
+
+        NamedFeedEvent<City> lastFeedEvent = dataAggregator.getCityTable().getLastFeedEvent();
+        Assert.assertEquals(new City("LONDON", 8888), lastFeedEvent.data());
+
     }
 
 
@@ -124,6 +129,9 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
                 .sequenceNumber(3));
         expectedCityTable.put("LONDON", new City("LONDON", 8888));
         Assert.assertEquals(expectedCityTable, tableMap);
+
+        NamedFeedEvent<City> lastFeedEvent = dataAggregator.getCityTable().getLastFeedEvent();
+        Assert.assertEquals(new City("LONDON", 8888), lastFeedEvent.data());
     }
 
     @Data
