@@ -81,8 +81,9 @@ public class NamedFeedTableNode<K, V> extends BaseNode implements TableNode<K, V
     @Initialise
     public void initialise() {
         lastSequenceNumber = -1;
+        auditLog.info("subscribe", feedName);
+        getContext().subscribeToNamedFeed(feedName);
     }
-
 
     @ServiceRegistered
     public void serviceRegistered(NamedFeed feed, String feedName) {

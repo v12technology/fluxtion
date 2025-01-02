@@ -20,8 +20,11 @@ package com.fluxtion.compiler.generation.eventfeed;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.event.NamedFeedEvent;
 import com.fluxtion.runtime.event.NamedFeedEventImpl;
+import com.fluxtion.runtime.input.NamedFeed;
+import com.fluxtion.runtime.node.EventSubscription;
 import com.fluxtion.runtime.node.NamedFeedTableNode;
 import com.fluxtion.runtime.node.TableNode;
 import lombok.AllArgsConstructor;
@@ -134,6 +137,23 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
         Assert.assertEquals(new City("LONDON", 8888), lastFeedEvent.data());
     }
 
+    @Test
+    public void subscribeToFeed() {
+        sep(c -> {
+            NamedFeedTableNode<String, City> tableNode = new NamedFeedTableNode<>(
+                    "feed1",
+                    "com.fluxtion.compiler.generation.eventfeed.TableNodeTest$City::getName");
+            DataAggregator dataAggregator = new DataAggregator();
+            dataAggregator.setCityTable(tableNode);
+            c.addNode(dataAggregator, "dataAggregator");
+        });
+
+        MyEventFeed eventFeed = new MyEventFeed();
+        sep.addEventFeed(eventFeed);
+
+        Assert.assertTrue(eventFeed.subscribed);
+    }
+
     @Data
     public static class DataAggregator {
         private TableNode<String, City> cityTable;
@@ -145,5 +165,27 @@ public class TableNodeTest extends MultipleSepTargetInProcessTest {
     public static class City {
         String name;
         int population;
+    }
+
+    public static class MyEventFeed implements NamedFeed {
+
+        boolean subscribed = false;
+
+        @Override
+        public void registerSubscriber(StaticEventProcessor subscriber) {
+            subscribed = true;
+        }
+
+        @Override
+        public void subscribe(StaticEventProcessor subscriber, EventSubscription<?> subscriptionId) {
+        }
+
+        @Override
+        public void unSubscribe(StaticEventProcessor subscriber, EventSubscription<?> subscriptionId) {
+        }
+
+        @Override
+        public void removeAllSubscriptions(StaticEventProcessor subscriber) {
+        }
     }
 }
