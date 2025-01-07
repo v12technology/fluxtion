@@ -20,10 +20,14 @@ package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.FlowFunction;
+import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
+import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
+import com.fluxtion.runtime.dataflow.groupby.GroupBy;
+import com.fluxtion.runtime.dataflow.groupby.GroupByHashMap;
 import com.fluxtion.runtime.dataflow.groupby.GroupByKey;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.event.NamedFeedEvent;
@@ -40,6 +44,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -61,6 +66,24 @@ public interface DataFlow {
         return new FlowBuilder<>(
                 EventProcessorBuilderService.service().addOrReuse(new DefaultEventHandlerNode<>(classSubscription))
         );
+    }
+
+    /**
+     * Subscribes to events of type {@literal <T>} apply an instance function publishing the return value. Creates a
+     * handler method in the generated {@link com.fluxtion.runtime.StaticEventProcessor}
+     * so that if {@link com.fluxtion.runtime.StaticEventProcessor#onEvent(Object)} is called an invocation is routed
+     * to this {@link FlowFunction}
+     * <p>
+     * In effect this is a compound subscribe().map() combinations
+     *
+     * @param function A class literal describing the subscription
+     * @param <T>      The type subscribed to by the generated {@link com.fluxtion.runtime.StaticEventProcessor}
+     * @param <R>      The output type of the map function applied to input instances
+     * @return An {@link FlowBuilder} that can used to construct stream processing logic
+     */
+    static <T, R> FlowBuilder<R> subscribe(SerializableFunction<T, R> function) {
+        Class<T> classSubscription = (Class<T>) function.method().getDeclaringClass();
+        return subscribe(classSubscription).map(function);
     }
 
     /**
@@ -409,6 +432,14 @@ public interface DataFlow {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupBy(keyFunction);
+    }
+
+    static <T, K, V> GroupByFlowBuilder<K, V> groupByFromMap(SerializableFunction<T, Map<K, V>> mapSupplier) {
+        TriggeredFlowFunction<GroupBy<K, V>> triggered = new MapRef2RefFlowFunction<>(
+                subscribe(mapSupplier).eventStream,
+                new GroupByHashMap<K, V>()::fromMap
+        );
+        return new GroupByFlowBuilder<>(triggered);
     }
 
     @SafeVarargs
