@@ -301,6 +301,35 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
         assertThat(results, CoreMatchers.is(expected));
     }
 
+    @lombok.Data
+    public static class IntegerMap {
+        private Map<String, Integer> map = new HashMap<>();
+    }
+
+    @Test
+    public void groupByFromMapTest() {
+        Map<String, Integer> expected = new HashMap<>();
+        sep(c ->
+                DataFlow.groupByFromMap(IntegerMap::getMap)
+                        .map(GroupBy::toMap)
+                        .id("results"));
+
+        IntegerMap integerMap = new IntegerMap();
+        integerMap.getMap().put("A", 1);
+        integerMap.getMap().put("B", 2);
+        onEvent(integerMap);
+
+        Map<String, Data> actual = getStreamed("results");
+        expected.put("A", 1);
+        expected.put("B", 2);
+        MatcherAssert.assertThat(actual, is(expected));
+
+        integerMap.getMap().put("C", 3);
+        onEvent(integerMap);
+        expected.put("C", 3);
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+
     @Test
     public void mapGroupByValuesTest() {
         Map<String, Integer> results = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.fluxtion.runtime.dataflow.groupby;
 
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.dataflow.Stateful;
 
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GroupByHashMap<K, V> implements GroupBy<K, V>, Stateful<GroupBy<K, V>> {
+    @FluxtionIgnore
     private final Map<K, V> map = new HashMap<>();
 
     public GroupByHashMap<K, V> add(KeyValue<K, V> keyValue) {

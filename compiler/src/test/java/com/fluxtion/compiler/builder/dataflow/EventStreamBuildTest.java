@@ -167,6 +167,19 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void subscribeToPropertyTest() {
+        sep(c -> {
+            subscribe(PairPrice::getPrice)
+                    .push(new NotifyAndPushTarget()::setDoublePushValue);
+        });
+
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(notifyTarget.getIntPushValue(), is(0));
+        onEvent(new PairPrice("A", 23.67));
+        assertThat(notifyTarget.getDoublePushValue(), is(23.67));
+    }
+
+    @Test
     public void sinkTest() {
         List<Object> myList = new ArrayList<>();
         sep(c -> subscribe(String.class)
