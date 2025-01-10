@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest.SepTestConfig;
@@ -9,6 +27,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Map;
+
+import static com.fluxtion.compiler.builder.dataflow.MultiJoinBuilder.multiJoinLeg;
 
 public class MultiJoinTest extends MultipleSepTargetInProcessTest {
     public MultiJoinTest(SepTestConfig testConfig) {
@@ -34,10 +54,42 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
         Map<String, String> resultMap = getStreamed("results");
 
         Assert.assertEquals(1, resultMap.size());
-        Assert.assertEquals(resultMap.get("greg"), "47 male UK");
+        Assert.assertEquals("47 male UK", resultMap.get("greg"));
 
         onEvent(new LeftData("greg", 55));
-        Assert.assertEquals(resultMap.get("greg"), "55 male UK");
+        Assert.assertEquals("55 male UK", resultMap.get("greg"));
+
+
+        onEvent(new LeftData("tim", 47));
+        onEvent(new MiddleData("greg", "male"));
+        onEvent(new RightData("greg", "UK"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void multiJoinFromHelper() {
+        sep(c -> {
+            MultiJoinBuilder.build(
+                            MergedData::new,
+                            multiJoinLeg(DataFlow.groupBy(LeftData::getName), MergedData::setLeftData),
+                            multiJoinLeg(DataFlow.groupBy(MiddleData::getName), MergedData::setMiddleData),
+                            multiJoinLeg(DataFlow.groupBy(RightData::getName), MergedData::setRightData))
+                    .mapValues(MergedData::formattedString)
+                    .map(GroupBy::toMap)
+                    .id("results");
+        });
+
+        onEvent(new LeftData("greg", 47));
+        onEvent(new MiddleData("greg", "male"));
+        onEvent(new RightData("greg", "UK"));
+
+        Map<String, String> resultMap = getStreamed("results");
+
+        Assert.assertEquals(1, resultMap.size());
+        Assert.assertEquals("47 male UK", resultMap.get("greg"));
+
+        onEvent(new LeftData("greg", 55));
+        Assert.assertEquals("55 male UK", resultMap.get("greg"));
 
 
         onEvent(new LeftData("tim", 47));
