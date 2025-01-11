@@ -69,7 +69,7 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
     @SuppressWarnings("unchecked")
     public void multiJoinFromHelper() {
         sep(c -> {
-            MultiJoinBuilder.build(
+            DataFlow.multiJoin(
                             MergedData::new,
                             multiJoinLeg(DataFlow.groupBy(LeftData::getName), MergedData::setLeftData),
                             multiJoinLeg(DataFlow.groupBy(MiddleData::getName), MergedData::setMiddleData),

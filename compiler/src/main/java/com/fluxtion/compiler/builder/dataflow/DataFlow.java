@@ -23,7 +23,6 @@ import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
-import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
 import com.fluxtion.runtime.dataflow.groupby.GroupBy;
@@ -375,8 +374,43 @@ public interface DataFlow {
      * @return An {@link FlowBuilder} that can used to construct stream processing logic
      */
     static <T> FlowBuilder<T> mergeMap(MergeAndMapFlowBuilder<T> builder) {
-        MergeMapFlowFunction<T> build = builder.build();
-        return new FlowBuilder<>(build);
+        return new FlowBuilder<>(builder.build());
+    }
+
+    /**
+     * Builds a {@link FlowBuilder} that is formed from merging multiple {@link FlowBuilder} inputs of differernt types pushing
+     * to a target instance. To create {@link com.fluxtion.compiler.builder.dataflow.MergeAndMapFlowBuilder.MergeInput}
+     * legs us the {@link MergeAndMapFlowBuilder#requiredMergeInput(FlowBuilder, LambdaReflection.SerializableBiConsumer)},
+     * {@link MergeAndMapFlowBuilder#optionalMergeInput(FlowBuilder, LambdaReflection.SerializableBiConsumer)}
+     * utility functions
+     *
+     * @param target   Supplier of target instances that store the result of the push
+     * @param joinLegs The legs that supply the inputs to the join
+     * @param <K>      The key class
+     * @param <T>      The join target class
+     * @return The GroupByFlow with a new instance of the target allocated to every key
+     */
+    @SuppressWarnings("all")
+    public static <K, T> FlowBuilder<T> mergeMap(LambdaReflection.SerializableSupplier<T> target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
+        return MergeAndMapFlowBuilder.merge(target, joinLegs);
+    }
+
+    /**
+     * Builds a {@link FlowBuilder} that is formed from merging multiple {@link FlowBuilder} inputs of differernt types pushing
+     * to a target instance. To create {@link com.fluxtion.compiler.builder.dataflow.MergeAndMapFlowBuilder.MergeInput}
+     * legs us the {@link MergeAndMapFlowBuilder#requiredMergeInput(FlowBuilder, LambdaReflection.SerializableBiConsumer)},
+     * {@link MergeAndMapFlowBuilder#optionalMergeInput(FlowBuilder, LambdaReflection.SerializableBiConsumer)}
+     * utility functions
+     *
+     * @param target   target instance that store the result of the push
+     * @param joinLegs The legs that supply the inputs to the join
+     * @param <K>      The key class
+     * @param <T>      The join target class
+     * @return The GroupByFlow with a new instance of the target allocated to every key
+     */
+    @SuppressWarnings("all")
+    public static <K, T> FlowBuilder<T> mergeMapToNode(T target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
+        return MergeAndMapFlowBuilder.mergeToNode(target, joinLegs);
     }
 
     /**
@@ -533,5 +567,19 @@ public interface DataFlow {
         @SuppressWarnings("unchecked")
         Class<T> classSubscription = (Class<T>) keyFunction.method().getDeclaringClass();
         return subscribe(classSubscription).groupBy(keyFunction, valueFunction, aggregateFunctionSupplier);
+    }
+
+    /**
+     * Builds a GroupByFlowBuilder that is formed from multiple joins and pushed to a target instance.
+     *
+     * @param target   Supplier of target instances that store the result of the join
+     * @param joinLegs The legs that supply the inputs to the join
+     * @param <K>      The key class
+     * @param <T>      The join target class
+     * @return The GroupByFlow with a new instance of the target allocated to every key
+     */
+    @SuppressWarnings("all")
+    public static <K, T> GroupByFlowBuilder<K, T> multiJoin(LambdaReflection.SerializableSupplier<T> target, MultiJoinBuilder.MultiJoinLeg<K, T, ?>... joinLegs) {
+        return MultiJoinBuilder.multiJoin(target, joinLegs);
     }
 }

@@ -51,7 +51,7 @@ public class MultiJoinBuilder<K, T> {
      * @return The GroupByFlow with a new instance of the target allocated to every key
      */
     @SuppressWarnings("all")
-    public static <K, T> GroupByFlowBuilder<K, T> build(LambdaReflection.SerializableSupplier<T> target, MultiJoinLeg<K, T, ?>... joinLegs) {
+    public static <K, T> GroupByFlowBuilder<K, T> multiJoin(LambdaReflection.SerializableSupplier<T> target, MultiJoinLeg<K, T, ?>... joinLegs) {
         MultiJoinBuilder multiJoinBuilder = new MultiJoinBuilder(Object.class, target);
         for (MultiJoinLeg joinLeg : joinLegs) {
             multiJoinBuilder.addJoin(joinLeg.flow, joinLeg.setter);
