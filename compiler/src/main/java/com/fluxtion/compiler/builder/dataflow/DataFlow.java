@@ -22,6 +22,7 @@ import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
+import com.fluxtion.runtime.dataflow.function.BiPushFunction;
 import com.fluxtion.runtime.dataflow.function.MapFlowFunction.MapRef2RefFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodePropertyToFlowFunction;
 import com.fluxtion.runtime.dataflow.function.NodeToFlowFunction;
@@ -35,6 +36,7 @@ import com.fluxtion.runtime.node.DefaultEventHandlerNode;
 import com.fluxtion.runtime.node.NamedFeedEventHandlerNode;
 import com.fluxtion.runtime.node.NamedFeedTopicFilteredEventHandlerNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiConsumer;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableSupplier;
@@ -579,7 +581,30 @@ public interface DataFlow {
      * @return The GroupByFlow with a new instance of the target allocated to every key
      */
     @SafeVarargs
-    public static <K, T> GroupByFlowBuilder<K, T> multiJoin(LambdaReflection.SerializableSupplier<T> target, MultiJoinBuilder.MultiJoinLeg<K, T, ?>... joinLegs) {
+    static <K, T> GroupByFlowBuilder<K, T> multiJoin(LambdaReflection.SerializableSupplier<T> target, MultiJoinBuilder.MultiJoinLeg<K, T, ?>... joinLegs) {
         return MultiJoinBuilder.multiJoin(target, joinLegs);
+    }
+
+    static <T, A, B> FlowBuilder<T> push(
+            SerializableBiConsumer<A, B> instancePushMethod,
+            FlowBuilder<A> flowBuilderA,
+            FlowBuilder<B> flowBuilderB) {
+        BiPushFunction<T, A, B> biPush = new BiPushFunction<>(
+                instancePushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier());
+        return new FlowBuilder<>(biPush);
+    }
+
+    static <T, A, B> FlowBuilder<T> push(
+            LambdaReflection.SerializableTriConsumer<T, A, B> classPushMethod,
+            FlowBuilder<A> flowBuilderA,
+            FlowBuilder<B> flowBuilderB) {
+        //add check for tri consumer instance method
+        BiPushFunction<T, A, B> biPush = new BiPushFunction<>(
+                classPushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier());
+        return new FlowBuilder<>(biPush);
     }
 }
