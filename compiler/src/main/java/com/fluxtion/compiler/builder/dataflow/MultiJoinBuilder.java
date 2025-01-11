@@ -33,14 +33,6 @@ public class MultiJoinBuilder<K, T> {
 
     private final MultiJoin<K, T> multiLegJoin;
 
-    public MultiJoinBuilder(Class<K> keyClass, LambdaReflection.SerializableSupplier<T> target) {
-        multiLegJoin = new MultiJoin<>(keyClass, target);
-    }
-
-    public static <K, T> MultiJoinBuilder<K, T> builder(Class<K> keyClass, LambdaReflection.SerializableSupplier<T> target) {
-        return new MultiJoinBuilder<>(keyClass, target);
-    }
-
     /**
      * Builds a GroupByFlowBuilder that is formed from multiple joins and pushed to a target instance.
      *
@@ -57,6 +49,14 @@ public class MultiJoinBuilder<K, T> {
             multiJoinBuilder.addJoin(joinLeg.flow, joinLeg.setter);
         }
         return multiJoinBuilder.dataFlow();
+    }
+
+    public static <K, T> MultiJoinBuilder<K, T> builder(Class<K> keyClass, LambdaReflection.SerializableSupplier<T> target) {
+        return new MultiJoinBuilder<>(keyClass, target);
+    }
+
+    public MultiJoinBuilder(Class<K> keyClass, LambdaReflection.SerializableSupplier<T> target) {
+        multiLegJoin = new MultiJoin<>(keyClass, target);
     }
 
     public static <K1, T1, R> MultiJoinLeg<K1, T1, R> multiJoinLeg(GroupByFlowBuilder<K1, R> flow, LambdaReflection.SerializableBiConsumer<T1, R> setter) {

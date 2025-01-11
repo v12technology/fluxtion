@@ -66,7 +66,6 @@ public class MultiJoinTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void multiJoinFromHelper() {
         sep(c -> {
             DataFlow.multiJoin(

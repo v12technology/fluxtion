@@ -130,7 +130,6 @@ public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    @SuppressWarnings("all")
     public void mergeRequiredAndOptional_Helper_PropertiesTest() {
         sep(c -> {
             DataFlow.mergeMap(MyData::new,
@@ -154,7 +153,6 @@ public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
-    @SuppressWarnings("all")
     public void mergeToKnownInstance_PropertiesTest() {
         sep(c -> {
             MyData myData = c.addNode(new MyData(), "myData");
