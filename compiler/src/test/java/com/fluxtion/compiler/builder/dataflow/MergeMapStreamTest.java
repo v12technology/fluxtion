@@ -168,11 +168,9 @@ public class MergeMapStreamTest extends MultipleSepTargetInProcessTest {
         Assert.assertNull("no push expected", myData.getValue());
 
         onEvent(1);
-//        resultsHolder = getField(ResultsHolder.NAME);
         Assert.assertNull("no push expected", myData.getValue());
 
         onEvent("hello world");
-//        resultsHolder = getField(ResultsHolder.NAME);
         Assert.assertEquals("hello world", myData.getValue());
     }
 

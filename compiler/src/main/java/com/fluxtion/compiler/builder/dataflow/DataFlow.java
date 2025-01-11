@@ -391,7 +391,7 @@ public interface DataFlow {
      * @return The GroupByFlow with a new instance of the target allocated to every key
      */
     @SafeVarargs
-    public static <K, T> FlowBuilder<T> mergeMap(LambdaReflection.SerializableSupplier<T> target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
+    static <K, T> FlowBuilder<T> mergeMap(LambdaReflection.SerializableSupplier<T> target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
         return MergeAndMapFlowBuilder.merge(target, joinLegs);
     }
 
@@ -409,7 +409,7 @@ public interface DataFlow {
      * @return The GroupByFlow with a new instance of the target allocated to every key
      */
     @SafeVarargs
-    public static <K, T> FlowBuilder<T> mergeMapToNode(T target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
+    static <K, T> FlowBuilder<T> mergeMapToNode(T target, MergeAndMapFlowBuilder.MergeInput<T, ?>... joinLegs) {
         return MergeAndMapFlowBuilder.mergeToNode(target, joinLegs);
     }
 
