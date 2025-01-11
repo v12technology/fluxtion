@@ -33,7 +33,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
     @Test
     public void biPushTest() {
-        addAuditor();
+//        addAuditor();
         sep(c -> {
             DataFlow.push(
                     c.addNode(new MyPushTarget(), "myPushTarget")::update,
@@ -59,8 +59,8 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
     @Test
     public void biPushTestClassMethod() {
-        writeSourceFile = true;
-        addAuditor();
+//        writeSourceFile = true;
+//        addAuditor();
         sep(c -> {
             DataFlow.push(
                     MyPushTarget::update,
