@@ -35,7 +35,7 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
     @Test
     public void innerJoinTest() {
         sep(c -> {
-                    val schools = DataFlow.subscribe(School.class)
+                    GroupByFlowBuilder<String, School> schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
                     val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
@@ -82,6 +82,7 @@ public class JoinTest extends MultipleSepTargetInProcessTest {
         sep(c -> {
                     val schools = DataFlow.subscribe(School.class)
                             .groupBy(School::getName);
+
                     val pupils = DataFlow.subscribe(Pupil.class)
                             .groupByToList(Pupil::getSchool)
                             .defaultValue(GroupBy.emptyCollection());
