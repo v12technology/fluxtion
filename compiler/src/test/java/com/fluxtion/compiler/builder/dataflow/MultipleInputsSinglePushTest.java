@@ -20,6 +20,7 @@ package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
+import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.node.BaseNode;
 import lombok.Data;
 import org.junit.Assert;
@@ -42,6 +43,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
     public void biPushTest() {
         sep(c -> {
             MyPushTarget myPushTarget = c.addNode(new MyPushTarget(), "myPushTarget");
+            c.addNode(new PushTriggerMonitor(myPushTarget), "monitor");
             DataFlow.push(
                     myPushTarget::update,
                     DataFlow.subscribe(String.class),
@@ -50,7 +52,11 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
         MyPushTarget myPushTarget = getField("myPushTarget");
 
+        PushTriggerMonitor monitor = getField("monitor");
+        Assert.assertFalse(monitor.isTriggered());
+
         publishIntSignal("count", 200);
+        Assert.assertTrue(monitor.isTriggered());
         Assert.assertEquals(200, MyPushTarget.inputCount);
         Assert.assertEquals(200, myPushTarget.getInstanceCount());
         Assert.assertNull(MyPushTarget.stringInput);
@@ -67,6 +73,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
     public void triPushTest() {
         sep(c -> {
             MyPushTarget myPushTarget = c.addNode(new MyPushTarget(), "myPushTarget");
+            c.addNode(new PushTriggerMonitor(myPushTarget), "monitor");
             DataFlow.push(
                     myPushTarget::update3,
                     DataFlow.subscribe(String.class),
@@ -76,7 +83,11 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
         MyPushTarget myPushTarget = getField("myPushTarget");
 
+        PushTriggerMonitor monitor = getField("monitor");
+        Assert.assertFalse(monitor.isTriggered());
+
         onEvent("stringFlow");
+        Assert.assertTrue(monitor.isTriggered());
         Assert.assertEquals("stringFlow", myPushTarget.getInput1());
         Assert.assertEquals("stringFlow", myPushTarget.getInput2());
         Assert.assertEquals("stringFlow", myPushTarget.getInput3());
@@ -86,6 +97,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
     public void quadPushTest() {
         sep(c -> {
             MyPushTarget myPushTarget = c.addNode(new MyPushTarget(), "myPushTarget");
+            c.addNode(new PushTriggerMonitor(myPushTarget), "monitor");
             DataFlow.push(
                     myPushTarget::update4,
                     DataFlow.subscribe(String.class),
@@ -96,7 +108,11 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
         MyPushTarget myPushTarget = getField("myPushTarget");
 
+        PushTriggerMonitor monitor = getField("monitor");
+        Assert.assertFalse(monitor.isTriggered());
+
         onEvent("stringFlow");
+        Assert.assertTrue(monitor.isTriggered());
         Assert.assertEquals("stringFlow", myPushTarget.getInput1());
         Assert.assertEquals("stringFlow", myPushTarget.getInput2());
         Assert.assertEquals("stringFlow", myPushTarget.getInput3());
@@ -179,6 +195,24 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
             this.input3 = input3;
             this.input4 = input4;
             update4Called = true;
+        }
+
+        @OnTrigger
+        public boolean onTrigger() {
+            return true;
+        }
+    }
+
+    @Data
+    public static class PushTriggerMonitor extends BaseNode {
+        private final MyPushTarget myPushTarget;
+        private boolean triggered;
+
+        @OnTrigger
+        public boolean onTrigger() {
+            auditLog.info("myPushTarget", myPushTarget);
+            triggered = true;
+            return true;
         }
     }
 }
