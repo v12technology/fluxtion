@@ -205,7 +205,8 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
             SerializableFunction<T, V> valueFunction,
             SerializableSupplier<F> aggregateFunctionSupplier) {
         MapFlowFunction<T, GroupBy<K1, A>, TriggeredFlowFunction<T>> x = new MapRef2RefFlowFunction<>(eventStream,
-                new GroupByFlowFunctionWrapper<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate);
+                new GroupByFlowFunctionWrapper<>(keyFunction, valueFunction, aggregateFunctionSupplier)::aggregate)
+                .defaultValue(GroupBy.emptyCollection());
         return new GroupByFlowBuilder<>(x);
     }
 
@@ -437,25 +438,11 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     /*
     Done:
     ================
-    co-group joining multiple aggregates into a single row/object
-    outer joins
-    innerjoin
-    groupBy - sliding window
     add peek to primitive streams
-    stateful support for functions
     Use transient reference in any stream that has an instance function reference. Remove anchor
-    add standard Binary and Map functions for primitives, sum, max, min, add, multiply etc.
     add standard predicates for primitives
-    windowing sliding
-    windowing tumbling
     De-dupe filter
     mapOnNotify
-    id for eventStream
-    flatmap
-    groupBy
-    groupBy - tumbling window
-    More tests
-    merge
 
     optional:
     ================
