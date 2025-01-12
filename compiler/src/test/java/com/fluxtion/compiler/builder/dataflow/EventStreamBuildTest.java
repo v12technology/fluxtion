@@ -89,15 +89,32 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
 
     @Test
-    public void wrapNodeAndPushStreamPropertyStreamTest() {
-        sep(c -> subscribeToNodeProperty(MyStringHandler::getInputString)
-                .push(new NotifyAndPushTarget()::setStringPushValue));
+    public void wrapNodeMethodRefAndPushStreamPropertyStreamTest() {
+        sep(c -> {
+            subscribeToNodeProperty(MyStringHandler::getInputString)
+                    .push(new NotifyAndPushTarget()::setStringPushValue);
+        });
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("test");
         assertThat(notifyTarget.getStringPushValue(), is("test"));
         assertThat(notifyTarget.getOnEventCount(), is(1));
     }
+
+    @Test
+    public void wrapNodeAndPushStreamPropertyStreamTest() {
+        sep(c -> {
+            MyStringHandler stringHandler = c.addNode(new MyStringHandler());
+            subscribeToNodeProperty(stringHandler::getInputString)
+                    .push(new NotifyAndPushTarget()::setStringPushValue);
+        });
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
+        onEvent("test");
+        assertThat(notifyTarget.getStringPushValue(), is("test"));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
 
     @Test
     public void streamAsMemberTest() {
