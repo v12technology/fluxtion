@@ -2,14 +2,13 @@ package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnTrigger;
-import com.fluxtion.runtime.dataflow.DefaultValueSupplier;
-import com.fluxtion.runtime.dataflow.DoubleFlowFunction;
-import com.fluxtion.runtime.dataflow.FlowFunction;
-import com.fluxtion.runtime.dataflow.IntFlowFunction;
-import com.fluxtion.runtime.dataflow.LongFlowFunction;
+import com.fluxtion.runtime.dataflow.*;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 
@@ -26,6 +25,10 @@ public abstract class MapFlowFunction<T, R, S extends FlowFunction<T>> extends A
 
     protected transient String auditInfo;
     protected transient R result;
+    @Getter
+    @Setter
+    @Accessors(fluent = true)
+    protected R defaultValue;
 
     @SuppressWarnings("unchecked")
     public MapFlowFunction(S inputEventStream, MethodReferenceReflection methodReferenceReflection) {
@@ -62,12 +65,12 @@ public abstract class MapFlowFunction<T, R, S extends FlowFunction<T>> extends A
 
     @Override
     public boolean hasDefaultValue() {
-        return DefaultValueSupplier.class.isAssignableFrom(getStreamFunction().method().getDeclaringClass());
+        return defaultValue != null | DefaultValueSupplier.class.isAssignableFrom(getStreamFunction().method().getDeclaringClass());
     }
 
     @Override
     public R get() {
-        return result;
+        return result == null ? defaultValue : result;
     }
 
     abstract protected void mapOperation();
@@ -76,6 +79,13 @@ public abstract class MapFlowFunction<T, R, S extends FlowFunction<T>> extends A
         result = resetFunction.reset();
     }
 
+    public R getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(R defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
     //***************** REFERENCE map producers START *****************//
     @EqualsAndHashCode(callSuper = true)
