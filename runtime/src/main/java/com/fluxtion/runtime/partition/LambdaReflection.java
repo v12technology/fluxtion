@@ -1,6 +1,19 @@
 /*
- * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
- * SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 package com.fluxtion.runtime.partition;
 
@@ -214,6 +227,31 @@ public interface LambdaReflection {
     @FunctionalInterface
     interface QuadFunction<F, T, U, V, R> {
         R apply(F f, T t, U u, V v);
+    }
+
+    @FunctionalInterface
+    interface SerializableTriConsumer<A, B, C> extends Serializable, MethodReferenceReflection {
+        void accept(A a, B b, C c);
+    }
+
+    @FunctionalInterface
+    interface SerializableQuadConsumer<A, B, C, D> extends Serializable, MethodReferenceReflection {
+        void accept(A a, B b, C c, D d);
+    }
+
+    @FunctionalInterface
+    interface SerializableQuinConsumer<A, B, C, D, E> extends Serializable, MethodReferenceReflection {
+        void accept(A a, B b, C c, D d, E e);
+    }
+
+    @FunctionalInterface
+    interface SerializableSextConsumer<A, B, C, D, E, F> extends Serializable, MethodReferenceReflection {
+        void accept(A a, B b, C c, D d, E e, F f);
+    }
+
+    @FunctionalInterface
+    interface SerializableSeptConsumer<A, B, C, D, E, F, G> extends Serializable, MethodReferenceReflection {
+        void accept(A a, B b, C c, D d, E e, F f, G g);
     }
 
     static <T> Method getMethod(LambdaReflection.SerializableConsumer<T> supplier) {

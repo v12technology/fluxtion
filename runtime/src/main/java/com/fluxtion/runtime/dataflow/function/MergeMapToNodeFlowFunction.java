@@ -1,6 +1,19 @@
 /*
- * SPDX-FileCopyrightText: © 2025 Gregory Higgins <greg.higgins@v12technology.com>
- * SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
 package com.fluxtion.runtime.dataflow.function;
@@ -9,27 +22,25 @@ import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.NoTriggerReference;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.callback.DirtyStateMonitor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Merges multiple event streams into a single transformed output
  */
 @ToString
-public class MergeMapFlowFunction<T> implements TriggeredFlowFunction<T> {
+public class MergeMapToNodeFlowFunction<T> implements TriggeredFlowFunction<T> {
 
-    private final Supplier<T> factory;
-    private T result;
+    private final T result;
     private final List<MergeProperty<T, ?>> mergeProperties;
     @SuppressWarnings("rawtypes")
     private List<FlowFunction> triggerList = new ArrayList<>();
@@ -42,12 +53,14 @@ public class MergeMapFlowFunction<T> implements TriggeredFlowFunction<T> {
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
 
-    public MergeMapFlowFunction(LambdaReflection.SerializableSupplier<T> factory) {
-        this(factory, new ArrayList<>());
+    public MergeMapToNodeFlowFunction(T result) {
+        this(result, new ArrayList<>());
     }
 
-    public MergeMapFlowFunction(LambdaReflection.SerializableSupplier<T> factory, List<MergeProperty<T, ?>> mergeProperties) {
-        this.factory = factory;
+    public MergeMapToNodeFlowFunction(
+            @AssignToField("result") T result,
+            @AssignToField("mergeProperties") List<MergeProperty<T, ?>> mergeProperties) {
+        this.result = result;
         this.mergeProperties = mergeProperties;
     }
 
@@ -70,7 +83,6 @@ public class MergeMapFlowFunction<T> implements TriggeredFlowFunction<T> {
     @OnTrigger
     public boolean triggered() {
         if (allTriggersUpdated) {
-            result = result == null ? factory.get() : result;
             for (int i = 0; i < mergeProperties.size(); i++) {
                 mergeProperties.get(i).push(result);
             }

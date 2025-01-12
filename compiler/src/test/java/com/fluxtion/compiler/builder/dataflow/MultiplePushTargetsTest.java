@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2025 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
@@ -8,8 +13,8 @@ import org.junit.Test;
 
 import static com.fluxtion.compiler.builder.dataflow.EventStreamBuildTest.NotifyAndPushTarget;
 
-public class MultiplePushTest extends MultipleSepTargetInProcessTest {
-    public MultiplePushTest(CompiledAndInterpretedSepTest.SepTestConfig testConfig) {
+public class MultiplePushTargetsTest extends MultipleSepTargetInProcessTest {
+    public MultiplePushTargetsTest(CompiledAndInterpretedSepTest.SepTestConfig testConfig) {
         super(testConfig);
     }
 

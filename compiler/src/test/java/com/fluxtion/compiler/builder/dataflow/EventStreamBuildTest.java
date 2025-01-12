@@ -1,6 +1,19 @@
 /*
- * SPDX-FileCopyrightText: © 2024 Gregory Higgins <greg.higgins@v12technology.com>
- * SPDX-License-Identifier: AGPL-3.0-only
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
 package com.fluxtion.compiler.builder.dataflow;
@@ -76,15 +89,32 @@ public class EventStreamBuildTest extends MultipleSepTargetInProcessTest {
 
 
     @Test
-    public void wrapNodeAndPushStreamPropertyStreamTest() {
-        sep(c -> subscribeToNodeProperty(MyStringHandler::getInputString)
-                .push(new NotifyAndPushTarget()::setStringPushValue));
+    public void wrapNodeMethodRefAndPushStreamPropertyStreamTest() {
+        sep(c -> {
+            subscribeToNodeProperty(MyStringHandler::getInputString)
+                    .push(new NotifyAndPushTarget()::setStringPushValue);
+        });
         NotifyAndPushTarget notifyTarget = getField("notifyTarget");
         assertThat(0, is(notifyTarget.getOnEventCount()));
         onEvent("test");
         assertThat(notifyTarget.getStringPushValue(), is("test"));
         assertThat(notifyTarget.getOnEventCount(), is(1));
     }
+
+    @Test
+    public void wrapNodeAndPushStreamPropertyStreamTest() {
+        sep(c -> {
+            MyStringHandler stringHandler = c.addNode(new MyStringHandler());
+            subscribeToNodeProperty(stringHandler::getInputString)
+                    .push(new NotifyAndPushTarget()::setStringPushValue);
+        });
+        NotifyAndPushTarget notifyTarget = getField("notifyTarget");
+        assertThat(0, is(notifyTarget.getOnEventCount()));
+        onEvent("test");
+        assertThat(notifyTarget.getStringPushValue(), is("test"));
+        assertThat(notifyTarget.getOnEventCount(), is(1));
+    }
+
 
     @Test
     public void streamAsMemberTest() {
