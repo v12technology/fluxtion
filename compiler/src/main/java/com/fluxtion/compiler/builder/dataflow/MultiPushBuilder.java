@@ -20,11 +20,9 @@ package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
-import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeMapToNodeFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeProperty;
 import com.fluxtion.runtime.partition.LambdaReflection;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -35,37 +33,26 @@ import java.util.List;
  *
  * @param <T> The output type of the merged stream
  */
-@AllArgsConstructor
-public class MergeAndMapFlowBuilder<T> {
+public class MultiPushBuilder<T> {
 
-    private final LambdaReflection.SerializableSupplier<T> resultFactory;
     private final T resultInstance;
     private final List<MergeProperty<T, ?>> required = new ArrayList<>();
 
-    private MergeAndMapFlowBuilder(LambdaReflection.SerializableSupplier<T> resultFactory) {
-        this.resultFactory = resultFactory;
-        resultInstance = null;
-    }
-
-    private MergeAndMapFlowBuilder(T resultInstance) {
-        this.resultFactory = null;
+    private MultiPushBuilder(T resultInstance) {
         this.resultInstance = resultInstance;
     }
 
-    public static <T> MergeAndMapFlowBuilder<T> of(LambdaReflection.SerializableSupplier<T> resultFactory) {
-        return new MergeAndMapFlowBuilder<T>(resultFactory);
+
+    public static <T> MultiPushBuilder<T> of(T resultInstance) {
+        return new MultiPushBuilder<T>(resultInstance);
     }
 
-    public static <T> MergeAndMapFlowBuilder<T> of(T resultInstance) {
-        return new MergeAndMapFlowBuilder<T>(resultInstance);
-    }
-
-    public <R> MergeAndMapFlowBuilder<T> required(FlowBuilder<R> trigger, LambdaReflection.SerializableBiConsumer<T, R> setValue) {
+    public <R> MultiPushBuilder<T> required(FlowBuilder<R> trigger, LambdaReflection.SerializableBiConsumer<T, R> setValue) {
         required.add(new MergeProperty<T, R>(trigger.eventStream, setValue, true, true));
         return this;
     }
 
-    public <R> MergeAndMapFlowBuilder<T> requiredNoTrigger(FlowBuilder<R> trigger, LambdaReflection.SerializableBiConsumer<T, R> setValue) {
+    public <R> MultiPushBuilder<T> requiredNoTrigger(FlowBuilder<R> trigger, LambdaReflection.SerializableBiConsumer<T, R> setValue) {
         required.add(new MergeProperty<T, R>(trigger.eventStream, setValue, false, true));
         return this;
     }
@@ -81,7 +68,7 @@ public class MergeAndMapFlowBuilder<T> {
      */
     @SuppressWarnings("all")
     public static <K, T> FlowBuilder<T> merge(LambdaReflection.SerializableSupplier<T> target, MergeInput<T, ?>... joinLegs) {
-        MergeAndMapFlowBuilder multiJoinBuilder = new MergeAndMapFlowBuilder(target);
+        MultiPushBuilder multiJoinBuilder = new MultiPushBuilder(target);
         for (MergeInput joinLeg : joinLegs) {
             if (joinLeg.isTriggering()) {
                 multiJoinBuilder.required(joinLeg.flow, joinLeg.getSetter());
@@ -94,7 +81,7 @@ public class MergeAndMapFlowBuilder<T> {
 
     @SuppressWarnings("all")
     public static <K, T> FlowBuilder<T> mergeToNode(T target, MergeInput<T, ?>... joinLegs) {
-        MergeAndMapFlowBuilder multiJoinBuilder = new MergeAndMapFlowBuilder(target);
+        MultiPushBuilder multiJoinBuilder = new MultiPushBuilder(target);
         for (MergeInput joinLeg : joinLegs) {
             if (joinLeg.isTriggering()) {
                 multiJoinBuilder.required(joinLeg.flow, joinLeg.getSetter());
@@ -107,12 +94,12 @@ public class MergeAndMapFlowBuilder<T> {
 
     public static <T1, R> MergeInput<T1, R> requiredMergeInput(FlowBuilder<R> flow,
                                                                LambdaReflection.SerializableBiConsumer<T1, R> setter) {
-        return new MergeAndMapFlowBuilder.MergeInput<>(true, flow, setter);
+        return new MultiPushBuilder.MergeInput<>(true, flow, setter);
     }
 
     public static <T1, R> MergeInput<T1, R> optionalMergeInput(FlowBuilder<R> flow,
                                                                LambdaReflection.SerializableBiConsumer<T1, R> setter) {
-        return new MergeAndMapFlowBuilder.MergeInput<>(false, flow, setter);
+        return new MultiPushBuilder.MergeInput<>(false, flow, setter);
     }
 
     @Data
@@ -124,15 +111,9 @@ public class MergeAndMapFlowBuilder<T> {
 
     public TriggeredFlowFunction<T> build() {
         TriggeredFlowFunction<T> flowFunction;
-        if (resultFactory == null) {
-            MergeMapToNodeFlowFunction<T> streamNode = new MergeMapToNodeFlowFunction<>(resultInstance);
-            required.forEach(streamNode::registerTrigger);
-            flowFunction = streamNode;
-        } else {
-            MergeMapFlowFunction<T> stream = new MergeMapFlowFunction<>(resultFactory, new ArrayList<>());
-            required.forEach(stream::registerTrigger);
-            flowFunction = stream;
-        }
+        MergeMapToNodeFlowFunction<T> streamNode = new MergeMapToNodeFlowFunction<>(resultInstance);
+        required.forEach(streamNode::registerTrigger);
+        flowFunction = streamNode;
         return flowFunction;
     }
 
