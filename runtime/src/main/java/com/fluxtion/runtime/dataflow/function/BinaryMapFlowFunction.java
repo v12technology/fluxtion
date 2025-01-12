@@ -2,14 +2,14 @@ package com.fluxtion.runtime.dataflow.function;
 
 import com.fluxtion.runtime.annotations.OnTrigger;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
-import com.fluxtion.runtime.dataflow.DoubleFlowFunction;
-import com.fluxtion.runtime.dataflow.FlowFunction;
-import com.fluxtion.runtime.dataflow.IntFlowFunction;
-import com.fluxtion.runtime.dataflow.LongFlowFunction;
+import com.fluxtion.runtime.dataflow.*;
 import com.fluxtion.runtime.partition.LambdaReflection.MethodReferenceReflection;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiDoubleFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiIntFunction;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableBiLongFunction;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 
@@ -27,6 +27,10 @@ public abstract class BinaryMapFlowFunction<R, Q, T, S extends FlowFunction<R>, 
 
     protected transient String auditInfo;
     protected transient T result;
+    @Getter
+    @Setter
+    @Accessors(fluent = true)
+    protected T defaultValue;
 
     public BinaryMapFlowFunction(
             S inputEventStream,
@@ -54,8 +58,13 @@ public abstract class BinaryMapFlowFunction<R, Q, T, S extends FlowFunction<R>, 
     }
 
     @Override
+    public boolean hasDefaultValue() {
+        return defaultValue != null | DefaultValueSupplier.class.isAssignableFrom(getStreamFunction().method().getDeclaringClass());
+    }
+
+    @Override
     public T get() {
-        return result;
+        return result == null ? defaultValue : result;
     }
 
     abstract protected void mapOperation();
@@ -66,6 +75,14 @@ public abstract class BinaryMapFlowFunction<R, Q, T, S extends FlowFunction<R>, 
             result = resetFunction.reset();
 //        super.resetOperation();
 //        System.out.println("Call to binary function reset - not implemented");
+    }
+
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     public static class BinaryMapToRefFlowFunction<R, Q, T, S extends FlowFunction<R>, U extends FlowFunction<Q>>

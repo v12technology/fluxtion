@@ -152,7 +152,8 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new BinaryMapToRefFlowFunction<>(
                         eventStream,
                         supplierOfIdsToDelete.defaultValue(Collections::emptyList).eventStream,
-                        new GroupByDeleteByKeyFlowFunction(supplierOfIdsToDelete.flowSupplier(), clearDeleteIdsAfterApplying)::deleteByKey));
+                        new GroupByDeleteByKeyFlowFunction(supplierOfIdsToDelete.flowSupplier(), clearDeleteIdsAfterApplying)::deleteByKey))
+                .defaultValue(new GroupBy.EmptyGroupBy<>());
     }
 
     /**
@@ -169,7 +170,8 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
                 new BinaryMapToRefFlowFunction<>(
                         eventStream,
                         deleteTestFlow.defaultValue(functionInstance).eventStream,
-                        new GroupByDeleteByNameFlowFunctionWrapper(deletePredicateFunction, functionInstance)::deleteByKey));
+                        new GroupByDeleteByNameFlowFunctionWrapper(deletePredicateFunction, functionInstance)::deleteByKey))
+                .defaultValue(new GroupBy.EmptyGroupBy<>());
     }
 
     public GroupByFlowBuilder<K, V> filterValues(SerializableFunction<V, Boolean> mappingFunction) {
@@ -222,8 +224,8 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
             SerializableBiFunction<GroupBy<K, V>, GroupBy<K2, V2>, GroupBy<KOUT, VOUT>> int2IntFunction,
             GroupByFlowBuilder<K2, V2> stream2Builder) {
         return new GroupByFlowBuilder<>(
-                new BinaryMapToRefFlowFunction<>(
-                        eventStream, stream2Builder.eventStream, int2IntFunction)
+                new BinaryMapToRefFlowFunction<>(eventStream, stream2Builder.eventStream, int2IntFunction)
+                        .defaultValue(new GroupBy.EmptyGroupBy<>())
         );
     }
 
@@ -232,8 +234,8 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
             SerializableBiFunction<GroupBy<K, V>, V2, GroupBy<KOUT, VOUT>> int2IntFunction,
             FlowBuilder<V2> stream2Builder) {
         return new GroupByFlowBuilder<>(
-                new BinaryMapToRefFlowFunction<>(
-                        eventStream, stream2Builder.eventStream, int2IntFunction)
+                new BinaryMapToRefFlowFunction<>(eventStream, stream2Builder.eventStream, int2IntFunction)
+                        .defaultValue(new GroupBy.EmptyGroupBy<>())
         );
     }
 

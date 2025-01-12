@@ -465,10 +465,11 @@ public interface DataFlow {
     }
 
     static <T, K, V> GroupByFlowBuilder<K, V> groupByFromMap(SerializableFunction<T, Map<K, V>> mapSupplier) {
-        TriggeredFlowFunction<GroupBy<K, V>> triggered = new MapRef2RefFlowFunction<>(
+        MapRef2RefFlowFunction<Map<K, V>, GroupBy<K, V>, TriggeredFlowFunction<Map<K, V>>> triggered = new MapRef2RefFlowFunction<>(
                 subscribe(mapSupplier).eventStream,
                 new GroupByHashMap<K, V>()::fromMap
         );
+        triggered.defaultValue(new GroupBy.EmptyGroupBy<>());
         return new GroupByFlowBuilder<>(triggered);
     }
 
