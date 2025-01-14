@@ -25,6 +25,7 @@ import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
@@ -458,17 +459,17 @@ public class SimpleEventProcessorModel {
                     Set<Constructor> constructors = ReflectionUtils.getConstructors(fieldClass, matchConstructorType(cstrArgList, privateFields));
                     if (constructors.isEmpty()) {
                         throw new RuntimeException("cannot find matching constructor for:" + f
-                                                   + " failed to match for these fields:" + privateFields.stream()
-                                                           .map(MappedField::getMappedName)
-                                                           .collect(Collectors.joining(", ", "[", "]")));
+                                + " failed to match for these fields:" + privateFields.stream()
+                                .map(MappedField::getMappedName)
+                                .collect(Collectors.joining(", ", "[", "]")));
                     }
                     List<String> fieldsThatClash = validateNoTypeClash(privateFields, constructors.iterator().next());
                     if (!fieldsThatClash.isEmpty()) {
                         throw new RuntimeException(
                                 "cannot find matching constructor for:" + f
-                                + " use @" + AssignToField.class.getSimpleName()
-                                + " to resolve clashing types these fields:"
-                                + fieldsThatClash.stream().collect(Collectors.joining(", ", "[", "]")));
+                                        + " use @" + AssignToField.class.getSimpleName()
+                                        + " to resolve clashing types these fields:"
+                                        + fieldsThatClash.stream().collect(Collectors.joining(", ", "[", "]")));
                     }
                 }
                 List<Field.MappedField> collect = Arrays.stream(cstrArgList).filter(Objects::nonNull).collect(Collectors.toList());
@@ -582,7 +583,7 @@ public class SimpleEventProcessorModel {
                     String val = method.getAnnotation(OnParentUpdate.class).value();
                     if (method.getParameterTypes().length != 1) {
                         final String errorMsg = "Cannot create OnParentUpdate callback method must have a single parameter "
-                                                + cbMethodHandle;
+                                + cbMethodHandle;
                         LOGGER.error(errorMsg);
                         throw new RuntimeException(errorMsg);
                     }
@@ -638,7 +639,7 @@ public class SimpleEventProcessorModel {
                             }
                         } else {
                             LOGGER.debug("Cannot create OnParentUpdate callback" + cbMethodHandle
-                                         + " no parent field matches:'" + val + "'");
+                                    + " no parent field matches:'" + val + "'");
                         }
                     } else {
                         //store for matching later
@@ -678,6 +679,8 @@ public class SimpleEventProcessorModel {
             String name = dependencyGraph.getInstanceMap().get(object);
             if (object instanceof EventHandlerNode) {
                 eventCbList.add(new EventCallList((EventHandlerNode<?>) object));
+            } else if (object instanceof StaticEventProcessor) {
+                eventCbList.add(new EventCallList((StaticEventProcessor) object));
             }
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
@@ -704,7 +707,7 @@ public class SimpleEventProcessorModel {
                             }
 
                             boolean noPropagateMethod = cbMethod.getAnnotation(NoPropagateFunction.class) != null
-                                                        || !propagateClass;
+                                    || !propagateClass;
                             LongAdder argNumber = new LongAdder();
                             boolean booleanReturn = method.getReturnType() == boolean.class;
                             StringBuilder signature = booleanReturn
@@ -978,7 +981,7 @@ public class SimpleEventProcessorModel {
 
     private boolean noDirtyFlagNeeded(Field node) {
         boolean notRequired = dependencyGraph.getDirectChildrenListeningForEvent(node.instance).isEmpty()
-                              && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
+                && parentUpdateListenerMethodMap.get(node.instance).isEmpty();
         Method[] methodList = node.instance.getClass().getDeclaredMethods();
         for (Method method : methodList) {
             if (annotationInHierarchy(method, AfterTrigger.class)) {
@@ -1375,6 +1378,47 @@ public class SimpleEventProcessorModel {
             isInverseFiltered = false;
         }
 
+        EventCallList(StaticEventProcessor eh) throws Exception {
+            filterId = Event.NO_INT_FILTER;
+            sortedDependents = dependencyGraph.getEventSortedDependents(eh);
+            dispatchMethods = new ArrayList<>();
+            postDispatchMethods = new ArrayList<>();
+            exportMethod = null;
+
+            eventTypeClass = Object.class;
+
+            @SuppressWarnings("unchecked") Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
+                    ReflectionUtils.withModifier(Modifier.PUBLIC)
+                            .and(ReflectionUtils.withName("onEvent"))
+                            .and(ReflectionUtils.withParametersCount(1))
+            );
+            Method onEventMethod = ehMethodList.iterator().next();
+            String name = dependencyGraph.variableName(eh);
+            final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true, false);
+            dispatchMethods.add(cbMethodHandle);
+            node2UpdateMethodMap.put(eh, cbMethodHandle);
+            for (int i = 1; i < sortedDependents.size(); i++) {
+                Object object = sortedDependents.get(i);
+                if (object == eh) {
+                    continue;
+                }
+                name = dependencyGraph.variableName(object);
+                Method[] methodList = object.getClass().getMethods();
+                for (Method method : methodList) {
+                    if (annotationInHierarchy(method, OnTrigger.class)) {
+                        dispatchMethods.add(new CbMethodHandle(method, object, name));
+                    }
+                    if (annotationInHierarchy(method, AfterTrigger.class)) {
+                        postDispatchMethods.add(new CbMethodHandle(method, object, name));
+                    }
+                }
+            }
+            filterString = null;
+            isIntFilter = false;
+            isFiltered = false;
+            isInverseFiltered = false;
+        }
+
         EventCallList(Object instance, Method onEventMethod, String exportedMethodName, boolean propagate) throws Exception {
             if (propagate) {
                 sortedDependents = dependencyGraph.getEventSortedDependents(instance);
@@ -1416,7 +1460,6 @@ public class SimpleEventProcessorModel {
                     }
                 }
             }
-
         }
 
         @SuppressWarnings("unchecked")
@@ -1464,7 +1507,7 @@ public class SimpleEventProcessorModel {
                     .filter(e -> {
                         EventHandlerFilterOverride override = (EventHandlerFilterOverride) e.getKey();
                         return override.getEventHandlerInstance() == instance
-                               && override.getEventType() == onEventMethod.getParameterTypes()[0];
+                                && override.getEventType() == onEventMethod.getParameterTypes()[0];
                     })
                     .mapToInt(Entry::getValue)
                     .findFirst();
