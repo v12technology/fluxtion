@@ -24,6 +24,7 @@ import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.function.AggregateFlowFunctionWrapper;
+import com.fluxtion.runtime.dataflow.aggregate.function.SizedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TimedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow;
 import com.fluxtion.runtime.dataflow.function.BinaryMapFlowFunction.BinaryMapToRefFlowFunction;
@@ -185,6 +186,12 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     slidingAggregate(SerializableSupplier<F> aggregateFunction, int bucketSizeMillis, int bucketsPerWindow) {
         return new FlowBuilder<>(
                 new TimedSlidingWindow<>(eventStream, aggregateFunction, bucketSizeMillis, bucketsPerWindow));
+    }
+
+    public <R, F extends AggregateFlowFunction<T, R, F>> FlowBuilder<R>
+    slidingAggregateByCount(SerializableSupplier<F> aggregateFunction, int elementsInWindow) {
+        return new FlowBuilder<>(
+                new SizedSlidingWindow<>(eventStream, aggregateFunction, elementsInWindow));
     }
 
     /**
