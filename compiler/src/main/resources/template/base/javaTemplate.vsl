@@ -152,7 +152,7 @@ private transient final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpda
 
     //EVENT DISPATCH - START
     @Override
-    @OnEventHandler(failBuildIfNotGuarded = false)
+    @OnEventHandler(failBuildIfMissingBooleanReturn = false)
     public void onEvent(Object event) {
         if(buffering){
             triggerCalculation();

@@ -75,7 +75,7 @@ public class ValidatingAnnotationProcessorTest {
                 "public class MyStringHandler {\n" +
                 "    String in;\n" +
                 "\n" +
-                "    @OnEventHandler(failBuildIfNotGuarded = false)\n" +
+                "    @OnEventHandler(failBuildIfMissingBooleanReturn = false)\n" +
                 "    public void stringUpdated() {\n" +
                 "        this.in = in;\n" +
                 "    }\n" +
@@ -179,7 +179,7 @@ public class ValidatingAnnotationProcessorTest {
                 "public class MyStringHandler {\n" +
                 "    String in;\n" +
                 "\n" +
-                "    @OnTrigger(failBuildIfNotGuarded = false)\n" +
+                "    @OnTrigger(failBuildIfMissingBooleanReturn = false)\n" +
                 "    public void stringUpdated() {\n" +
                 "        this.in = in;\n" +
                 "    }\n" +
