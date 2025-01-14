@@ -1,7 +1,26 @@
+/*
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Server Side Public License, version 1,
+ * as published by MongoDB, Inc.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Server Side Public License for more details.
+ *
+ * You should have received a copy of the Server Side Public License
+ * along with this program.  If not, see
+ * <http://www.mongodb.com/licensing/server-side-public-license>.
+ */
+
 package com.fluxtion.runtime.input;
 
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.TearDown;
+import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
 import com.fluxtion.runtime.annotations.runtime.ServiceDeregistered;
 import com.fluxtion.runtime.annotations.runtime.ServiceRegistered;
 import com.fluxtion.runtime.event.NamedFeedEvent;
@@ -21,7 +40,7 @@ public final class SubscriptionManagerNode implements SubscriptionManager, Named
     //subscriptions
     private final transient Map<Object, Integer> subscriptionMap = new HashMap<>();
     private final transient Map<EventSubscription<?>, Integer> namedFeedSubscriptionMap = new HashMap<>();
-
+    @FluxtionIgnore
     private StaticEventProcessor eventProcessor = StaticEventProcessor.NULL_EVENTHANDLER;
 
     public void setSubscribingEventProcessor(StaticEventProcessor eventProcessor) {

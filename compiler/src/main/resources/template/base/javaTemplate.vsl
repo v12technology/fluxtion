@@ -19,6 +19,7 @@
 package ${package};
 
 import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.lifecycle.BatchHandler;
 import com.fluxtion.runtime.lifecycle.Lifecycle;
 import com.fluxtion.runtime.EventProcessor;
@@ -48,13 +49,13 @@ EventProcessor<${className}>, ${MODEL.additionalInterfaces} StaticEventProcessor
 
 //Node declarations
 ${MODEL.nodeDeclarations}
-    private final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
+private transient final ExportFunctionAuditEvent functionAudit = new ExportFunctionAuditEvent();
 //Dirty flags
 private boolean initCalled = false;
 private boolean processing = false;
 private boolean buffering = false;
-private final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
-private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
+private transient final IdentityHashMap<Object, BooleanSupplier> dirtyFlagSupplierMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
+private transient final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = new IdentityHashMap<>(${MODEL.dirtyFlagCount});
 
     ${MODEL.dirtyFlagDeclarations}
     ${MODEL.forkDeclarations}
@@ -151,6 +152,7 @@ private final IdentityHashMap<Object, Consumer<Boolean>> dirtyFlagUpdateMap = ne
 
     //EVENT DISPATCH - START
     @Override
+    @OnEventHandler(failBuildIfMissingBooleanReturn = false)
     public void onEvent(Object event) {
         if(buffering){
             triggerCalculation();
