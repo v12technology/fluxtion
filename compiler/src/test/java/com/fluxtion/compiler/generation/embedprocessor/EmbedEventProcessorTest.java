@@ -18,8 +18,7 @@
 
 package com.fluxtion.compiler.generation.embedprocessor;
 
-import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.compiler.generation.OutputRegistry;
+import com.fluxtion.compiler.generation.embedprocessor.generated.EmbedProcessor;
 import com.fluxtion.compiler.generation.util.CompiledAndInterpretedSepTest;
 import com.fluxtion.compiler.generation.util.MultipleSepTargetInProcessTest;
 import com.fluxtion.runtime.EventProcessor;
@@ -31,8 +30,6 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-
 public class EmbedEventProcessorTest extends MultipleSepTargetInProcessTest {
     public EmbedEventProcessorTest(CompiledAndInterpretedSepTest.SepTestConfig testConfig) {
         super(testConfig);
@@ -42,29 +39,29 @@ public class EmbedEventProcessorTest extends MultipleSepTargetInProcessTest {
     @SneakyThrows
     @Test
     public void embedGeneratedProcessorTest() {
-        EventProcessor<?> processor;
-        try {
-            Class<EventProcessor<?>> clazz = (Class<EventProcessor<?>>) Class.forName("com.fluxtion.runtime.EventProcessor");
-            processor = clazz.newInstance();
-        } catch (Exception e) {
-            System.out.println("compiling missing event processor");
-            String srcPath = new File(OutputRegistry.JAVA_TEST_SRC_DIR).getCanonicalPath();
-            String classesPath = new File(OutputRegistry.CLASSES_TEST_DIR).getCanonicalPath();
-            processor = Fluxtion.compile(
-                    cfg -> {
-                        cfg.addNode(new EmbeddedNode(), "embeddedNode");
-                    },
-                    compCfg -> {
-                        compCfg.setClassName("EmbedProcessor");
-                        compCfg.setPackageName("com.fluxtion.compiler.generation.embedprocessor.generated");
-                        compCfg.setOutputDirectory(srcPath);
-                        compCfg.setBuildOutputDirectory(classesPath);
-                        compCfg.setCompileSource(true);
-                    }
-            );
-        }
+        EventProcessor<?> embeddedProcessor = new EmbedProcessor();
+//        try {
+//            Class<EventProcessor<?>> clazz = (Class<EventProcessor<?>>) Class.forName("com.fluxtion.runtime.EventProcessor");
+//            processor = clazz.newInstance();
+//        } catch (Exception e) {
+//            System.out.println("compiling missing event processor");
+//            String srcPath = new File(OutputRegistry.JAVA_TEST_SRC_DIR).getCanonicalPath();
+//            String classesPath = new File(OutputRegistry.CLASSES_TEST_DIR).getCanonicalPath();
+//            processor = Fluxtion.compile(
+//                    cfg -> {
+//                        cfg.addNode(new EmbeddedNode(), "embeddedNode");
+//                    },
+//                    compCfg -> {
+//                        compCfg.setClassName("EmbedProcessor");
+//                        compCfg.setPackageName("com.fluxtion.compiler.generation.embedprocessor.generated");
+//                        compCfg.setOutputDirectory(srcPath);
+//                        compCfg.setBuildOutputDirectory(classesPath);
+//                        compCfg.setCompileSource(true);
+//                    }
+//            );
+//        }
 
-        final EventProcessor<?> embeddedProcessor = processor;
+//        final EventProcessor<?> embeddedProcessor = processor;
 
         sep(c -> {
             MyNode eventProcessor = new MyNode(embeddedProcessor);
