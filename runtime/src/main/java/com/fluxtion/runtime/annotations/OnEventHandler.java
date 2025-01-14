@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -163,4 +164,14 @@ public @interface OnEventHandler {
      * @return invoke dependents on update
      */
     boolean propagate() default true;
+
+    /**
+     * Validates at generation time the method returns a boolean. If the check fails a {@link RuntimeException} will
+     * be thrown.
+     * <p>
+     * This is a generation time only check
+     *
+     * @return require boolean return from callback method
+     */
+    boolean failBuildIfMissingBooleanReturn() default true;
 }

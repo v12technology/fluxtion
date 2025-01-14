@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@ import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.compiler.generation.exporter.JgraphGraphMLExporter;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.*;
 import com.fluxtion.runtime.audit.Auditor;
@@ -772,6 +773,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
+                    | StaticEventProcessor.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null
                     | !ClassUtils.getAllAnnotatedAnnotationTypes(refField.getClass(), ExportService.class).isEmpty()
             ;
@@ -797,6 +799,7 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                     annotationPredicate()
             ).isEmpty();
             addNode |= EventHandlerNode.class.isAssignableFrom(refField.getClass())
+                    | StaticEventProcessor.class.isAssignableFrom(refField.getClass())
                     | refField.getClass().getAnnotation(SepNode.class) != null
                     | !ClassUtils.getAllAnnotatedAnnotationTypes(refField.getClass(), ExportService.class).isEmpty()
             ;
@@ -827,11 +830,16 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                 .or(ReflectionUtils.withAnnotation(OnTrigger.class))
                 .or(ReflectionUtils.withAnnotation(TriggerEventOverride.class));
         return EventHandlerNode.class.isAssignableFrom(obj.getClass())
+                || StaticEventProcessor.class.isAssignableFrom(obj.getClass())
                 || !ReflectionUtils.getAllMethods(obj.getClass(), predicate).isEmpty()
                 || ClassUtils.isPropagatingExportService(obj.getClass());
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
+        if (object != null && StaticEventProcessor.class.isAssignableFrom(object.getClass())) {
+            LOGGER.debug("dont walk dependencies for StaticEventProcessor field:{}", object);
+            return;
+        }
         walkDependenciesForEventHandling(object);
         @SuppressWarnings("unchecked") Set<Field> s = ReflectionUtils.getAllFields(object.getClass());
         Field[] fields = new Field[s.size()];
@@ -1101,6 +1109,9 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
                         exportGraph.addVertex(eventClass);
                         exportGraph.addEdge(eventClass, t);
                     }
+                }
+                if (t instanceof StaticEventProcessor) {
+                    //TODO loop and add to the graph
                 }
                 for (AnnotatedType annotatedInterface : ClassUtils.getAllAnnotatedAnnotationTypes(t.getClass(), ExportService.class)) {
                     if (annotatedInterface.isAnnotationPresent(ExportService.class)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ import com.fluxtion.compiler.generation.model.*;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
 import com.fluxtion.runtime.EventProcessorContext;
+import com.fluxtion.runtime.annotations.ExportService;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnParentUpdate;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
@@ -409,33 +410,33 @@ public class JavaSourceGenerator {
 
         if (model.isDispatchOnlyVersion()) {
             dispatchOnlyNodeMemberAssignments = "    @Override\n" +
-                                                "   public final void assignMembers(Map<String, Object> memberMap) {\n" +
-                                                "        memberMap.forEach((k, v) -> setField(k, v));\n" +
-                                                "        " + forkedAssignments +
-                                                "        " + memberAssignments +
-                                                "        if(subscriptionManager != null){\n" +
-                                                "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
-                                                "        }\n" +
-                                                "        if(context != null) {\n" +
-                                                "            context.setEventProcessorCallback(this);\n" +
-                                                "        }\n" +
-                                                "  }\n\n";
+                    "   public final void assignMembers(Map<String, Object> memberMap) {\n" +
+                    "        memberMap.forEach((k, v) -> setField(k, v));\n" +
+                    "        " + forkedAssignments +
+                    "        " + memberAssignments +
+                    "        if(subscriptionManager != null){\n" +
+                    "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
+                    "        }\n" +
+                    "        if(context != null) {\n" +
+                    "            context.setEventProcessorCallback(this);\n" +
+                    "        }\n" +
+                    "  }\n\n";
 
             dispatchOnlyNodeMemberAssignments += "    @Override\n" +
-                                                 "   public final void assignMembers(Map<String, Object> memberMap, Map<Object, Object> contextMap) {\n" +
-                                                 "        memberMap.forEach((k, v) -> setField(k, v));\n" +
-                                                 "        if(context != null) {\n" +
-                                                 "            context.replaceMappings(contextMap);\n" +
-                                                 "        }\n" +
-                                                 "        " + forkedAssignments +
-                                                 "        " + memberAssignments +
-                                                 "        if(subscriptionManager != null){\n" +
-                                                 "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
-                                                 "        }\n" +
-                                                 "        if(context != null) {\n" +
-                                                 "            context.setEventProcessorCallback(this);\n" +
-                                                 "        }\n" +
-                                                 "  }\n";
+                    "   public final void assignMembers(Map<String, Object> memberMap, Map<Object, Object> contextMap) {\n" +
+                    "        memberMap.forEach((k, v) -> setField(k, v));\n" +
+                    "        if(context != null) {\n" +
+                    "            context.replaceMappings(contextMap);\n" +
+                    "        }\n" +
+                    "        " + forkedAssignments +
+                    "        " + memberAssignments +
+                    "        if(subscriptionManager != null){\n" +
+                    "            subscriptionManager.setSubscribingEventProcessor(this);\n" +
+                    "        }\n" +
+                    "        if(context != null) {\n" +
+                    "            context.setEventProcessorCallback(this);\n" +
+                    "        }\n" +
+                    "  }\n";
         } else {
             nodeMemberAssignments = memberAssignments.toString();
         }
@@ -465,15 +466,15 @@ public class JavaSourceGenerator {
             forkedAssignments = model.getTriggerOnlyCallBacks().stream()
                     .filter(CbMethodHandle::isForkExecution)
                     .map(c -> c.forkVariableName()
-                              + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
-                              + ", \"" + c.variableName + "\" );")
+                            + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
+                            + ", \"" + c.variableName + "\" );")
                     .collect(Collectors.joining("\n", "\n//Forked assignment\n", "\n"));
         } else {
             forkDeclarations = model.getTriggerOnlyCallBacks().stream()
                     .filter(CbMethodHandle::isForkExecution)
                     .map(c -> "private final " + forkWrapperClass + " " + c.forkVariableName()
-                              + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
-                              + ", \"" + c.variableName + "\" );")
+                            + " = new " + forkWrapperClass + "(" + c.invokeLambdaString()
+                            + ", \"" + c.variableName + "\" );")
                     .collect(Collectors.joining("\n", "\n//Forked declarations\n", "\n"));
         }
 
@@ -583,18 +584,18 @@ public class JavaSourceGenerator {
                                 }
 
                                 return d.getName() + " = " + d.getForkedName() + ".afterEvent();\n"
-                                       + "if(" + d.getName() + "){\n"
-                                       + guarded + "\n"
-                                       + "}"
-                                       + sbUnguarded;
+                                        + "if(" + d.getName() + "){\n"
+                                        + guarded + "\n"
+                                        + "}"
+                                        + sbUnguarded;
                             })
                             .collect(Collectors.joining("\n"));
 
                     if (!model.getNodeGuardConditions(field.instance).isEmpty()) {
                         guardCheckMethods += String.format("%1$4sprivate boolean guardCheck_%2$s() {%n" +
-                                                           forkedReturn +
-                                                           "%1$8sreturn %3$s;" +
-                                                           "}%n", "", field.getName(), guardConditions);
+                                forkedReturn +
+                                "%1$8sreturn %3$s;" +
+                                "}%n", "", field.getName(), guardConditions);
                     }
                 }
         );
@@ -615,7 +616,7 @@ public class JavaSourceGenerator {
             String pkgName = clazzName.replace("." + simpleName, "");
             ret = simpleName;
             if (clazzName.startsWith("java.lang")
-                || GenerationContext.SINGLETON.getPackageName().equals(pkgName)) {
+                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)) {
                 //ignore java.lang
             } else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(clazzName)) {
@@ -650,7 +651,7 @@ public class JavaSourceGenerator {
             } catch (Exception e) {
                 syntheticConstructor = true;
             }
-            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" ");
+            StringBuilder declarationRoot = declarationBuilder.append(s4).append(access).append(" transient ");
             if (!dispatchOnlyVersion) {
                 declarationRoot.append(" final ");
             }
@@ -726,14 +727,14 @@ public class JavaSourceGenerator {
                     int mappedValue = filterVariableMap.get(variableName);
                     if (mappedValue != value) {
                         throw new IllegalStateException("two mappings for the same filter"
-                                                        + " constant '" + variableName + "'");
+                                + " constant '" + variableName + "'");
                     } else {
                         continue;
                     }
                 }
                 filterVariableMap.put(variableName, value);
                 final String declaration = String.format("    "
-                                                         + "public static final int %s = %d;",
+                                + "public static final int %s = %d;",
                         variableName, value);
                 filterConstantDeclarations += (firstLine ? "" : "\n") + declaration;
                 firstLine = false;
@@ -765,11 +766,11 @@ public class JavaSourceGenerator {
         eventHandlers += "\n  //EVENT BUFFERING - START\n";
         if (!eventProcessorConfig.isSupportBufferAndTrigger()) {
             eventHandlers += "    public void bufferEvent(Object event) {" +
-                             "        throw new UnsupportedOperationException(\"bufferEvent not supported\");\n" +
-                             "    }\n";
+                    "        throw new UnsupportedOperationException(\"bufferEvent not supported\");\n" +
+                    "    }\n";
             eventHandlers += "\n    public void triggerCalculation() {" +
-                             "        throw new UnsupportedOperationException(\"triggerCalculation not supported\");\n" +
-                             "    }\n";
+                    "        throw new UnsupportedOperationException(\"triggerCalculation not supported\");\n" +
+                    "    }\n";
             eventHandlers += "  //EVENT BUFFERING - END\n\n";
             return;
         }
@@ -779,7 +780,7 @@ public class JavaSourceGenerator {
 
         boolean patternSwitch = eventProcessorConfig.getDispatchStrategy() == DISPATCH_STRATEGY.PATTERN_MATCH;
         StringBuilder noTriggerDispatch = new StringBuilder("    public void bufferEvent(Object event){\n" +
-                                                            "        buffering = true;\n");
+                "        buffering = true;\n");
         //build buffer event method
         String bufferEvents = "";
         if (instanceOfDispatch) {
@@ -840,11 +841,11 @@ public class JavaSourceGenerator {
         cbMapPostDispatch.put(FilterDescription.DEFAULT_FILTER, model.getAllPostEventCallBacks());
         String dispatchString = buildFilteredSwitch(cbMap, cbMapPostDispatch, Object.class, false, true);
         String bufferedTrigger = "\n    public void triggerCalculation(){\n" +
-                                 "        buffering = false;\n" +
-                                 "        String typedEvent = \"No event information - buffered dispatch\";\n" +
-                                 (dispatchString == null ? "" : dispatchString) +
-                                 "        afterEvent();\n" +
-                                 "\n    }\n";
+                "        buffering = false;\n" +
+                "        String typedEvent = \"No event information - buffered dispatch\";\n" +
+                (dispatchString == null ? "" : dispatchString) +
+                "        afterEvent();\n" +
+                "\n    }\n";
 
         bufferDispatch = false;
         isInlineEventHandling = prev;
@@ -1438,15 +1439,15 @@ public class JavaSourceGenerator {
     @Override
     public String toString() {
         return "SepJavaSourceModel{" + "\ninitialiseMethods=" + initialiseMethodList
-               + ", \nbatchEndMethods=" + batchEndMethodList
-               + ", \nbatchPauseMethods=" + batchPauseMethodList
-               + ", \neventEndMethods=" + eventEndMethodList
-               + ", \ntearDownMethods=" + tearDownMethodList
-               + ", \nnodeDeclarations=" + nodeDeclarationList
-               + ", \neventDispatch=" + eventDispatch
-               + ", \nnodeMemberAssignments=" + nodeMemberAssignmentList
-               + ", \nmodel=" + model
-               + "\n}";
+                + ", \nbatchEndMethods=" + batchEndMethodList
+                + ", \nbatchPauseMethods=" + batchPauseMethodList
+                + ", \neventEndMethods=" + eventEndMethodList
+                + ", \ntearDownMethods=" + tearDownMethodList
+                + ", \nnodeDeclarations=" + nodeDeclarationList
+                + ", \neventDispatch=" + eventDispatch
+                + ", \nnodeMemberAssignments=" + nodeMemberAssignmentList
+                + ", \nmodel=" + model
+                + "\n}";
     }
 
     private void buildNodeRegistrationListeners() {
@@ -1473,7 +1474,7 @@ public class JavaSourceGenerator {
         String auditEvent = String.format("private void auditEvent(%s typedEvent){\n", eventClassName);
         String auditInvocation = "private void auditInvocation(Object node, String nodeName, String methodName, Object typedEvent){\n";
         String initialiseAuditor = "private void initialiseAuditor(" + getClassName(Auditor.class.getName()) + " auditor){\n"
-                                   + "\tauditor.init();\n";
+                + "\tauditor.init();\n";
         for (Field nodeField : nodeFields) {
             String nodeName = nodeField.name;
             if (listenerFields.stream().anyMatch((t) -> t.name.equals(nodeName))) {
@@ -1527,10 +1528,10 @@ public class JavaSourceGenerator {
         }
 
         String prefix = "  public <T> void setField(String fieldName, T field){\n" +
-                        "    switch (fieldName){\n";
+                "    switch (fieldName){\n";
         String suffix = "      default: {}\n" +
-                        "    }\n" +
-                        "  }\n";
+                "    }\n" +
+                "  }\n";
 
         final List<Field> nodeFields = model.getNodeFields();
         StringBuilder switchString = new StringBuilder(prefix);
@@ -1561,10 +1562,11 @@ public class JavaSourceGenerator {
     public void additionalInterfacesToImplement(Set<Class<?>> interfacesToImplement) {
         additionalInterfaces = "";
         if (!interfacesToImplement.isEmpty()) {
+            importList.add(ExportService.class.getCanonicalName());
             additionalInterfaces = interfacesToImplement.stream()
                     .map(this::getClassTypeName)
                     .sorted()
-                    .collect(Collectors.joining(", ", "\n /*--- @ExportService start ---*/\n ", ",\n/*--- @ExportService end ---*/\n"));
+                    .collect(Collectors.joining(", @ExportService ", "\n /*--- @ExportService start ---*/\n @ExportService ", ",\n/*--- @ExportService end ---*/\n"));
         }
         if (model.isDispatchOnlyVersion()) {
             additionalInterfaces += getClassTypeName(NodeDispatchTable.class) + ",\n";
