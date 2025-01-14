@@ -44,7 +44,7 @@ public class EmbedEventProcessorTest extends MultipleSepTargetInProcessTest {
     public void embedGeneratedProcessorTest() {
         EventProcessor<?> processor;
         try {
-            Class<EventProcessor<?>> clazz = (Class<EventProcessor<?>>) Class.forName("com.fluxtion.runtime.EventProcessor");
+            Class<EventProcessor<?>> clazz = (Class<EventProcessor<?>>) Class.forName("com.fluxtion.compiler.generation.embedprocessor.generated.EmbedProcessor");
             processor = clazz.newInstance();
         } catch (Exception e) {
             System.out.println("compiling missing event processor");
