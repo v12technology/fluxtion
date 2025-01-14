@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -836,6 +836,10 @@ public class TopologicallySortedDependencyGraph implements NodeRegistry {
     }
 
     private void walkDependencies(Object object) throws IllegalArgumentException, IllegalAccessException {
+        if (object != null && StaticEventProcessor.class.isAssignableFrom(object.getClass())) {
+            LOGGER.debug("dont walk dependencies for StaticEventProcessor field:{}", object);
+            return;
+        }
         walkDependenciesForEventHandling(object);
         @SuppressWarnings("unchecked") Set<Field> s = ReflectionUtils.getAllFields(object.getClass());
         Field[] fields = new Field[s.size()];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ public class CbMethodHandle {
         this.invertedDirtyHandler = onTriggerAnnotation != null && !onTriggerAnnotation.dirty();
         boolean parallel = (instance instanceof ParallelFunction) ? ((ParallelFunction) instance).parallelCandidate() : false;
         this.forkExecution = parallel || onTriggerAnnotation != null && onTriggerAnnotation.parallelExecution();
-        this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfNotGuarded();
+        this.failBuildOnUnguardedTrigger = onTriggerAnnotation != null && onTriggerAnnotation.failBuildIfMissingBooleanReturn();
         this.guardedParent = onParentUpdateAnnotation != null && onParentUpdateAnnotation.guarded();
         this.noPropagateEventHandler = onEventHandlerAnnotation != null && !onEventHandlerAnnotation.propagate();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@ import com.fluxtion.compiler.generation.model.Field.MappedField;
 import com.fluxtion.compiler.generation.serialiser.FieldSerializer;
 import com.fluxtion.compiler.generation.util.ClassUtils;
 import com.fluxtion.compiler.generation.util.NaturalOrderComparator;
-import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.annotations.builder.AssignToField;
 import com.fluxtion.runtime.annotations.builder.ConstructorArg;
@@ -679,8 +678,6 @@ public class SimpleEventProcessorModel {
             String name = dependencyGraph.getInstanceMap().get(object);
             if (object instanceof EventHandlerNode) {
                 eventCbList.add(new EventCallList((EventHandlerNode<?>) object));
-            } else if (object instanceof StaticEventProcessor) {
-                eventCbList.add(new EventCallList((StaticEventProcessor) object));
             }
             Method[] methodList = object.getClass().getMethods();
             for (Method method : methodList) {
@@ -1375,47 +1372,6 @@ public class SimpleEventProcessorModel {
             boolean isStrFilter = filterString != null && !filterString.isEmpty();
             isIntFilter = filterId != Event.NO_INT_FILTER;
             isFiltered = filterId != Event.NO_INT_FILTER || isStrFilter;
-            isInverseFiltered = false;
-        }
-
-        EventCallList(StaticEventProcessor eh) throws Exception {
-            filterId = Event.NO_INT_FILTER;
-            sortedDependents = dependencyGraph.getEventSortedDependents(eh);
-            dispatchMethods = new ArrayList<>();
-            postDispatchMethods = new ArrayList<>();
-            exportMethod = null;
-
-            eventTypeClass = Object.class;
-
-            @SuppressWarnings("unchecked") Set<Method> ehMethodList = ReflectionUtils.getAllMethods(eh.getClass(),
-                    ReflectionUtils.withModifier(Modifier.PUBLIC)
-                            .and(ReflectionUtils.withName("onEvent"))
-                            .and(ReflectionUtils.withParametersCount(1))
-            );
-            Method onEventMethod = ehMethodList.iterator().next();
-            String name = dependencyGraph.variableName(eh);
-            final CbMethodHandle cbMethodHandle = new CbMethodHandle(onEventMethod, eh, name, eventTypeClass, true, false);
-            dispatchMethods.add(cbMethodHandle);
-            node2UpdateMethodMap.put(eh, cbMethodHandle);
-            for (int i = 1; i < sortedDependents.size(); i++) {
-                Object object = sortedDependents.get(i);
-                if (object == eh) {
-                    continue;
-                }
-                name = dependencyGraph.variableName(object);
-                Method[] methodList = object.getClass().getMethods();
-                for (Method method : methodList) {
-                    if (annotationInHierarchy(method, OnTrigger.class)) {
-                        dispatchMethods.add(new CbMethodHandle(method, object, name));
-                    }
-                    if (annotationInHierarchy(method, AfterTrigger.class)) {
-                        postDispatchMethods.add(new CbMethodHandle(method, object, name));
-                    }
-                }
-            }
-            filterString = null;
-            isIntFilter = false;
-            isFiltered = false;
             isInverseFiltered = false;
         }
 

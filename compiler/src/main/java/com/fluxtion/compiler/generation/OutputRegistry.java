@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2024 gregory higgins.
+ * Copyright (c) 2020-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -43,6 +43,7 @@ public class OutputRegistry {
     public static final String RESOURCE_DIR = "src/main/resources/";
     public static final String RESOURCE_TEST_DIR = "src/test/resources/";
     public static final String RESOURCE_GENERATED_TEST_DIR = "target/generated-test-sources/resources/";
+    public static final String CLASSES_TEST_DIR = "target/test-classes/";
     private ClassLoader classLoader;
 
     private DirOptions dirOptions;

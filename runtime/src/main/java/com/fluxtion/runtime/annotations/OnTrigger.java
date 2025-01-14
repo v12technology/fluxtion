@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -81,14 +82,14 @@ public @interface OnTrigger {
     boolean dirty() default true;
 
     /**
-     * Validates at generation time the method has guards applied. If the check fails a {@link RuntimeException} will
+     * Validates at generation time the method returns a boolean. If the check fails a {@link RuntimeException} will
      * be thrown.
      * <p>
-     * This is a generation time only
+     * This is a generation time only check
      *
-     * @return
+     * @return require boolean return from callback method
      */
-    boolean failBuildIfNotGuarded() default true;
+    boolean failBuildIfMissingBooleanReturn() default true;
 
     /**
      * Forks the annotated trigger method to execute in parallel if possible. The method may execute on this thread
