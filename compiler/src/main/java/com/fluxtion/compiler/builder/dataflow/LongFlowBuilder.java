@@ -5,6 +5,7 @@ import com.fluxtion.runtime.dataflow.LongFlowFunction;
 import com.fluxtion.runtime.dataflow.LongFlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateLongFlowFunction;
+import com.fluxtion.runtime.dataflow.aggregate.function.FixSizedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TimedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow.TumblingLongWindowStream;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateLongFlowFunctionWrapper;
@@ -126,6 +127,12 @@ public class LongFlowBuilder implements FlowDataSupplier<LongFlowSupplier> {
                         aggregateFunction,
                         bucketSizeMillis,
                         numberOfBuckets));
+    }
+
+    public <F extends AggregateLongFlowFunction<F>> LongFlowBuilder slidingAggregateByCount(
+            SerializableSupplier<F> aggregateFunction, int elementsInWindow) {
+        return new LongFlowBuilder(
+                new FixSizedSlidingWindow.FixSizedSlidingLongWindow<>(eventStream, aggregateFunction, elementsInWindow));
     }
 
     public <T> FlowBuilder<T> mapOnNotify(T target) {

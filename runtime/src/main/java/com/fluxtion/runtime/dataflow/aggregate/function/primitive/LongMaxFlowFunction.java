@@ -4,7 +4,8 @@ public class LongMaxFlowFunction extends AbstractLongFlowFunction<LongMaxFlowFun
 
     @Override
     public long aggregateLong(long input) {
-        value = Math.max(value, input);
+        value = reset ? input : Math.max(value, input);
+        reset = false;
         return getAsLong();
     }
 

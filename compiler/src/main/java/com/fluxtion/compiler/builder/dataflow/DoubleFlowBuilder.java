@@ -5,6 +5,7 @@ import com.fluxtion.runtime.dataflow.DoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.DoubleFlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateDoubleFlowFunction;
+import com.fluxtion.runtime.dataflow.aggregate.function.FixSizedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TimedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow.TumblingDoubleWindowStream;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateDoubleFlowFunctionWrapper;
@@ -126,6 +127,12 @@ public class DoubleFlowBuilder implements FlowDataSupplier<DoubleFlowSupplier> {
                         aggregateFunction,
                         bucketSizeMillis,
                         numberOfBuckets));
+    }
+
+    public <F extends AggregateDoubleFlowFunction<F>> DoubleFlowBuilder slidingAggregateByCount(
+            SerializableSupplier<F> aggregateFunction, int elementsInWindow) {
+        return new DoubleFlowBuilder(
+                new FixSizedSlidingWindow.FixSizedSlidingDoubleWindow<>(eventStream, aggregateFunction, elementsInWindow));
     }
 
     public <T> FlowBuilder<T> mapOnNotify(T target) {

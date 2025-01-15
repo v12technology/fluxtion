@@ -111,23 +111,6 @@ public class TimedSlidingWindow
             intSlidingFunction = new BucketedSlidingWindowedIntFunction<>(windowFunctionSupplier, buckets);
         }
 
-//        @OnParentUpdate
-//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
-//        }
-
-//        @OnParentUpdate
-//        public void updateData(IntEventStream inputEventStream) {
-//            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
-//        }
-//
-//        @OnTrigger
-//        public boolean triggered() {
-//            boolean publish = intSlidingFunction.isAllBucketsFilled();
-//            if (publish) value = intSlidingFunction.getAsInt();
-//            return publish;
-//        }
-
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
             intSlidingFunction.roll(rollTrigger.getTriggerCount());
@@ -169,7 +152,7 @@ public class TimedSlidingWindow
             extends TimedSlidingWindow<Double, Double, DoubleFlowFunction, F>
             implements DoubleFlowFunction {
 
-        private double value;
+        private double value = Double.NaN;
         private transient final BucketedSlidingWindowedDoubleFunction<F> intSlidingFunction;
 
         public TimedSlidingWindowDoubleStream(
@@ -188,23 +171,6 @@ public class TimedSlidingWindow
             super(inputEventStream, windowFunctionSupplier, buckets);
             intSlidingFunction = new BucketedSlidingWindowedDoubleFunction<>(windowFunctionSupplier, buckets);
         }
-
-//        @OnParentUpdate
-//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
-//        }
-//
-//        @OnParentUpdate
-//        public void updateData(DoubleEventStream inputEventStream) {
-//            intSlidingFunction.aggregateDouble(inputEventStream.getAsDouble());
-//        }
-//
-//        @OnTrigger
-//        public boolean triggered() {
-//            boolean publish = intSlidingFunction.isAllBucketsFilled();
-//            if (publish) value = intSlidingFunction.getAsDouble();
-//            return publish;
-//        }
 
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
@@ -238,7 +204,7 @@ public class TimedSlidingWindow
         protected void resetOperation() {
             intSlidingFunction.init();
             rollTrigger.init();
-            value = 0;
+            value = Double.NaN;
         }
     }
 
@@ -266,23 +232,6 @@ public class TimedSlidingWindow
             super(inputEventStream, windowFunctionSupplier, buckets);
             intSlidingFunction = new BucketedSlidingWindowedLongFunction<>(windowFunctionSupplier, buckets);
         }
-
-//        @OnParentUpdate
-//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
-//        }
-//
-//        @OnParentUpdate
-//        public void updateData(LongEventStream inputEventStream) {
-//            intSlidingFunction.aggregateLong(inputEventStream.getAsLong());
-//        }
-//
-//        @OnTrigger
-//        public boolean triggered() {
-//            boolean publish = intSlidingFunction.isAllBucketsFilled();
-//            if (publish) value = intSlidingFunction.getAsLong();
-//            return publish;
-//        }
 
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {

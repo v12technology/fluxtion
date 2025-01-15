@@ -12,6 +12,7 @@ public abstract class AbstractLongFlowFunction<T extends AbstractLongFlowFunctio
         implements LongFlowFunction, AggregateLongFlowFunction<T> {
 
     protected long value;
+    protected boolean reset = true;
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
     private BooleanSupplier dirtySupplier;
@@ -26,6 +27,7 @@ public abstract class AbstractLongFlowFunction<T extends AbstractLongFlowFunctio
     @Override
     public long resetLong() {
         value = 0;
+        reset = true;
         return getAsLong();
     }
 
@@ -51,6 +53,7 @@ public abstract class AbstractLongFlowFunction<T extends AbstractLongFlowFunctio
 
     @Override
     public Long aggregate(Long input) {
+        reset = false;
         return aggregateLong(input);
     }
 

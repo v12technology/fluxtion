@@ -35,8 +35,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
     @Before
     public void setup() {
-        MyPushTarget.update3Called = false;
-        MyPushTarget.update4Called = false;
+        MyPushTarget.reset();
     }
 
     @Test
@@ -56,11 +55,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
         Assert.assertFalse(monitor.isTriggered());
 
         publishIntSignal("count", 200);
-        Assert.assertTrue(monitor.isTriggered());
-        Assert.assertEquals(200, MyPushTarget.inputCount);
-        Assert.assertEquals(200, myPushTarget.getInstanceCount());
-        Assert.assertNull(MyPushTarget.stringInput);
-        Assert.assertNull(myPushTarget.getInstanceString());
+        Assert.assertFalse(monitor.isTriggered());
 
         onEvent("stringFlow");
         Assert.assertEquals(200, MyPushTarget.inputCount);
@@ -76,7 +71,7 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
             c.addNode(new PushTriggerMonitor(myPushTarget), "monitor");
             DataFlow.push(
                     myPushTarget::update3,
-                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribeToSignal("signal", String.class),
                     DataFlow.subscribe(String.class),
                     DataFlow.subscribe(String.class));
         });
@@ -87,8 +82,11 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
         Assert.assertFalse(monitor.isTriggered());
 
         onEvent("stringFlow");
+        Assert.assertFalse(monitor.isTriggered());
+
+        publishSignal("signal", "mySignal");
         Assert.assertTrue(monitor.isTriggered());
-        Assert.assertEquals("stringFlow", myPushTarget.getInput1());
+        Assert.assertEquals("mySignal", myPushTarget.getInput1());
         Assert.assertEquals("stringFlow", myPushTarget.getInput2());
         Assert.assertEquals("stringFlow", myPushTarget.getInput3());
     }
@@ -139,15 +137,33 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
                     DataFlow.subscribe(String.class),
                     DataFlow.subscribe(String.class),
                     DataFlow.subscribe(String.class));
+
+            DataFlow.push(
+                    MyPushTarget::update5,
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribeToIntSignal("count5"));
+
+            DataFlow.push(
+                    MyPushTarget::update6,
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribe(String.class),
+                    DataFlow.subscribeToIntSignal("count5"),
+                    DataFlow.subscribeToIntSignal("count6"));
         });
 
         Assert.assertFalse(MyPushTarget.update3Called);
         Assert.assertFalse(MyPushTarget.update4Called);
 
-
         publishIntSignal("count", 200);
-        Assert.assertEquals(200, MyPushTarget.inputCount);
-        Assert.assertNull(MyPushTarget.stringInput);
+        Assert.assertFalse(MyPushTarget.update3Called);
+        Assert.assertFalse(MyPushTarget.update4Called);
+        Assert.assertFalse(MyPushTarget.update5Called);
+        Assert.assertFalse(MyPushTarget.update6Called);
 
         onEvent("stringFlow");
         Assert.assertEquals(200, MyPushTarget.inputCount);
@@ -155,6 +171,20 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
 
         Assert.assertTrue(MyPushTarget.update3Called);
         Assert.assertTrue(MyPushTarget.update4Called);
+        Assert.assertFalse(MyPushTarget.update5Called);
+        Assert.assertFalse(MyPushTarget.update6Called);
+
+        publishIntSignal("count5", 200);
+        Assert.assertTrue(MyPushTarget.update3Called);
+        Assert.assertTrue(MyPushTarget.update4Called);
+        Assert.assertTrue(MyPushTarget.update5Called);
+        Assert.assertFalse(MyPushTarget.update6Called);
+
+        publishIntSignal("count6", 200);
+        Assert.assertTrue(MyPushTarget.update3Called);
+        Assert.assertTrue(MyPushTarget.update4Called);
+        Assert.assertTrue(MyPushTarget.update5Called);
+        Assert.assertTrue(MyPushTarget.update6Called);
     }
 
 
@@ -171,6 +201,15 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
         private String input4;
         static boolean update3Called = false;
         static boolean update4Called = false;
+        static boolean update5Called = false;
+        static boolean update6Called = false;
+
+        public static void reset() {
+            update3Called = false;
+            update4Called = false;
+            update5Called = false;
+            update6Called = false;
+        }
 
         public void update(String input, int inCount) {
             auditLog.info("stringInput", input)
@@ -195,6 +234,22 @@ public class MultipleInputsSinglePushTest extends MultipleSepTargetInProcessTest
             this.input3 = input3;
             this.input4 = input4;
             update4Called = true;
+        }
+
+        public void update5(String input1, String input2, String input3, String input4, int count) {
+            this.input1 = input1;
+            this.input2 = input2;
+            this.input3 = input3;
+            this.input4 = input4;
+            update5Called = true;
+        }
+
+        public void update6(String input1, String input2, String input3, String input4, int count, int count2) {
+            this.input1 = input1;
+            this.input2 = input2;
+            this.input3 = input3;
+            this.input4 = input4;
+            update6Called = true;
         }
 
         @OnTrigger

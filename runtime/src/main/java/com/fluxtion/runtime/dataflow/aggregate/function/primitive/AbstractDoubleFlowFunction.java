@@ -24,7 +24,7 @@ public abstract class AbstractDoubleFlowFunction<T extends AbstractDoubleFlowFun
 
     @Override
     public double resetDouble() {
-        value = 0;
+        value = Double.NaN;
         return getAsDouble();
     }
 
