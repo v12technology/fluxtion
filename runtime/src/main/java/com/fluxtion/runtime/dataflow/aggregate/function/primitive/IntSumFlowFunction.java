@@ -3,14 +3,9 @@ package com.fluxtion.runtime.dataflow.aggregate.function.primitive;
 public class IntSumFlowFunction extends AbstractIntFlowFunction<IntSumFlowFunction> {
 
     @Override
-    public int resetInt() {
-        value = 0;
-        return getAsInt();
-    }
-
-    @Override
     public int aggregateInt(int input) {
         value += input;
+        reset = false;
         return getAsInt();
     }
 
@@ -27,7 +22,7 @@ public class IntSumFlowFunction extends AbstractIntFlowFunction<IntSumFlowFuncti
     @Override
     public String toString() {
         return "AggregateIntSum{" +
-                "value=" + value +
-                '}';
+               "value=" + value +
+               '}';
     }
 }

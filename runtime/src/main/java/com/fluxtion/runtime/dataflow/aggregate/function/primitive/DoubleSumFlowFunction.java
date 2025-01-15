@@ -9,6 +9,12 @@ public class DoubleSumFlowFunction extends AbstractDoubleFlowFunction<DoubleSumF
     }
 
     @Override
+    public double resetDouble() {
+        value = 0;
+        return getAsDouble();
+    }
+
+    @Override
     public void combine(DoubleSumFlowFunction combine) {
         value += combine.value;
     }

@@ -5,6 +5,7 @@ import com.fluxtion.runtime.dataflow.IntFlowFunction;
 import com.fluxtion.runtime.dataflow.IntFlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.aggregate.AggregateIntFlowFunction;
+import com.fluxtion.runtime.dataflow.aggregate.function.FixSizedSlidingWindow.FixSizedSlidingIntWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TimedSlidingWindow;
 import com.fluxtion.runtime.dataflow.aggregate.function.TumblingWindow.TumblingIntWindowStream;
 import com.fluxtion.runtime.dataflow.aggregate.function.primitive.AggregateIntFlowFunctionWrapper;
@@ -127,6 +128,12 @@ public class IntFlowBuilder implements FlowDataSupplier<IntFlowSupplier> {
                         aggregateFunction,
                         bucketSizeMillis,
                         numberOfBuckets));
+    }
+
+    public <F extends AggregateIntFlowFunction<F>> IntFlowBuilder slidingAggregateByCount(
+            SerializableSupplier<F> aggregateFunction, int elementsInWindow) {
+        return new IntFlowBuilder(
+                new FixSizedSlidingIntWindow<>(eventStream, aggregateFunction, elementsInWindow));
     }
 
     public <T> FlowBuilder<T> mapOnNotify(T target) {

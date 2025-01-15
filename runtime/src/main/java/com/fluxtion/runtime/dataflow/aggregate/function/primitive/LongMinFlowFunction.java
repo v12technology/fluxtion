@@ -4,7 +4,8 @@ public class LongMinFlowFunction extends AbstractLongFlowFunction<LongMinFlowFun
 
     @Override
     public long aggregateLong(long input) {
-        value = Math.min(value, input);
+        value = reset ? input : Math.min(value, input);
+        reset = false;
         return getAsLong();
     }
 

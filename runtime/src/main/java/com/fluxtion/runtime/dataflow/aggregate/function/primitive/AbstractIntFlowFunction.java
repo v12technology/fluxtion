@@ -12,6 +12,7 @@ public abstract class AbstractIntFlowFunction<T extends AbstractIntFlowFunction<
         implements IntFlowFunction, AggregateIntFlowFunction<T> {
 
     protected int value;
+    protected boolean reset = true;
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;
     private BooleanSupplier dirtySupplier;
@@ -30,6 +31,7 @@ public abstract class AbstractIntFlowFunction<T extends AbstractIntFlowFunction<
     @Override
     public int resetInt() {
         value = 0;
+        reset = true;
         return getAsInt();
     }
 
@@ -50,6 +52,7 @@ public abstract class AbstractIntFlowFunction<T extends AbstractIntFlowFunction<
 
     @Override
     public Integer aggregate(Integer input) {
+        reset = false;
         return aggregateInt(input);
     }
 
