@@ -48,7 +48,6 @@ public class MergeMapToNodeFlowFunction<T> implements TriggeredFlowFunction<T> {
     @SuppressWarnings("rawtypes")
     private final transient List<FlowFunction> nonTriggeringSources = new ArrayList<>();
     private final transient Set<FlowFunction<?>> requiredSet = new HashSet<>();
-
     private transient boolean allTriggersUpdated = false;
     @Inject
     public DirtyStateMonitor dirtyStateMonitor;

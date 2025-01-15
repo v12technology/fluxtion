@@ -38,7 +38,7 @@ public class TriPushFunction<T, A, B, C> extends MultiArgumentPushFunction<T> {
                            @AssignToField("source1") FlowSupplier<A> source1,
                            @AssignToField("source2") FlowSupplier<B> source2,
                            @AssignToField("source3") FlowSupplier<C> source3) {
-        super(classPushMethod, source1, source2);
+        super(classPushMethod, source1, source2, source3);
         this.classPushMethod = classPushMethod;
         this.source1 = source1;
         this.source2 = source2;
@@ -49,7 +49,7 @@ public class TriPushFunction<T, A, B, C> extends MultiArgumentPushFunction<T> {
                            @AssignToField("source1") FlowSupplier<A> source1,
                            @AssignToField("source2") FlowSupplier<B> source2,
                            @AssignToField("source3") FlowSupplier<C> source3) {
-        super(instancePushMethod, source1, source2);
+        super(instancePushMethod, source1, source2, source3);
         this.instancePushMethod = instancePushMethod;
         this.source1 = source1;
         this.source2 = source2;

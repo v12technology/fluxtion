@@ -4,7 +4,7 @@ public class DoubleMinFlowFunction extends AbstractDoubleFlowFunction<DoubleMinF
 
     @Override
     public double aggregateDouble(double input) {
-        value = Math.min(value, input);
+        value = Double.isNaN(value) ? input : Math.min(value, input);
         return getAsDouble();
     }
 

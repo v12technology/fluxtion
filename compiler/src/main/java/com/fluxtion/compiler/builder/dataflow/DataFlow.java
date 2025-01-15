@@ -229,8 +229,8 @@ public interface DataFlow {
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                      NoSuchMethodException e) {
                 throw new RuntimeException("no default constructor found for class:"
-                        + sourceProperty.getContainingClass()
-                        + " either add default constructor or pass in a node instance");
+                                           + sourceProperty.getContainingClass()
+                                           + " either add default constructor or pass in a node instance");
             }
         } else {
             source = (T) sourceProperty.captured()[0];
@@ -644,17 +644,89 @@ public interface DataFlow {
      * @return A {@link FlowBuilder} wrapping an instance of T that can used to construct stream processing logic
      */
     static <T, A, B, C, D> FlowBuilder<T> push(
-            SerializableQuadConsumer<T, A, B, C> instancePushMethod,
+            SerializableQuadConsumer<A, B, C, D> instancePushMethod,
             FlowDataSupplier<? extends FlowSupplier<A>> flowBuilderA,
             FlowDataSupplier<? extends FlowSupplier<B>> flowBuilderB,
             FlowDataSupplier<? extends FlowSupplier<C>> flowBuilderC,
             FlowDataSupplier<? extends FlowSupplier<D>> flowBuilderD) {
-        QuadPushFunction pushFunction = new QuadPushFunction(
+        QuadPushFunction<T, A, B, C, D> pushFunction = new QuadPushFunction<>(
                 instancePushMethod,
                 flowBuilderA.flowSupplier(),
                 flowBuilderB.flowSupplier(),
                 flowBuilderC.flowSupplier(),
                 flowBuilderD.flowSupplier());
+        return new FlowBuilder<>(pushFunction);
+    }
+
+    /**
+     * Gathers five input {@link FlowSupplier} and pushes them to a single 5 5argument consumer method.
+     *
+     * @param instancePushMethod consumer method
+     * @param flowBuilderA       supply for argument 1
+     * @param flowBuilderB       supply for argument 2
+     * @param flowBuilderC       supply for argument 3
+     * @param flowBuilderD       supply for argument 4
+     * @param flowBuilderE       supply for argument 5
+     * @param <T>                The target push instance type
+     * @param <A>                Type of argument 1
+     * @param <B>                Type of argument 2
+     * @param <C>                Type of argument 3
+     * @param <D>                Type of argument 4
+     * @param <E>                Type of argument 5
+     * @return A {@link FlowBuilder} wrapping an instance of T that can used to construct stream processing logic
+     */
+    static <T, A, B, C, D, E> FlowBuilder<T> push(
+            SerializableQuinConsumer<A, B, C, D, E> instancePushMethod,
+            FlowDataSupplier<? extends FlowSupplier<A>> flowBuilderA,
+            FlowDataSupplier<? extends FlowSupplier<B>> flowBuilderB,
+            FlowDataSupplier<? extends FlowSupplier<C>> flowBuilderC,
+            FlowDataSupplier<? extends FlowSupplier<D>> flowBuilderD,
+            FlowDataSupplier<? extends FlowSupplier<E>> flowBuilderE) {
+        QuinPushFunction<T, A, B, C, D, E> pushFunction = new QuinPushFunction<>(
+                instancePushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier(),
+                flowBuilderC.flowSupplier(),
+                flowBuilderD.flowSupplier(),
+                flowBuilderE.flowSupplier());
+        return new FlowBuilder<>(pushFunction);
+    }
+
+    /**
+     * Gathers six input {@link FlowSupplier} and pushes them to a single 5 5argument consumer method.
+     *
+     * @param instancePushMethod consumer method
+     * @param flowBuilderA       supply for argument 1
+     * @param flowBuilderB       supply for argument 2
+     * @param flowBuilderC       supply for argument 3
+     * @param flowBuilderD       supply for argument 4
+     * @param flowBuilderE       supply for argument 5
+     * @param flowBuilderF       supply for argument 6
+     * @param <T>                The target push instance type
+     * @param <A>                Type of argument 1
+     * @param <B>                Type of argument 2
+     * @param <C>                Type of argument 3
+     * @param <D>                Type of argument 4
+     * @param <E>                Type of argument 5
+     * @param <F>                Type of argument 6
+     * @return A {@link FlowBuilder} wrapping an instance of T that can used to construct stream processing logic
+     */
+    static <T, A, B, C, D, E, F> FlowBuilder<T> push(
+            SerializableSextConsumer<A, B, C, D, E, F> instancePushMethod,
+            FlowDataSupplier<? extends FlowSupplier<A>> flowBuilderA,
+            FlowDataSupplier<? extends FlowSupplier<B>> flowBuilderB,
+            FlowDataSupplier<? extends FlowSupplier<C>> flowBuilderC,
+            FlowDataSupplier<? extends FlowSupplier<D>> flowBuilderD,
+            FlowDataSupplier<? extends FlowSupplier<E>> flowBuilderE,
+            FlowDataSupplier<? extends FlowSupplier<F>> flowBuilderF) {
+        SextPushFunction<T, A, B, C, D, E, F> pushFunction = new SextPushFunction<>(
+                instancePushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier(),
+                flowBuilderC.flowSupplier(),
+                flowBuilderD.flowSupplier(),
+                flowBuilderE.flowSupplier(),
+                flowBuilderF.flowSupplier());
         return new FlowBuilder<>(pushFunction);
     }
 
@@ -736,6 +808,80 @@ public interface DataFlow {
                 flowBuilderB.flowSupplier(),
                 flowBuilderC.flowSupplier(),
                 flowBuilderD.flowSupplier());
+        return new FlowBuilder<>(pushFunction);
+    }
+
+    /**
+     * Gathers five input {@link FlowSupplier} and pushes them to a single 5 argument consumer method.
+     * Implicitly creates a target instance from the
+     *
+     * @param classPushMethod consumer method
+     * @param flowBuilderA    supply for argument 1
+     * @param flowBuilderB    supply for argument 2
+     * @param flowBuilderC    supply for argument 3
+     * @param flowBuilderD    supply for argument 4
+     * @param flowBuilderE    supply for argument 5
+     * @param <T>             The target push instance type
+     * @param <A>             Type of argument 1
+     * @param <B>             Type of argument 2
+     * @param <C>             Type of argument 3
+     * @param <D>             Type of argument 4
+     * @param <E>             Type of argument 5
+     * @return A {@link FlowBuilder} wrapping an instance of T that can used to construct stream processing logic
+     */
+    static <T, A, B, C, D, E> FlowBuilder<T> push(
+            SerializableSextConsumer<T, A, B, C, D, E> classPushMethod,
+            FlowDataSupplier<? extends FlowSupplier<A>> flowBuilderA,
+            FlowDataSupplier<? extends FlowSupplier<B>> flowBuilderB,
+            FlowDataSupplier<? extends FlowSupplier<C>> flowBuilderC,
+            FlowDataSupplier<? extends FlowSupplier<D>> flowBuilderD,
+            FlowDataSupplier<? extends FlowSupplier<E>> flowBuilderE) {
+        QuinPushFunction<T, A, B, C, D, E> pushFunction = new QuinPushFunction<>(
+                classPushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier(),
+                flowBuilderC.flowSupplier(),
+                flowBuilderD.flowSupplier(),
+                flowBuilderE.flowSupplier());
+        return new FlowBuilder<>(pushFunction);
+    }
+
+    /**
+     * Gathers five input {@link FlowSupplier} and pushes them to a single 5 argument consumer method.
+     * Implicitly creates a target instance from the
+     *
+     * @param classPushMethod consumer method
+     * @param flowBuilderA    supply for argument 1
+     * @param flowBuilderB    supply for argument 2
+     * @param flowBuilderC    supply for argument 3
+     * @param flowBuilderD    supply for argument 4
+     * @param flowBuilderE    supply for argument 5
+     * @param flowBuilderF    supply for argument 6
+     * @param <T>             The target push instance type
+     * @param <A>             Type of argument 1
+     * @param <B>             Type of argument 2
+     * @param <C>             Type of argument 3
+     * @param <D>             Type of argument 4
+     * @param <E>             Type of argument 5
+     * @param <F>             Type of argument 6
+     * @return A {@link FlowBuilder} wrapping an instance of T that can used to construct stream processing logic
+     */
+    static <T, A, B, C, D, E, F> FlowBuilder<T> push(
+            SerializableSeptConsumer<T, A, B, C, D, E, F> classPushMethod,
+            FlowDataSupplier<? extends FlowSupplier<A>> flowBuilderA,
+            FlowDataSupplier<? extends FlowSupplier<B>> flowBuilderB,
+            FlowDataSupplier<? extends FlowSupplier<C>> flowBuilderC,
+            FlowDataSupplier<? extends FlowSupplier<D>> flowBuilderD,
+            FlowDataSupplier<? extends FlowSupplier<E>> flowBuilderE,
+            FlowDataSupplier<? extends FlowSupplier<F>> flowBuilderF) {
+        SextPushFunction<T, A, B, C, D, E, F> pushFunction = new SextPushFunction<>(
+                classPushMethod,
+                flowBuilderA.flowSupplier(),
+                flowBuilderB.flowSupplier(),
+                flowBuilderC.flowSupplier(),
+                flowBuilderD.flowSupplier(),
+                flowBuilderE.flowSupplier(),
+                flowBuilderF.flowSupplier());
         return new FlowBuilder<>(pushFunction);
     }
 }

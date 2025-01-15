@@ -52,6 +52,56 @@ public class SlidingWindowTest extends MultipleSepTargetInProcessTest {
     }
 
     @Test
+    public void testSizedSlidingIntWindow() {
+        sep(c -> DataFlow
+                .subscribe(Integer.class)
+                .mapToInt(Integer::intValue)
+                .slidingAggregateByCount(Aggregates.intSumFactory(), 5)
+                .id("sum")
+        );
+
+        int[] expected = new int[]{0, 0, 0, 0, 10, 15, 20, 25, 30, 35};
+
+        for (int i = 0; i < 10; i++) {
+            onEvent(i);
+            Assert.assertEquals(expected[i], getStreamed("sum", Integer.class).intValue());
+        }
+    }
+
+    @Test
+    public void testSizedSlidingDoubleWindow() {
+        sep(c -> DataFlow
+                .subscribe(Integer.class)
+                .mapToDouble(Integer::doubleValue)
+                .slidingAggregateByCount(Aggregates.doubleSumFactory(), 5)
+                .id("sum")
+        );
+
+        double[] expected = new double[]{0, 0, 0, 0, 10, 15, 20, 25, 30, 35};
+
+        for (int i = 0; i < 10; i++) {
+            onEvent(i);
+            Assert.assertEquals(expected[i], getStreamed("sum", Double.class).doubleValue(), 0.00001);
+        }
+    }
+
+    @Test
+    public void testSizedSlidingLongWindow() {
+        sep(c -> DataFlow
+                .subscribe(Integer.class)
+                .mapToLong(Integer::longValue)
+                .slidingAggregateByCount(Aggregates.longSumFactory(), 5)
+                .id("sum")
+        );
+        long[] expected = new long[]{0, 0, 0, 0, 10, 15, 20, 25, 30, 35};
+
+        for (int i = 0; i < 10; i++) {
+            onEvent(i);
+            Assert.assertEquals(expected[i], getStreamed("sum", Long.class).longValue());
+        }
+    }
+
+    @Test
     public void slidingByTimeTest() {
         sep(c -> DataFlow
                 .subscribe(Integer.class)

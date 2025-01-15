@@ -28,7 +28,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 @Getter
@@ -47,15 +49,16 @@ public abstract class BaseFlowNode<T> extends BaseNode implements TriggeredFlowF
     private Object publishTriggerOverrideNode;
     private Object resetTriggerNode;
     private BooleanSupplier dirtySupplier;
-
-    //    @SuppressWarnings("rawtypes")
     protected List<FlowSupplier<?>> inputs = new ArrayList<>();
+    private final transient Set<FlowSupplier<?>> requiredSet = new HashSet<>();
+    private transient boolean allTriggersUpdated = false;
 
     @Initialise
     public final void initialiseEventStream() {
         overrideUpdateTrigger = updateTriggerNode != null;
         overridePublishTrigger = publishTriggerOverrideNode != null;
         dirtySupplier = getContext().getDirtyStateMonitor().dirtySupplier(this);
+        requiredSet.addAll(inputs);
         initialise();
     }
 
@@ -72,7 +75,11 @@ public abstract class BaseFlowNode<T> extends BaseNode implements TriggeredFlowF
 
     @OnParentUpdate("inputs")
     public void inputUpdated(FlowSupplier<?> inputEventStream) {
-        inputStreamTriggered = !resetTriggered;
+        if (!allTriggersUpdated) {
+            requiredSet.remove(inputEventStream);
+            allTriggersUpdated = requiredSet.isEmpty();
+        }
+        inputStreamTriggered = !resetTriggered & allTriggersUpdated;
     }
 
     @OnParentUpdate("updateTriggerNode")
@@ -95,6 +102,7 @@ public abstract class BaseFlowNode<T> extends BaseNode implements TriggeredFlowF
         resetTriggered = true;
         inputStreamTriggered = false;
         if (isStatefulFunction()) resetOperation();
+        requiredSet.addAll(inputs);
     }
 
     protected abstract void resetOperation();
@@ -125,10 +133,10 @@ public abstract class BaseFlowNode<T> extends BaseNode implements TriggeredFlowF
      */
     protected boolean fireEventUpdateNotification() {
         boolean fireNotification = (!overridePublishTrigger && !overrideUpdateTrigger && inputStreamTriggered)
-                | (!overridePublishTrigger && overrideTriggered)
-                | publishOverrideTriggered
-                | publishTriggered
-                | resetTriggered;
+                                   | (!overridePublishTrigger && overrideTriggered)
+                                   | publishOverrideTriggered
+                                   | publishTriggered
+                                   | resetTriggered;
         overrideTriggered = false;
         publishTriggered = false;
         publishOverrideTriggered = false;

@@ -4,7 +4,8 @@ public class IntMinFlowFunction extends AbstractIntFlowFunction<IntMinFlowFuncti
 
     @Override
     public int aggregateInt(int input) {
-        value = Math.min(value, input);
+        value = reset ? input : Math.min(value, input);
+        reset = false;
         return getAsInt();
     }
 

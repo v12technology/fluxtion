@@ -38,6 +38,10 @@ public interface Mappers {
         return (R) in;
     }
 
+    static double nanToZero(double in) {
+        return Double.isNaN(in) ? 0 : in;
+    }
+
     static <T> SerializableToIntFunction<T> count() {
         return Aggregates.countFactory().get()::aggregate;
     }
