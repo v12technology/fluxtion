@@ -111,23 +111,6 @@ public class TimedSlidingWindow
             intSlidingFunction = new BucketedSlidingWindowedIntFunction<>(windowFunctionSupplier, buckets);
         }
 
-//        @OnParentUpdate
-//        public void timeTriggerFired(FixedRateTrigger rollTrigger) {
-//            intSlidingFunction.roll(rollTrigger.getTriggerCount());
-//        }
-
-//        @OnParentUpdate
-//        public void updateData(IntEventStream inputEventStream) {
-//            intSlidingFunction.aggregateInt(inputEventStream.getAsInt());
-//        }
-//
-//        @OnTrigger
-//        public boolean triggered() {
-//            boolean publish = intSlidingFunction.isAllBucketsFilled();
-//            if (publish) value = intSlidingFunction.getAsInt();
-//            return publish;
-//        }
-
         @OnParentUpdate
         public void timeTriggerFired(FixedRateTrigger rollTrigger) {
             intSlidingFunction.roll(rollTrigger.getTriggerCount());
