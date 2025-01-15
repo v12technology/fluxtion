@@ -4,7 +4,9 @@ public class DoubleMaxFlowFunction extends AbstractDoubleFlowFunction<DoubleMaxF
 
     @Override
     public double aggregateDouble(double input) {
-        value = Math.max(value, input);
+        if (!Double.isNaN(input)) {
+            value = Double.isNaN(value) ? input : Math.max(value, input);
+        }
         return getAsDouble();
     }
 

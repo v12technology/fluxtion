@@ -311,15 +311,15 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         onEvent("100");
         tickDelta(100);
 
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
 
         onEvent("90");
         tickDelta(100);
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
 
         onEvent("30");
         tickDelta(100);
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
 
         tickDelta(100);
         assertThat(getStreamed("max"), is(100d));
@@ -331,18 +331,18 @@ public class PrimitiveDoubleTriggeringTest extends MultipleSepTargetInProcessTes
         assertThat(getStreamed("max"), is(30d));
 
         tickDelta(100);
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
 
         onEvent("70");
         onEvent("50");
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
 
         tickDelta(100);
         assertThat(getStreamed("max"), is(70d));
 
         publishSignal("reset");
         tickDelta(100);
-        assertThat(getStreamed("max"), is(0d));
+        assertThat(getStreamed("max"), is(Double.NaN));
     }
 
     @Test

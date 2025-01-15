@@ -1051,10 +1051,10 @@ public class GroupByTest extends MultipleSepTargetInProcessTest {
 
 
         onEvent(new MidPrice("USDUSD", 1));
-        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        MatcherAssert.assertThat(getStreamed("pnl"), CoreMatchers.is(Double.NaN));
         onEvent(new MidPrice("GBPUSD", 1.2));
         onEvent(new MidPrice("EURUSD", 1.5));
-        Assert.assertTrue(Double.isNaN(getStreamed("pnl")));
+        MatcherAssert.assertThat(getStreamed("pnl"), CoreMatchers.is(Double.NaN));
 
         onEvent(new MidPrice("USDJPY", 100));
         MatcherAssert.assertThat(getStreamed("pnl"), is(closeTo(-1600, 0.01)));

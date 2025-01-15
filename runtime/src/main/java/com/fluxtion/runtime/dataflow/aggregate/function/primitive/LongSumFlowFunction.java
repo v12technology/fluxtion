@@ -5,6 +5,7 @@ public class LongSumFlowFunction extends AbstractLongFlowFunction<LongSumFlowFun
     @Override
     public long aggregateLong(long input) {
         value += input;
+        reset = false;
         return getAsLong();
     }
 

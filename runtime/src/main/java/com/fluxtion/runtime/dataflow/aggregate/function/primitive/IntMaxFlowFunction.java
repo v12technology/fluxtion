@@ -4,7 +4,8 @@ public class IntMaxFlowFunction extends AbstractIntFlowFunction<IntMaxFlowFuncti
 
     @Override
     public int aggregateInt(int input) {
-        value = Math.max(value, input);
+        value = reset ? input : Math.max(value, input);
+        reset = false;
         return getAsInt();
     }
 

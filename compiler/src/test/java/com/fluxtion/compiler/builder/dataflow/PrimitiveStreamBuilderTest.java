@@ -469,7 +469,8 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
     public void slidingDoubleWindowTest() {
         sep(c -> subscribe(String.class)
                 .mapToDouble(EventStreamBuildTest::parseDouble)
-                .slidingAggregate(DoubleSumFlowFunction::new, 100, 4).id("sum")
+                .slidingAggregate(DoubleSumFlowFunction::new, 100, 4).id("rawSum")
+                .map(Mappers::nanToZero).id("sum")
                 .push(new NotifyAndPushTarget()::setDoublePushValue));
         setTime(0);
         onEvent("10.5");
@@ -477,13 +478,16 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         onEvent("10.3");
         tickDelta(100);
 
+        assertThat(getStreamed("rawSum"), is(Double.NaN));
         assertThat(getStreamed("sum"), is(0d));
 
         onEvent("10.2");
         tickDelta(100);
+        assertThat(getStreamed("rawSum"), is(Double.NaN));
         assertThat(getStreamed("sum"), is(0d));
 
         tickDelta(100);
+        assertThat(getStreamed("rawSum"), is(Double.NaN));
         assertThat(getStreamed("sum"), is(0d));
 
         tickDelta(100);
@@ -493,6 +497,7 @@ public class PrimitiveStreamBuilderTest extends MultipleSepTargetInProcessTest {
         assertThat(getStreamed("sum"), closeTo(10.2, 0.0001));
 
         tickDelta(100);
+        assertThat(getStreamed("rawSum"), is(0d));
         assertThat(getStreamed("sum"), is(0d));
     }
 
