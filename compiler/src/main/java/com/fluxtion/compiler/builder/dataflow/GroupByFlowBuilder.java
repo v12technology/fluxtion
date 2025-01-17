@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2025 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler.builder.dataflow;
 
 import com.fluxtion.runtime.EventProcessorBuilderService;
@@ -219,7 +224,7 @@ public class GroupByFlowBuilder<K, V> extends AbstractGroupByBuilder<K, V, Group
         return mapBiFunction(new RightJoin()::join, rightGroupBy).mapValues(Tuples.mapTuple(mergeFunction));
     }
 
-    public <K2 extends K, V2, KOUT, VOUT>
+    public <K2, V2, KOUT, VOUT>
     GroupByFlowBuilder<KOUT, VOUT> mapBiFunction(
             SerializableBiFunction<GroupBy<K, V>, GroupBy<K2, V2>, GroupBy<KOUT, VOUT>> int2IntFunction,
             GroupByFlowBuilder<K2, V2> stream2Builder) {
