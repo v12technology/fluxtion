@@ -18,11 +18,11 @@
 
 package com.fluxtion.runtime.callback;
 
-import com.fluxtion.runtime.EventProcessorContext;
-import com.fluxtion.runtime.EventProcessorContextListener;
+import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.builder.FluxtionIgnore;
-import com.fluxtion.runtime.node.EventHandlerNode;
-import lombok.SneakyThrows;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.BaseNode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,41 +32,29 @@ import java.util.List;
  * Extend this node to expose instance callback outside the {@link com.fluxtion.runtime.EventProcessor}.
  * Use the protected fireCallback methods to trigger child nodes. Data can be optionally passed into a fireCallback method
  */
-public class CallBackNode<R>
-        implements
-        Callback<R>,
-        EventHandlerNode<InstanceCallbackEvent>,
-        EventProcessorContextListener {
+public abstract class AbstractCallbackNode<R> extends BaseNode implements Event, Callback<R> {
 
-    private final InstanceCallbackEvent event;
+    public static int instanceFilterCounter = 0;
+    private final int filterId;
     protected R data;
     @FluxtionIgnore
     private final List<R> dataQueue = new ArrayList<>();
-    private EventDispatcher dispatcher;
 
-    public CallBackNode(InstanceCallbackEvent event) {
-        this.event = event;
+    public AbstractCallbackNode() {
+        filterId = EventProcessorBuilderService.nextId(instanceFilterCounter++);
     }
 
-    @SneakyThrows
-    public CallBackNode() {
-        event = InstanceCallbackEvent.nextCallBackEvent();
+    public AbstractCallbackNode(int filterId) {
+        this.filterId = filterId;
     }
 
-    @Override
-    public void currentContext(EventProcessorContext currentContext) {
-        dispatcher = currentContext.getEventDispatcher();
-    }
-
-    @Override
-    public Class<? extends InstanceCallbackEvent> eventClass() {
-        return event.getClass();
-    }
-
-    @Override
-    public <E extends InstanceCallbackEvent> boolean onEvent(E e) {
-        data = dataQueue.isEmpty() ? null : dataQueue.remove(0);
-        return true;
+    @OnEventHandler(filterVariable = "filterId")
+    public boolean trigger(AbstractCallbackNode<R> callbackNode) {
+        boolean matchSource = callbackNode == this;
+        if (matchSource) {
+            data = dataQueue.isEmpty() ? null : dataQueue.remove(0);
+        }
+        return matchSource;
     }
 
     /**
@@ -87,7 +75,7 @@ public class CallBackNode<R>
     @Override
     public void fireCallback(R data) {
         dataQueue.add(data);
-        dispatcher.processReentrantEvent(event);
+        getContext().processReentrantEvent(this);
     }
 
     /**
@@ -113,11 +101,16 @@ public class CallBackNode<R>
     @Override
     public void fireNewEventCycle(R data) {
         dataQueue.add(data);
-        dispatcher.processAsNewEventCycle(event);
+        getContext().processAsNewEventCycle(this);
     }
 
     @Override
     public R get() {
         return data;
+    }
+
+    @Override
+    public int filterId() {
+        return filterId;
     }
 }

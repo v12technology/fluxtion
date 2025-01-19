@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -29,6 +30,24 @@ import java.util.Optional;
  */
 @AutoService(EventProcessorBuilderService.class)
 public class EventProcessorBuilderServiceImpl implements EventProcessorBuilderService {
+
+    private static long currentId = 1;
+
+    public static void resetGenerationContext() {
+        currentId = 1;
+    }
+
+    @Override
+    public int nextSequenceNumber(int currentGenerationId) {
+        if (currentGenerationId < currentId) {
+            currentGenerationId++;
+            currentId++;
+        } else if (currentGenerationId >= currentId) {
+            currentGenerationId = 1;
+            currentId++;
+        }
+        return currentGenerationId;
+    }
 
     @Override
     public <T> T add(T node) {

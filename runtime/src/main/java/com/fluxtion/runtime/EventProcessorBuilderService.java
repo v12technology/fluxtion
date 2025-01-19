@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -26,6 +27,8 @@ import java.util.ServiceLoader;
  */
 public interface EventProcessorBuilderService {
 
+    int nextSequenceNumber(int currentGenerationId);
+
     <T> T add(T node);
 
     <T> T[] add(T... nodes);
@@ -49,6 +52,11 @@ public interface EventProcessorBuilderService {
     }
 
     EventProcessorBuilderService NULL_CONTEXT = new EventProcessorBuilderService() {
+        @Override
+        public int nextSequenceNumber(int currentGenerationId) {
+            throw new UnsupportedOperationException();
+        }
+
         @Override
         public <T> T add(T node) {
             return node;
@@ -93,7 +101,6 @@ public interface EventProcessorBuilderService {
         public <T> T getNodeById(String id) {
             return null;
         }
-
     };
 
     static EventProcessorBuilderService service() {
@@ -111,5 +118,9 @@ public interface EventProcessorBuilderService {
                 return NULL_CONTEXT;
             }
         }
+    }
+
+    static int nextId(int currentGenerationId) {
+        return service().nextSequenceNumber(currentGenerationId);
     }
 }
