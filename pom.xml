@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxtion</groupId>
     <artifactId>fluxtion.master</artifactId>
-    <version>9.7.6-SNAPSHOT</version>
+    <version>9.7.6</version>
     <packaging>pom</packaging>
     <name>fluxtion</name>
 
