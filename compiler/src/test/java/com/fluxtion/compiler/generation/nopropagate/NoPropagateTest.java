@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2024 gregory higgins.
+ * Copyright (c) 2019-2025 gregory higgins.
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -96,14 +96,13 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
         public void MarketUpdate(MarketHandler update) {
             eventCount++;
         }
-
     }
 
     public static class PricePublisher {
-        public final PricerFormer former;
+        public final Object former;
         int eventCount;
 
-        public PricePublisher(PricerFormer former) {
+        public PricePublisher(Object former) {
             this.former = former;
         }
 
@@ -112,8 +111,6 @@ public class NoPropagateTest extends MultipleSepTargetInProcessTest {
             eventCount++;
             return true;
         }
-
-
     }
 
 }

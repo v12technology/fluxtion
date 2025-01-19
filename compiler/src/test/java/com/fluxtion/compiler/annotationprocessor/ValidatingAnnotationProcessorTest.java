@@ -76,7 +76,27 @@ public class ValidatingAnnotationProcessorTest {
                 "    String in;\n" +
                 "\n" +
                 "    @OnEventHandler(failBuildIfMissingBooleanReturn = false)\n" +
-                "    public void stringUpdated() {\n" +
+                "    public void stringUpdated(String in) {\n" +
+                "        this.in = in;\n" +
+                "    }\n" +
+                "}";
+
+        System.setErr(new DoNothingPrintStream());
+        System.setOut(new DoNothingPrintStream());
+        StringCompilation.compile("MyStringHandler", source);
+    }
+
+    @SneakyThrows
+    @Test
+    public void eventHandler_noPropagateMissingBooleanReturn() {
+        String source = "    " +
+                "import com.fluxtion.runtime.annotations.OnEventHandler;\n" +
+                "\n" +
+                "public class MyStringHandler {\n" +
+                "    String in;\n" +
+                "\n" +
+                "    @OnEventHandler(propagate = false)\n" +
+                "    public void stringUpdated(String in) {\n" +
                 "        this.in = in;\n" +
                 "    }\n" +
                 "}";
@@ -186,7 +206,6 @@ public class ValidatingAnnotationProcessorTest {
                 "}";
         StringCompilation.compile("MyStringHandler", source);
     }
-
 
     @SneakyThrows
     @Test(expected = RuntimeException.class)

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2018 2024 gregory higgins.
+ * Copyright (c) 2025 gregory higgins.
+ * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Server Side Public License, version 1,
@@ -17,6 +18,7 @@
 package com.fluxtion.runtime;
 
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the
@@ -25,6 +27,26 @@ import java.util.ServiceLoader;
  * @author 2024 gregory higgins.
  */
 public interface EventProcessorBuilderService {
+
+    LongAdder currentIdAdder = new LongAdder();
+
+    default int nextSequenceNumber(int currentGenerationId) {
+        currentIdAdder.increment();
+        long currentId = currentIdAdder.longValue();
+        if (currentGenerationId < currentId) {
+            currentGenerationId++;
+            currentId++;
+        } else if (currentGenerationId >= currentId) {
+            currentGenerationId = 1;
+            currentId++;
+        }
+        return currentGenerationId;
+    }
+
+    static void resetGenerationContext() {
+        currentIdAdder.reset();
+        currentIdAdder.increment();
+    }
 
     <T> T add(T node);
 
@@ -49,6 +71,7 @@ public interface EventProcessorBuilderService {
     }
 
     EventProcessorBuilderService NULL_CONTEXT = new EventProcessorBuilderService() {
+
         @Override
         public <T> T add(T node) {
             return node;
@@ -93,7 +116,6 @@ public interface EventProcessorBuilderService {
         public <T> T getNodeById(String id) {
             return null;
         }
-
     };
 
     static EventProcessorBuilderService service() {
@@ -111,5 +133,9 @@ public interface EventProcessorBuilderService {
                 return NULL_CONTEXT;
             }
         }
+    }
+
+    static int nextId(int currentGenerationId) {
+        return service().nextSequenceNumber(currentGenerationId);
     }
 }

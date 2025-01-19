@@ -16,19 +16,14 @@
  */
 package com.fluxtion.compiler.generation;
 
+import com.fluxtion.compiler.builder.EventProcessorBuilderServiceImpl;
 import com.fluxtion.runtime.callback.InstanceCallbackEvent;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -187,6 +182,7 @@ public class GenerationContext {
         log.debug("built GenerationContext: {}", this);
         cacheMap = new HashMap<>();
         InstanceCallbackEvent.reset();
+        EventProcessorBuilderServiceImpl.resetGenerationContext();
     }
 
     private GenerationContext(ClassLoader classLoasder, String packageName, String sepClassName, File outputDirectory, File resourcesRootDirectory, File buildOutputDirectory) {
