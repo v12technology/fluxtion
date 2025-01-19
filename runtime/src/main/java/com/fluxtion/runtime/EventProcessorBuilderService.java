@@ -18,6 +18,7 @@
 package com.fluxtion.runtime;
 
 import java.util.ServiceLoader;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * Service providing buildtime access to constructing a SEP, use {@link #service() } to gain runtime access to the
@@ -27,7 +28,25 @@ import java.util.ServiceLoader;
  */
 public interface EventProcessorBuilderService {
 
-    int nextSequenceNumber(int currentGenerationId);
+    LongAdder currentIdAdder = new LongAdder();
+
+    default int nextSequenceNumber(int currentGenerationId) {
+        currentIdAdder.increment();
+        long currentId = currentIdAdder.longValue();
+        if (currentGenerationId < currentId) {
+            currentGenerationId++;
+            currentId++;
+        } else if (currentGenerationId >= currentId) {
+            currentGenerationId = 1;
+            currentId++;
+        }
+        return currentGenerationId;
+    }
+
+    static void resetGenerationContext() {
+        currentIdAdder.reset();
+        currentIdAdder.increment();
+    }
 
     <T> T add(T node);
 
@@ -52,10 +71,6 @@ public interface EventProcessorBuilderService {
     }
 
     EventProcessorBuilderService NULL_CONTEXT = new EventProcessorBuilderService() {
-        @Override
-        public int nextSequenceNumber(int currentGenerationId) {
-            throw new UnsupportedOperationException();
-        }
 
         @Override
         public <T> T add(T node) {

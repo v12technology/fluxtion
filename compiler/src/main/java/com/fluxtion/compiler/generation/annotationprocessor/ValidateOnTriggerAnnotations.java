@@ -44,14 +44,12 @@ public class ValidateOnTriggerAnnotations extends AbstractProcessor {
             Set<? extends Element> typeElements = annotatedElements.stream()
                     .filter(element -> {
                         OnTrigger triggerAnnotation = element.getAnnotation(OnTrigger.class);
-                        return triggerAnnotation != null && triggerAnnotation.failBuildIfMissingBooleanReturn();
+                        boolean missingReturn = triggerAnnotation.failBuildIfMissingBooleanReturn();
+                        missingReturn &= ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN;
+                        boolean nonPublic = !element.getModifiers().contains(Modifier.PUBLIC);
+                        boolean zeroParams = ((ExecutableType) element.asType()).getParameterTypes().isEmpty();
+                        return missingReturn | nonPublic | !zeroParams;
                     })
-                    .filter(element ->
-                                    ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN
-//                            (((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN && requireGuard)
-                                            || ((ExecutableType) element.asType()).getParameterTypes().size() != 0
-                                            || !element.getModifiers().contains(Modifier.PUBLIC)
-                    )
                     .collect(Collectors.toSet());
 
             typeElements.forEach(element ->

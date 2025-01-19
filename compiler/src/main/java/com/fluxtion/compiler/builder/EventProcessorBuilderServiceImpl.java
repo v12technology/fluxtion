@@ -35,6 +35,7 @@ public class EventProcessorBuilderServiceImpl implements EventProcessorBuilderSe
 
     public static void resetGenerationContext() {
         currentId = 1;
+        EventProcessorBuilderService.resetGenerationContext();
     }
 
     @Override
@@ -121,6 +122,4 @@ public class EventProcessorBuilderServiceImpl implements EventProcessorBuilderSe
     public boolean buildTime() {
         return GenerationContext.SINGLETON != null;
     }
-
-
 }

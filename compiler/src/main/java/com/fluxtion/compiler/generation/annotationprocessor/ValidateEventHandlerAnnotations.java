@@ -44,13 +44,13 @@ public class ValidateEventHandlerAnnotations extends AbstractProcessor {
             Set<? extends Element> typeElements = annotatedElements.stream()
                     .filter(element -> {
                         OnEventHandler ehAnnotation = element.getAnnotation(OnEventHandler.class);
-                        return ehAnnotation != null && ehAnnotation.failBuildIfMissingBooleanReturn();
+                        boolean missingReturn = ehAnnotation.propagate();
+                        missingReturn &= ehAnnotation.failBuildIfMissingBooleanReturn();
+                        missingReturn &= ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN;
+                        boolean nonPublic = !element.getModifiers().contains(Modifier.PUBLIC);
+                        boolean oneParams = ((ExecutableType) element.asType()).getParameterTypes().size() == 1;
+                        return missingReturn | nonPublic | !oneParams;
                     })
-                    .filter(element ->
-                            ((ExecutableType) element.asType()).getReturnType().getKind() != TypeKind.BOOLEAN
-                                    || ((ExecutableType) element.asType()).getParameterTypes().size() != 1
-                                    || !element.getModifiers().contains(Modifier.PUBLIC)
-                    )
                     .collect(Collectors.toSet());
 
             typeElements.forEach(element ->
