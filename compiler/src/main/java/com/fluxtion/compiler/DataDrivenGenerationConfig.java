@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: © 2025 Gregory Higgins <greg.higgins@v12technology.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 package com.fluxtion.compiler;
 
 import com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel;
@@ -24,7 +29,7 @@ public class DataDrivenGenerationConfig {
     private List<Object> nodes;
     private boolean enableAudit;
     private boolean printEventToString = false;
-    private LogLevel auditMethodTraceLogLevel = LogLevel.DEBUG;
+    private LogLevel traceLogeLevel = LogLevel.NONE;
     private FluxtionCompilerConfig compilerConfig;// = new FluxtionCompilerConfig();
 
     @SneakyThrows
@@ -36,8 +41,12 @@ public class DataDrivenGenerationConfig {
     public EventProcessorConfig getEventProcessorConfig() {
         EventProcessorConfig eventProcessorConfig = new EventProcessorConfig();
         eventProcessorConfig.setRootNodeConfig(getRootNodeConfig());
-        if (enableAudit)
-            eventProcessorConfig.addEventAudit(auditMethodTraceLogLevel, printEventToString);
+        if (enableAudit) {
+            eventProcessorConfig.addEventAudit();
+        }
+        if (traceLogeLevel != LogLevel.NONE) {
+            eventProcessorConfig.addEventAudit(traceLogeLevel, printEventToString);
+        }
         return eventProcessorConfig;
     }
 }
