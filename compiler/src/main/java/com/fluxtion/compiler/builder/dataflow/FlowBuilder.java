@@ -18,7 +18,11 @@
 
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.Fluxtion;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
@@ -439,6 +443,17 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public <I, Z extends FlowBuilder<I>> Z mapOnNotify(I target) {
         return super.mapOnNotifyBase(target);
+    }
+
+    public StaticEventProcessor build() {
+        List<Object> nodeList = GenerationContext.SINGLETON.getNodeList();
+        EventProcessor<?> eventProcessor = Fluxtion.compile(c -> {
+            for (Object node : nodeList) {
+                c.addNode(node);
+            }
+        });
+        eventProcessor.init();
+        return eventProcessor;
     }
 
 
