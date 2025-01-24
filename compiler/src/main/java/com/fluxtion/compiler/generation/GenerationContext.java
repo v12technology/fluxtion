@@ -75,6 +75,12 @@ public class GenerationContext {
         });
     }
 
+    public static void inLineContext() {
+        if (SINGLETON == null) {
+            GenerationContext.setupStaticContext("pkg" + nextId(), "Processor" + nextId(), new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
+        }
+    }
+
     public static void setupStaticContext(String packageName, String className, File outputDirectory, File resourcesRootDirectory) {
         setupStaticContext(packageName, className, outputDirectory, resourcesRootDirectory, false);
     }
@@ -113,6 +119,10 @@ public class GenerationContext {
         if (createBuildOutputDirectory && buildOutputDirectory != null) {
             buildOutputDirectory.mkdirs();
         }
+    }
+
+    public static void resetStaticContext() {
+        GenerationContext.SINGLETON = null;
     }
 
     /**

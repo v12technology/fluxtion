@@ -18,6 +18,7 @@
 
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.function.MergeMapFlowFunction;
@@ -43,11 +44,13 @@ public class MergeAndMapFlowBuilder<T> {
     private final List<MergeProperty<T, ?>> required = new ArrayList<>();
 
     private MergeAndMapFlowBuilder(LambdaReflection.SerializableSupplier<T> resultFactory) {
+        GenerationContext.inLineContext();
         this.resultFactory = resultFactory;
         resultInstance = null;
     }
 
     private MergeAndMapFlowBuilder(T resultInstance) {
+        GenerationContext.inLineContext();
         this.resultFactory = null;
         this.resultInstance = resultInstance;
     }

@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.IntFlowFunction;
 import com.fluxtion.runtime.dataflow.IntFlowSupplier;
@@ -31,6 +32,7 @@ public class IntFlowBuilder implements FlowDataSupplier<IntFlowSupplier> {
     final IntFlowFunction eventStream;
 
     IntFlowBuilder(IntFlowFunction eventStream) {
+        GenerationContext.inLineContext();
         EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
