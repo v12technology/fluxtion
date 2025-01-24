@@ -130,6 +130,10 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         );
     }
 
+    public <S, R> FlowBuilder<R> mapBi(FlowBuilder<S> stream2Builder, SerializableBiFunction<T, S, R> int2IntFunction) {
+        return new FlowBuilder<>(new BinaryMapToRefFlowFunction<>(eventStream, stream2Builder.eventStream, int2IntFunction));
+    }
+
     public FlowBuilder<T> merge(FlowBuilder<? extends T> streamToMerge) {
         return new FlowBuilder<>(new MergeFlowFunction<>(eventStream, streamToMerge.eventStream));
     }
@@ -447,10 +451,13 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public StaticEventProcessor build() {
         List<Object> nodeList = GenerationContext.SINGLETON.getNodeList();
+        Map<Object, String> publisNodeMap = GenerationContext.SINGLETON.getPublicNodes();
         EventProcessor<?> eventProcessor = Fluxtion.interpret(c -> {
             for (Object node : nodeList) {
                 c.addNode(node);
             }
+
+            publisNodeMap.forEach(c::addPublicNode);
         });
         eventProcessor.init();
         return eventProcessor;

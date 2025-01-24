@@ -16,33 +16,32 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 
-package com.fluxtion.compiler.builder.dataflow;
+package com.fluxtion.compiler.builder.dataflow.inline;
 
+import com.fluxtion.compiler.builder.dataflow.DataFlow;
 import com.fluxtion.runtime.StaticEventProcessor;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
-public class InLineDataFlowTest {
+import java.util.ArrayList;
+import java.util.List;
+
+public class InLineSinkTest {
 
     @Test
-    public void inline() {
+    public void sinkTest() {
         StaticEventProcessor eventProcessor = DataFlow.subscribe(String.class)
-                .mapBiFunction(InLineDataFlowTest::x, DataFlow.subscribe(Integer.class))
-                .console("Hello {}")
+                .sink("out")
                 .build();
 
-        eventProcessor.onEvent("world");
-        eventProcessor.onEvent(42);
+        List<String> results = new ArrayList<>();
+        eventProcessor.addSink("out", (String s) -> results.add(s));
 
-//        EventProcessor eventProcessor2 = Fluxtion.interpret(c -> {
-//            DataFlow.subscribe(String.class)
-//                    .console("Hello, {}");
-//        });
-//        eventProcessor2.init();
-//        eventProcessor2.onEvent("again :)");
+        eventProcessor.onEvent("1");
+        eventProcessor.onEvent("2");
+        eventProcessor.onEvent("3");
 
-    }
-
-    private static Object x(String s, Integer integer) {
-        return s + " -> " + integer;
+        MatcherAssert.assertThat(results, Matchers.contains("1", "2", "3"));
     }
 }
