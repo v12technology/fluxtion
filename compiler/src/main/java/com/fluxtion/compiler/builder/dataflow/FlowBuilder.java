@@ -460,11 +460,6 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
     /*
     Done:
     ================
-    add peek to primitive streams
-    Use transient reference in any stream that has an instance function reference. Remove anchor
-    add standard predicates for primitives
-    De-dupe filter
-    mapOnNotify
 
     optional:
     ================
