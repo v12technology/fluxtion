@@ -447,7 +447,7 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
 
     public StaticEventProcessor build() {
         List<Object> nodeList = GenerationContext.SINGLETON.getNodeList();
-        EventProcessor<?> eventProcessor = Fluxtion.compile(c -> {
+        EventProcessor<?> eventProcessor = Fluxtion.interpret(c -> {
             for (Object node : nodeList) {
                 c.addNode(node);
             }

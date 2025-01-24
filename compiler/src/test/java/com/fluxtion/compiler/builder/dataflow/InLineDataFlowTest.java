@@ -18,22 +18,31 @@
 
 package com.fluxtion.compiler.builder.dataflow;
 
-import com.fluxtion.compiler.generation.GenerationContext;
-import com.fluxtion.compiler.generation.OutputRegistry;
 import com.fluxtion.runtime.StaticEventProcessor;
 import org.junit.Test;
-
-import java.io.File;
 
 public class InLineDataFlowTest {
 
     @Test
     public void inline() {
-        GenerationContext.setupStaticContext("pkg", "Processor", new File(OutputRegistry.JAVA_GEN_DIR), new File(OutputRegistry.RESOURCE_DIR));
         StaticEventProcessor eventProcessor = DataFlow.subscribe(String.class)
-                .console("Hello, {}")
+                .mapBiFunction(InLineDataFlowTest::x, DataFlow.subscribe(Integer.class))
+                .console("Hello {}")
                 .build();
 
-        eventProcessor.onEvent("world!!");
+        eventProcessor.onEvent("world");
+        eventProcessor.onEvent(42);
+
+//        EventProcessor eventProcessor2 = Fluxtion.interpret(c -> {
+//            DataFlow.subscribe(String.class)
+//                    .console("Hello, {}");
+//        });
+//        eventProcessor2.init();
+//        eventProcessor2.onEvent("again :)");
+
+    }
+
+    private static Object x(String s, Integer integer) {
+        return s + " -> " + integer;
     }
 }
