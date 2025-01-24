@@ -17,11 +17,11 @@ public abstract class InstanceCallbackEvent extends NamedNodeSimple {
 
     @SneakyThrows
     public static InstanceCallbackEvent nextCallBackEvent() {
-        if (EventProcessorBuilderService.service().buildTime()) {
+//        if (EventProcessorBuilderService.service().buildTime()) {
             Class<? extends InstanceCallbackEvent> cbClass = InstanceCallbackEvent.cbClassList.remove(0);
             return cbClass.getDeclaredConstructor().newInstance();
-        }
-        return null;
+//        }
+//        return null;
     }
 
     static void main(String[] args) {

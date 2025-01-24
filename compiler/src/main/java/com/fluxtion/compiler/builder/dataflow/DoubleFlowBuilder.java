@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.DoubleFlowFunction;
 import com.fluxtion.runtime.dataflow.DoubleFlowSupplier;
@@ -31,6 +32,7 @@ public class DoubleFlowBuilder implements FlowDataSupplier<DoubleFlowSupplier> {
     final DoubleFlowFunction eventStream;
 
     DoubleFlowBuilder(DoubleFlowFunction eventStream) {
+        GenerationContext.inLineContext();
         EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }

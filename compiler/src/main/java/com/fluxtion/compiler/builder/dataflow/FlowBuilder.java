@@ -18,7 +18,11 @@
 
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.Fluxtion;
+import com.fluxtion.compiler.generation.GenerationContext;
+import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.EventProcessorBuilderService;
+import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.dataflow.FlowFunction;
 import com.fluxtion.runtime.dataflow.FlowSupplier;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
@@ -124,6 +128,10 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
                 new BinaryMapToRefFlowFunction<>(
                         eventStream, stream2Builder.eventStream, int2IntFunction)
         );
+    }
+
+    public <S, R> FlowBuilder<R> mapBi(FlowBuilder<S> stream2Builder, SerializableBiFunction<T, S, R> int2IntFunction) {
+        return new FlowBuilder<>(new BinaryMapToRefFlowFunction<>(eventStream, stream2Builder.eventStream, int2IntFunction));
     }
 
     public FlowBuilder<T> merge(FlowBuilder<? extends T> streamToMerge) {
@@ -441,15 +449,24 @@ public class FlowBuilder<T> extends AbstractFlowBuilder<T, FlowBuilder<T>> imple
         return super.mapOnNotifyBase(target);
     }
 
+    public StaticEventProcessor build() {
+        List<Object> nodeList = GenerationContext.SINGLETON.getNodeList();
+        Map<Object, String> publisNodeMap = GenerationContext.SINGLETON.getPublicNodes();
+        EventProcessor<?> eventProcessor = Fluxtion.interpret(c -> {
+            for (Object node : nodeList) {
+                c.addNode(node);
+            }
+
+            publisNodeMap.forEach(c::addPublicNode);
+        });
+        eventProcessor.init();
+        return eventProcessor;
+    }
+
 
     /*
     Done:
     ================
-    add peek to primitive streams
-    Use transient reference in any stream that has an instance function reference. Remove anchor
-    add standard predicates for primitives
-    De-dupe filter
-    mapOnNotify
 
     optional:
     ================

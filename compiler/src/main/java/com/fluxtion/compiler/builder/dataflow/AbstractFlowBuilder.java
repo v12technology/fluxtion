@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.TriggeredFlowFunction;
 import com.fluxtion.runtime.dataflow.function.*;
@@ -23,6 +24,7 @@ public abstract class AbstractFlowBuilder<T, B extends AbstractFlowBuilder<T, B>
 
 
     public AbstractFlowBuilder(TriggeredFlowFunction<T> eventStream) {
+        GenerationContext.inLineContext();
         this.eventStream = eventStream;
     }
 

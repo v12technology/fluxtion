@@ -61,3 +61,5 @@
 /compiler/target/
 /runtime/target/
 /parent-root/target
+/runtime/dependency-reduced-pom.xml
+/.idea/workspace.xml

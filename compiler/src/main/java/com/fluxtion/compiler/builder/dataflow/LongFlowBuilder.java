@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.builder.dataflow;
 
+import com.fluxtion.compiler.generation.GenerationContext;
 import com.fluxtion.runtime.EventProcessorBuilderService;
 import com.fluxtion.runtime.dataflow.LongFlowFunction;
 import com.fluxtion.runtime.dataflow.LongFlowSupplier;
@@ -31,6 +32,7 @@ public class LongFlowBuilder implements FlowDataSupplier<LongFlowSupplier> {
     final LongFlowFunction eventStream;
 
     LongFlowBuilder(LongFlowFunction eventStream) {
+        GenerationContext.inLineContext();
         EventProcessorBuilderService.service().add(eventStream);
         this.eventStream = eventStream;
     }
