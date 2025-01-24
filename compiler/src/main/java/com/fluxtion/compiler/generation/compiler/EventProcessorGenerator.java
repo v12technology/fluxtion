@@ -94,6 +94,7 @@ public class EventProcessorGenerator {
         if (generateDescription && !GenerationContext.SINGLETON.getPackageName().isEmpty()) {
             exportGraphMl(graph);
         }
+        GenerationContext.resetStaticContext();
         return new InMemoryEventProcessor(simpleEventProcessorModel, config);
     }
 

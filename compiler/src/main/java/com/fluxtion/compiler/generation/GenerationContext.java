@@ -121,6 +121,10 @@ public class GenerationContext {
         }
     }
 
+    public static void resetStaticContext() {
+        GenerationContext.SINGLETON = null;
+    }
+
     /**
      * Map representing the name of the actual node class generated at SEP
      * processing stage. Allowing a generic proxy class to be used in the SEP

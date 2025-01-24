@@ -59,8 +59,13 @@ public class EventProcessorCompilation {
         initialiseGenerator(configOverride);
         locateFactories();
         Class<?> returnClass = generateSep();
+        cleanupResources();
         LOG.debug("finished SEP compiler");
         return (Class<T>) returnClass;
+    }
+
+    private void cleanupResources() {
+        GenerationContext.resetStaticContext();
     }
 
     private void initialiseGenerator(EventProcessorConfig configOverride) {
