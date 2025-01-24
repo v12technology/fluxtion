@@ -616,7 +616,7 @@ public class JavaSourceGenerator {
             String pkgName = clazzName.replace("." + simpleName, "");
             ret = simpleName;
             if (clazzName.startsWith("java.lang")
-                    || GenerationContext.SINGLETON.getPackageName().equals(pkgName)) {
+                    || (GenerationContext.SINGLETON != null && GenerationContext.SINGLETON.getPackageName().equals(pkgName))) {
                 //ignore java.lang
             } else if (importMap.containsKey(simpleName)) {
                 if (!importMap.get(simpleName).equalsIgnoreCase(clazzName)) {
