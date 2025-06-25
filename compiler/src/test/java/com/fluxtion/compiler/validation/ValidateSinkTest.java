@@ -2,6 +2,7 @@ package com.fluxtion.compiler.validation;
 
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.dataflow.DataFlow;
+import com.fluxtion.compiler.generation.util.YamlFactory;
 import com.fluxtion.extension.csvcompiler.annotations.CsvMarshaller;
 import com.fluxtion.runtime.EventProcessor;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class ValidateSinkTest extends BaseEventProcessorRowBasedTest {
     @Test
     public void parseAndSucceedYamlTest() {
         List<ParseValidationRow> rows = new ArrayList<>();
-        Yaml yaml = new Yaml();
+        Yaml yaml = YamlFactory.newYaml();
         String yamlData = "!!com.fluxtion.compiler.validation.ValidateSinkTest$ParseValidationRow {answerString: 'doubled:4', intIn: '2'}\n" +
                 "---\n" +
                 "!!com.fluxtion.compiler.validation.ValidateSinkTest$ParseValidationRow {answerString: 'doubled:10', intIn: '5'}\n" +
