@@ -1,5 +1,6 @@
 package com.fluxtion.compiler.replay;
 
+import com.fluxtion.compiler.generation.util.YamlFactory;
 import com.fluxtion.runtime.annotations.builder.Inject;
 import com.fluxtion.runtime.audit.Auditor;
 import com.fluxtion.runtime.event.Event;
@@ -55,7 +56,7 @@ public class YamlReplayRecordWriter implements Auditor {
     public static final String DEFAULT_NAME = "yamlReplayRecordWriter";
     @Inject
     private final Clock clock;
-    private final transient Yaml yaml = new Yaml();
+    private final transient Yaml yaml = YamlFactory.newYaml();;
     private final transient ReplayRecord replayRecord = new ReplayRecord();
     private transient Writer targetWriter = NullWriter.NULL_WRITER;
     private Set<Class<?>> classWhiteList = new HashSet<>();

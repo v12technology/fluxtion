@@ -1,11 +1,14 @@
 package com.fluxtion.compiler.validation;
 
+import com.fluxtion.compiler.generation.util.YamlFactory;
 import com.fluxtion.extension.csvcompiler.RowMarshaller;
 import com.fluxtion.runtime.EventProcessor;
 import lombok.SneakyThrows;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor;
+import org.yaml.snakeyaml.extensions.compactnotation.PackageCompactConstructor;
 
 import java.io.Reader;
 import java.util.function.BiPredicate;
@@ -173,21 +176,25 @@ public class BaseEventProcessorRowBasedTest {
      */
     @SneakyThrows
     public static <T> Stream<T> yamlToStream(String doc, String packagePrefix) {
-        Yaml yaml = new Yaml(new Constructor(packagePrefix));
+        Yaml yaml = new Yaml(new PackageCompactConstructor(packagePrefix));
         Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
         @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
         return castStream;
     }
 
     public static <T> Stream<T> yamlToStream(String doc, Class<T> targetClass) {
-        Yaml yaml = new Yaml(new Constructor(targetClass));
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setTagInspector(tag -> true);
+        Yaml yaml = new Yaml(new Constructor(targetClass, loaderOptions));
         Stream<Object> stream = StreamSupport.stream(yaml.loadAll(doc).spliterator(), false);
         @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
         return castStream;
     }
 
     public static <T> Stream<T> yamlToStream(Reader reader, Class<T> targetClass) {
-        Yaml yaml = new Yaml(new Constructor(targetClass));
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setTagInspector(tag -> true);
+        Yaml yaml = new Yaml(new Constructor(targetClass, loaderOptions));
         Stream<Object> stream = StreamSupport.stream(yaml.loadAll(reader).spliterator(), false);
         @SuppressWarnings("unchecked") Stream<T> castStream = (Stream<T>) stream;
         return castStream;

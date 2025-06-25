@@ -43,7 +43,7 @@ public class YamlLogRecordListener implements LogRecordListener {
     }
 
     public YamlLogRecordListener() {
-        yaml = new Yaml();
+        yaml = YamlFactory.newYaml();;
     }
 
     public void loadFromFile(Reader reader) {

@@ -2,6 +2,7 @@ package com.fluxtion.compiler;
 
 import com.fluxtion.compiler.generation.EventProcessorFactory;
 import com.fluxtion.compiler.generation.RuntimeConstants;
+import com.fluxtion.compiler.generation.util.YamlFactory;
 import com.fluxtion.runtime.EventProcessor;
 import com.fluxtion.runtime.StaticEventProcessor;
 import com.fluxtion.runtime.annotations.builder.Disabled;
@@ -253,7 +254,7 @@ public interface Fluxtion {
      */
     @SneakyThrows
     static EventProcessor compileFromReader(Reader reader) {
-        Yaml yaml = new Yaml();
+        Yaml yaml = YamlFactory.newYaml();
         DataDrivenGenerationConfig rootInjectedConfig = yaml.loadAs(reader, DataDrivenGenerationConfig.class);
         String overrideOutputDirectory = System.getProperty(RuntimeConstants.OUTPUT_DIRECTORY);
         if (overrideOutputDirectory != null && !overrideOutputDirectory.isEmpty()) {
