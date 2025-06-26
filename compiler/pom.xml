@@ -29,7 +29,7 @@
     <name>fluxtion :: compiler</name>
 
     <properties>
-        <org.springframework.version>5.3.29</org.springframework.version>
+        <org.springframework.version>6.1.14</org.springframework.version>
     </properties>
 
     <build>
