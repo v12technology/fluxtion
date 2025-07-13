@@ -44,6 +44,14 @@ public class DefaultEventHandlerProcessorTest {
         processor.onEvent("XXX");
         Assert.assertEquals("XXX", handler.getEvent());
         Assert.assertEquals("XXX", ref.get());
+
+        Assert.assertFalse(handler.isStopped());
+        processor.stop();
+        Assert.assertTrue(handler.isStopped());
+
+        Assert.assertFalse(handler.isTearDown());
+        processor.tearDown();
+        Assert.assertTrue(handler.isTearDown());
     }
 
     @Getter
@@ -73,7 +81,6 @@ public class DefaultEventHandlerProcessorTest {
 
         @Override
         public void tearDown() {
-            System.out.println("TearDown");
             tearDown = true;
         }
 
