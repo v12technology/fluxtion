@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.fluxtion</groupId>
         <artifactId>root-parent-pom</artifactId>
-        <version>9.7.13</version>
+        <version>9.7.14-SNAPSHOT</version>
         <relativePath>../parent-root/pom.xml</relativePath>
     </parent>
 
