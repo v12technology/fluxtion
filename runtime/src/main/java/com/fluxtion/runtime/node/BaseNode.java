@@ -26,6 +26,10 @@ public class BaseNode extends EventLogNode implements EventProcessorContextListe
     public final void init() {
         name = context.getNodeNameLookup().lookupInstanceName(this);
         auditLog.info("init", name);
+        _initialise();
+    }
+
+    protected void _initialise() {
     }
 
     @Override
